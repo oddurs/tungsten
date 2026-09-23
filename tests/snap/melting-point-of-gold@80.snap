@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w melting point of gold
+
+  ◆ interpretation
+  │ melting point of gold
+
+  ◆ result
+  │ 1064.18 °C
+
+  ◆ other units
+  │ 1948 °F  ·  1337 K
+
+  ──────────────────── W74

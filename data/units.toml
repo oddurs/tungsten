@@ -1017,7 +1017,7 @@ source = "CODATA 2022, electron volt (exact); BIPM Table 8"
 
 [[unit]]
 names = ["dalton", "unified atomic mass unit", "atomic mass unit"]
-symbols = ["Da", "u", "amu"]
+symbols = ["u", "Da", "amu"]
 def = "1.66053906892e-27 kg"
 prefixes = "k M"
 system = "physics"
@@ -1100,7 +1100,7 @@ extra = [["nmi"], ["AU", "ly"]]
 name = "mass"
 dim = "kg"
 groups = [["t", "kg", "g", "mg", "µg"], ["tn", "lb", "oz"]]
-extra = [["st"], ["ozt"], ["ct"], ["Da", "kDa"]]
+extra = [["st"], ["ozt"], ["ct"], ["Da"]]
 
 [[quantity]]
 name = "time"

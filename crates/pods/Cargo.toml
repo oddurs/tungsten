@@ -9,6 +9,7 @@ authors.workspace = true
 
 [dependencies]
 tungsten-core.workspace = true
+tungsten-kb.workspace = true
 tungsten-units.workspace = true
 unicode-width.workspace = true
 

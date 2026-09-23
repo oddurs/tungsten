@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w earth.mass in kg
+
+  ◆ interpretation
+  │ mass of Earth  →  kg
+
+  ◆ result
+  │ 5.9722×10²⁴ kg
+
+  ──────────────────── W74

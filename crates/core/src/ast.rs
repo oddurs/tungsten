@@ -2,6 +2,7 @@
 
 use crate::resolve::{Const, Func};
 use std::ops::Range;
+use tungsten_kb::{Entity, Hit, Prop};
 use tungsten_units::{Number, UnitExpr};
 
 #[derive(Clone, Debug)]
@@ -9,6 +10,8 @@ pub struct Query {
     pub expr: Node,
     /// `in km`, `to h, min, s`. Empty when no conversion was asked for.
     pub targets: Vec<Target>,
+    /// `in g of caffeine`: which property bare entities stand for.
+    pub of: Option<Vec<Prop>>,
 }
 
 #[derive(Clone, Debug)]
@@ -68,6 +71,29 @@ pub enum Expr {
     Call(Func, Vec<Node>),
     /// Parentheses the user wrote.
     Group(Box<Node>),
+    /// A bare mention: `coffee` in `3 coffees`, `gold` alone. Stands for the
+    /// entity's default property (or the query's `of` property).
+    Entity(Mention),
+    /// `mass of earth`, `earth's mass`, `earth.mass`.
+    Prop(Mention, Vec<Prop>),
+}
+
+/// A word that names one or more entities, and which one was chosen.
+#[derive(Clone, Debug)]
+pub struct Mention {
+    pub hits: Vec<Hit>,
+    /// Filled in by the entity chooser, before checking.
+    pub chosen: Option<Choice>,
+    /// The span of the entity's name alone.
+    pub name_span: Range<usize>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Choice {
+    pub entity: Entity,
+    /// The property whose value this mention stands for. `None` for a lone
+    /// entity shown as a card.
+    pub prop: Option<Prop>,
 }
 
 impl Node {

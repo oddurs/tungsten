@@ -3,7 +3,8 @@
 //! Every unit comes out as its canonical symbol and every implicit operator is
 //! made explicit, so the user can see exactly how their words were read.
 
-use crate::ast::{BinOp, Expr, Node, PostOp, Query, Style};
+use crate::ast::{BinOp, Choice, Expr, Node, PostOp, Query, Style};
+use tungsten_kb::Kind;
 use tungsten_units::{Number, UnitExpr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -15,6 +16,8 @@ pub enum Piece {
     /// A small integer exponent, shown as a superscript where possible.
     Sup(i128),
     Word(&'static str),
+    /// Knowledge-base words: `mass of Earth`, `coffee`.
+    Text(String),
     Space,
     Open,
     Close,
@@ -32,6 +35,15 @@ pub fn interpret(q: &Query) -> Vec<Piece> {
                 out.push(Piece::Comma);
             }
             out.push(Piece::Unit(t.unit.clone()));
+        }
+    }
+    // `in g of caffeine`, `how much caffeine in …`
+    if let Some(prop) = q.of.as_ref().and_then(|p| p.first()) {
+        if q.targets.is_empty() {
+            out.push(Piece::Arrow);
+            out.push(Piece::Text(prop.name().to_string()));
+        } else {
+            out.push(Piece::Text(format!(" of {}", prop.name())));
         }
     }
     out
@@ -76,6 +88,40 @@ fn emit(n: &Node, parent: u8, right: bool, out: &mut Vec<Piece>) {
             out.push(Piece::Unit(unit.clone()));
         }
         Expr::Const(c) => out.push(Piece::Word(c.symbol())),
+        Expr::Entity(m) => {
+            if let Some(Choice {
+                entity,
+                prop: Some(prop),
+            }) = m.chosen
+            {
+                if entity.kind() == Kind::Constant {
+                    // G, not G(6.674 30×10⁻¹¹ m³/(kg·s²) value)
+                    out.push(Piece::Text(
+                        entity.symbol().unwrap_or(entity.display()).to_string(),
+                    ));
+                } else if let Some(v) = entity.value(prop) {
+                    // coffee(95 mg caffeine)
+                    out.push(Piece::Text(format!("{}(", entity.display())));
+                    out.push(Piece::Num(v.num));
+                    out.push(Piece::Space);
+                    out.push(Piece::Unit(v.unit));
+                    out.push(Piece::Text(format!(" {})", prop.name())));
+                }
+            }
+        }
+        Expr::Prop(m, _) => {
+            if let Some(Choice {
+                entity,
+                prop: Some(prop),
+            }) = m.chosen
+            {
+                out.push(Piece::Text(format!(
+                    "{} of {}",
+                    prop.name(),
+                    entity.display()
+                )));
+            }
+        }
         Expr::Neg(x) => {
             out.push(Piece::Op("−"));
             emit(x, 25, false, out);

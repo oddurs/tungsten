@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 coffees a day for a year in grams of caffeine
+
+  ◆ interpretation
+  │ 3 × coffee(95 mg caffeine) / d × 1 yr  →  g of caffeine
+
+  ◆ result
+  │ 104.09625 g
+
+  ◆ other units
+  │ 0.1041 kg  ·  3.672 oz
+
+  ───────────────────────────────────────────────────── W74

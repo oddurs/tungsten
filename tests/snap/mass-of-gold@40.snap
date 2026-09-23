@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass of gold
+
+  ◆ no such property
+  │ mass of gold
+  │ ^^^^^^^^^^^^ gold has no mass; try atomic number, atomic mass, density, melting point, boiling point
+
+  ────────────────────────────────── W74

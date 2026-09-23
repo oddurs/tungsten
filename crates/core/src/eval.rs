@@ -3,7 +3,7 @@
 //! Values are held in SI base units. The [`UnitExpr`] on a value only says how
 //! to show it, so display decisions can never change an answer.
 
-use crate::ast::{BinOp, Expr, Node, PostOp};
+use crate::ast::{BinOp, Choice, Expr, Node, PostOp};
 use crate::error::{Error, ErrorKind};
 use crate::resolve::Func;
 use tungsten_units::{Dim, MathError, Number, Rational, UnitExpr, UnitRef, coherent};
@@ -18,6 +18,10 @@ pub struct Value {
     /// A point on a temperature scale (20 °C, 300 K) rather than a
     /// difference (5 Δ°C). Only points convert with an offset.
     pub point: bool,
+    /// The number exactly as written in `unit`, while `unit` is unchanged.
+    /// Converting 196.96657 u through SI kilograms overflows exact
+    /// arithmetic; showing it in u should not.
+    pub given: Option<Number>,
 }
 
 impl Value {
@@ -27,11 +31,17 @@ impl Value {
             dim: Dim::NONE,
             unit: UnitExpr::default(),
             point: false,
+            given: None,
         }
     }
 
     /// The number to show next to `unit`.
     pub fn in_unit(&self, unit: &UnitExpr) -> Result<Number, MathError> {
+        if let Some(g) = self.given
+            && *unit == self.unit
+        {
+            return Ok(g);
+        }
         match unit.single().filter(|u| self.point && is_scale(*u)) {
             Some(u) => {
                 let off = u.offset().unwrap_or(Number::ZERO);
@@ -45,6 +55,45 @@ impl Value {
     pub fn shown(&self) -> Result<Number, MathError> {
         self.in_unit(&self.unit)
     }
+}
+
+/// A number in a unit, as a value: points on temperature scales included.
+pub fn quantity(v: Number, unit: &UnitExpr) -> Result<Value, MathError> {
+    Ok(match unit.single().filter(|u| is_scale(*u)) {
+        Some(u) => {
+            let off = u.offset().unwrap_or(Number::ZERO);
+            Value {
+                num: v.mul(u.factor())?.add(off)?,
+                dim: unit.dim(),
+                unit: unit.clone(),
+                point: true,
+                given: Some(v),
+            }
+        }
+        None => Value {
+            num: v.mul(unit.factor())?,
+            dim: unit.dim(),
+            unit: unit.clone(),
+            point: false,
+            given: Some(v),
+        },
+    })
+}
+
+/// The value a chosen entity stands for, shown in its property's display
+/// unit (melting points in °C, caffeine in mg).
+pub fn chosen(c: Choice) -> Result<Value, MathError> {
+    let prop = c.prop.ok_or(MathError::NotReal)?;
+    let v = c.entity.value(prop).ok_or(MathError::NotReal)?;
+    let mut value = quantity(v.num, &v.unit)?;
+    if let Some(show) = prop
+        .show()
+        .filter(|s| s.dim() == value.dim && *s != value.unit)
+    {
+        value.unit = show;
+        value.given = None;
+    }
+    Ok(value)
 }
 
 /// A temperature scale unit: K, °C, °F, °R — but not Δ°C or Δ°F.
@@ -79,6 +128,7 @@ fn as_difference(v: &Value) -> Result<Value, MathError> {
                 dim: v.dim,
                 unit,
                 point: false,
+                given: None,
             })
         }
         None => Ok(v.clone()),
@@ -94,31 +144,20 @@ pub fn eval(node: &Node) -> Result<Value, Error> {
     Ok(match &node.expr {
         Expr::Num(n) => Value::scalar(*n),
         Expr::Quantity { value, unit } => {
-            let v = value.unwrap_or(Number::ONE);
-            match unit.single().filter(|u| is_scale(*u)) {
-                Some(u) => {
-                    let off = u.offset().unwrap_or(Number::ZERO);
-                    let num = v.mul(u.factor()).and_then(|x| x.add(off)).map_err(&m)?;
-                    Value {
-                        num,
-                        dim: unit.dim(),
-                        unit: unit.clone(),
-                        point: true,
-                    }
-                }
-                None => Value {
-                    num: v.mul(unit.factor()).map_err(&m)?,
-                    dim: unit.dim(),
-                    unit: unit.clone(),
-                    point: false,
-                },
-            }
+            quantity(value.unwrap_or(Number::ONE), unit).map_err(&m)?
+        }
+        Expr::Entity(mention) | Expr::Prop(mention, _) => {
+            let c = mention
+                .chosen
+                .ok_or_else(|| Error::new(ErrorKind::NotAThing, node.span.clone()))?;
+            chosen(c).map_err(&m)?
         }
         Expr::Const(c) => Value::scalar(Number::approx(c.value()).map_err(&m)?),
         Expr::Neg(x) => {
             let v = eval(x)?;
             Value {
                 num: v.num.neg(),
+                given: v.given.map(Number::neg),
                 ..v
             }
         }
@@ -151,6 +190,7 @@ pub fn eval(node: &Node) -> Result<Value, Error> {
                         unit: settle(unit, &dim),
                         dim,
                         point: false,
+                        given: None,
                     }
                 }
                 // Only dimensionless bases reach here (the checker ensures it).
@@ -204,6 +244,7 @@ pub fn binary(op: BinOp, a: &Value, b: &Value) -> Result<Value, MathError> {
                 dim: a.dim,
                 unit: settle(unit, &a.dim),
                 point,
+                given: None,
             }
         }
         BinOp::Mul | BinOp::Div => {
@@ -219,6 +260,7 @@ pub fn binary(op: BinOp, a: &Value, b: &Value) -> Result<Value, MathError> {
                 dim,
                 unit: settle(unit.simplify(), &dim),
                 point: false,
+                given: None,
             }
         }
     })
@@ -259,6 +301,7 @@ fn call(f: Func, v: &Value) -> Result<Value, MathError> {
             unit: settle(unit, &dim),
             dim,
             point: false,
+            given: None,
         })
     };
     // round/floor/ceil work in the unit the value is shown in.
@@ -270,7 +313,11 @@ fn call(f: Func, v: &Value) -> Result<Value, MathError> {
             Some(u) => r.mul(u.factor())?.add(u.offset().unwrap_or(Number::ZERO))?,
             None => num,
         };
-        Ok(Value { num, ..v.clone() })
+        Ok(Value {
+            num,
+            given: Some(r),
+            ..v.clone()
+        })
     };
     match f {
         Func::Sqrt => rooted(2),
@@ -301,6 +348,7 @@ fn call(f: Func, v: &Value) -> Result<Value, MathError> {
         Func::Exp => scalar(x.exp()),
         Func::Abs => Ok(Value {
             num: v.num.abs(),
+            given: v.given.map(Number::abs),
             ..v.clone()
         }),
         Func::Round => in_unit(round_half_away, f64::round),

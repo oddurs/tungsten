@@ -53,6 +53,19 @@ fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
     {
         return group(&r.num().to_string(), f.fancy);
     }
+    // A large exact integer keeps its significant digits: 5.9722×10²⁴, not
+    // 5.972×10²⁴ (and not 5 972 200 000 000 000 000 000 000).
+    if r.is_integer() && mode == NumMode::Result && f.sig.is_none() {
+        let digits = r.num().unsigned_abs().to_string();
+        let sig_digits = digits.trim_end_matches('0').len().max(1);
+        if sig_digits <= MAX_EXACT_DIGITS {
+            return rounded(
+                r.to_f64(),
+                sig_digits.max(DEFAULT_SIG as usize) as u32,
+                f.fancy,
+            );
+        }
+    }
     match mode {
         NumMode::Literal => {
             if !decimal {
@@ -69,6 +82,12 @@ fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
                 && let Some(s) = exact_decimal(r)
                 && significant(&s) <= MAX_EXACT_DIGITS
             {
+                // Tiny exact values keep every digit, in scientific form:
+                // 6.6743×10⁻¹¹, not 0.000000000066743.
+                if r.abs() < Rational::new(1, 1000).unwrap_or(Rational::ZERO) {
+                    let n = significant(&s).max(1) as u32;
+                    return rounded(r.to_f64(), n, f.fancy);
+                }
                 return group(&s, f.fancy);
             }
             rounded(r.to_f64(), sig, f.fancy)
@@ -265,6 +284,10 @@ mod tests {
             number(q("8589934592", true), NumMode::Rounded, FANCY),
             "8.59×10⁹"
         );
+        let r = |s: &str| number(q(s, true), NumMode::Result, FANCY);
+        assert_eq!(r("5972200000000000000000000"), "5.9722×10²⁴");
+        assert_eq!(r("0.0000000000667430"), "6.6743×10⁻¹¹");
+        assert_eq!(r("0.00125"), "0.00125");
     }
 
     #[test]

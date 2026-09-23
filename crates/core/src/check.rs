@@ -52,6 +52,20 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
     let span = node.span.clone();
     Ok(match &node.expr {
         Expr::Num(_) | Expr::Const(_) => Ty::plain(Dim::NONE),
+        Expr::Entity(m) | Expr::Prop(m, _) => {
+            let v = m
+                .chosen
+                .and_then(|c| eval::chosen(c).ok())
+                .ok_or_else(|| Error::new(ErrorKind::NotAThing, span.clone()))?;
+            match v.unit.single().filter(|u| is_scale(*u)) {
+                Some(u) => Ty {
+                    dim: v.dim,
+                    point: true,
+                    affine: u.is_affine(),
+                },
+                None => Ty::plain(v.dim),
+            }
+        }
         Expr::Quantity { unit, .. } => match unit.single().filter(|u| is_scale(*u)) {
             Some(u) => Ty {
                 dim: unit.dim(),
@@ -223,6 +237,7 @@ fn temperature_hint(lhs: &Node, rhs: &Node, src: &str) -> Option<Hint> {
         dim: delta.dim(),
         unit: UnitExpr::one(delta),
         point: false,
+        given: None,
     };
     let sum = eval::binary(BinOp::Add, &a, &d).ok()?;
     let shown = match v.as_rational() {

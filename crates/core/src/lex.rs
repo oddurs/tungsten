@@ -30,6 +30,8 @@ pub enum TokKind {
     Foot,
     /// `"` directly after a number.
     Inch,
+    /// `'s` directly after a word: `earth's mass`.
+    Possessive,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -119,6 +121,16 @@ impl Lexer<'_> {
         self.out.push(Token { kind, span });
     }
 
+    fn prev_adjacent_word(&self, i: usize) -> Option<&str> {
+        match self.out.last() {
+            Some(Token {
+                kind: TokKind::Word(w),
+                span,
+            }) if span.end == self.byte(i) => Some(w),
+            _ => None,
+        }
+    }
+
     fn prev_is_adjacent_num(&self, i: usize) -> bool {
         matches!(
             self.out.last(),
@@ -161,6 +173,30 @@ impl Lexer<'_> {
             } else if matches!(c, '"' | '”' | '″') && self.prev_is_adjacent_num(start) {
                 self.i += 1;
                 self.push(TokKind::Inch, start, self.i);
+            } else if matches!(c, '\'' | '’') && self.prev_adjacent_word(start).is_some() {
+                // earth's, mars'
+                let next = self.at(self.i + 1);
+                let after = self.at(self.i + 2);
+                if matches!(next, Some('s' | 'S')) && !after.is_some_and(char::is_alphanumeric) {
+                    self.i += 2;
+                    self.push(TokKind::Possessive, start, self.i);
+                } else if !next.is_some_and(char::is_alphanumeric)
+                    && self
+                        .prev_adjacent_word(start)
+                        .is_some_and(|w| w.ends_with(['s', 'S']))
+                {
+                    self.i += 1;
+                    self.push(TokKind::Possessive, start, self.i);
+                } else {
+                    self.i += 1;
+                }
+            } else if c == '.'
+                && self.prev_adjacent_word(start).is_some()
+                && self.at(self.i + 1).is_some_and(char::is_alphabetic)
+            {
+                // earth.mass
+                self.i += 1;
+                self.push(TokKind::Op('.'), start, self.i);
             } else if matches!(c, '?' | '"' | '“' | '”' | '\'' | '‘' | '’' | '`') {
                 // Question marks and stray quotes carry no meaning.
                 self.i += 1;
@@ -457,6 +493,25 @@ mod tests {
             vec![w("°C"), w("Δ°F"), w("light-year")]
         );
         assert_eq!(kinds("what is 2?"), vec![w("what"), w("is"), num(2)]);
+    }
+
+    #[test]
+    fn possessives_and_dots() {
+        assert_eq!(
+            kinds("earth's mass"),
+            vec![w("earth"), TokKind::Possessive, w("mass")]
+        );
+        assert_eq!(
+            kinds("mars' moons"),
+            vec![w("mars"), TokKind::Possessive, w("moons")]
+        );
+        assert_eq!(kinds("earth’s"), vec![w("earth"), TokKind::Possessive]);
+        assert_eq!(
+            kinds("earth.mass"),
+            vec![w("earth"), TokKind::Op('.'), w("mass")]
+        );
+        // A foot mark is still a foot mark.
+        assert_eq!(kinds("5'")[1], TokKind::Foot);
     }
 
     #[test]

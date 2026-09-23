@@ -16,10 +16,11 @@
 //! binds tightest of all, so `1/2 km` is half a kilometre. And quantities of
 //! the same dimension in a row add: `2 h 15 min`, `5'11"`.
 
-use crate::ast::{BinOp, Expr, Node, PostOp, Query, Style, Target};
+use crate::ast::{BinOp, Expr, Mention, Node, PostOp, Query, Style, Target};
 use crate::error::{Error, ErrorKind};
-use crate::resolve::{Func, Item, Kw, Sym};
+use crate::resolve::{Func, Item, Kw, Meaning, Sym};
 use std::ops::Range;
+use tungsten_kb::Prop;
 use tungsten_units::{Dim, Number, Rational, UnitExpr, UnitRef, lookup_symbol};
 
 const ADD: u8 = 10;
@@ -47,12 +48,12 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
             continue;
         }
         match targets(&items[i + 1..], src) {
-            Ok(targets) => match whole(&items[..i], src) {
+            Ok((targets, of)) => match whole(&items[..i], src) {
                 // `100 in cm`: a bare number before `in` means inches.
                 Ok(Node {
                     expr: Expr::Num(n),
                     span,
-                }) if items[i].sym == Sym::Kw(Kw::In) => {
+                }) if items[i].sym == Sym::Kw(Kw::In) && of.is_none() => {
                     let inch = UnitExpr::one(lookup_symbol("in").expect("in"));
                     let span = span.start..items[i].span.end;
                     let expr = Node::new(
@@ -62,9 +63,9 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
                         },
                         span,
                     );
-                    return Ok(Query { expr, targets });
+                    return Ok(Query { expr, targets, of });
                 }
-                Ok(expr) => return Ok(Query { expr, targets }),
+                Ok(expr) => return Ok(Query { expr, targets, of }),
                 Err(e) => errors.push(e),
             },
             Err(e) => errors.push(e),
@@ -74,6 +75,7 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
         Ok(expr) => Ok(Query {
             expr,
             targets: Vec::new(),
+            of: None,
         }),
         Err(e) => {
             errors.push(e);
@@ -86,7 +88,8 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
     }
 }
 
-/// `how many feet in a mile` → `a mile in feet`.
+/// `how many feet in a mile` → `a mile in feet`;
+/// `how much caffeine in 3 coffees` → `3 coffees` of caffeine.
 fn how_many(items: &[Item], src: &str) -> Result<Query, Error> {
     let rest = &items[1..];
     let split = rest
@@ -115,12 +118,26 @@ fn how_many(items: &[Item], src: &str) -> Result<Query, Error> {
             e
         }
     })?;
-    let targets = if split == 0 {
-        Vec::new()
+    // `how much caffeine`: a property, not a unit.
+    if let [
+        Item {
+            sym: Sym::Name(m), ..
+        },
+    ] = &rest[..split]
+        && !m.props.is_empty()
+    {
+        return Ok(Query {
+            expr,
+            targets: Vec::new(),
+            of: Some(m.props.clone()),
+        });
+    }
+    let (targets, of) = if split == 0 {
+        (Vec::new(), None)
     } else {
         targets(&rest[..split], src)?
     };
-    Ok(Query { expr, targets })
+    Ok(Query { expr, targets, of })
 }
 
 fn whole(items: &[Item], src: &str) -> Result<Node, Error> {
@@ -135,7 +152,8 @@ fn whole(items: &[Item], src: &str) -> Result<Node, Error> {
     Ok(node)
 }
 
-fn targets(items: &[Item], src: &str) -> Result<Vec<Target>, Error> {
+/// Units after `in`, and an optional `of <property>`: `in g of caffeine`.
+fn targets(items: &[Item], src: &str) -> Result<(Vec<Target>, Option<Vec<Prop>>), Error> {
     let mut p = Parser { items, pos: 0, src };
     let mut out = Vec::new();
     loop {
@@ -147,7 +165,24 @@ fn targets(items: &[Item], src: &str) -> Result<Vec<Target>, Error> {
         });
         match p.peek().map(|it| &it.sym) {
             Some(Sym::Op(',') | Sym::Kw(Kw::And)) => p.pos += 1,
-            None => return Ok(out),
+            None => return Ok((out, None)),
+            Some(Sym::Kw(Kw::Of)) => {
+                p.pos += 1;
+                return match p.bump() {
+                    Some(Item {
+                        sym: Sym::Name(m), ..
+                    }) if !m.props.is_empty() && p.peek().is_none() => {
+                        Ok((out, Some(m.props.clone())))
+                    }
+                    Some(it) => Err(p.unexpected(it, "a property, like caffeine")),
+                    None => Err(Error::new(
+                        ErrorKind::UnexpectedEnd {
+                            expected: "a property, like caffeine",
+                        },
+                        p.end_span(),
+                    )),
+                };
+            }
             Some(_) => {
                 let it = p.peek().expect("peeked");
                 return Err(p.unexpected(it, "a unit"));
@@ -409,6 +444,7 @@ impl<'a> Parser<'a> {
             ));
         };
         match &it.sym {
+            Sym::Name(m) if !starts_unit(&it.sym) || self.of_follows() => self.name(m, it),
             Sym::Num { value, .. } => {
                 self.pos += 1;
                 self.quantity_from(*value, it.span.clone(), true)
@@ -417,7 +453,10 @@ impl<'a> Parser<'a> {
                 self.pos += 1;
                 self.quantity_from(*m, it.span.clone(), false)
             }
-            Sym::Unit(_) | Sym::UnitPow(..) | Sym::Kw(Kw::Square | Kw::Cubic | Kw::In) => {
+            Sym::Unit(_)
+            | Sym::UnitPow(..)
+            | Sym::Name(_)
+            | Sym::Kw(Kw::Square | Kw::Cubic | Kw::In) => {
                 let start = it.span.start;
                 let unit = self.unit_run(true)?;
                 let span = start..self.last_end();
@@ -481,6 +520,80 @@ impl<'a> Parser<'a> {
             }
             _ => Err(self.unexpected(it, "a number or unit")),
         }
+    }
+
+    /// Is the word after this one `of`, as in `mass of earth`?
+    fn of_follows(&self) -> bool {
+        self.peek_at(1).is_some_and(|n| n.sym == Sym::Kw(Kw::Of))
+    }
+
+    /// A knowledge-base word in operand position: `mass of earth`,
+    /// `earth's mass`, `earth.mass`, or a bare entity (`gold`, `3 coffees`).
+    fn name(&mut self, m: &'a Meaning, it: &'a Item) -> Result<Node, Error> {
+        const THING: &str = "a thing, like earth or gold";
+        if !m.props.is_empty() && self.of_follows() {
+            self.pos += 2;
+            // `mass of a banana`
+            if self.peek().is_some_and(|n| n.sym == Sym::Kw(Kw::A)) {
+                self.pos += 1;
+            }
+            let Some(ent) = self.bump() else {
+                return Err(Error::new(
+                    ErrorKind::UnexpectedEnd { expected: THING },
+                    self.end_span(),
+                ));
+            };
+            let Sym::Name(em) = &ent.sym else {
+                return Err(self.unexpected(ent, THING));
+            };
+            if em.entities.is_empty() {
+                return Err(self.unexpected(ent, THING));
+            }
+            let mention = Mention {
+                hits: em.entities.clone(),
+                chosen: None,
+                name_span: ent.span.clone(),
+            };
+            let span = it.span.start..ent.span.end;
+            return Ok(Node::new(Expr::Prop(mention, m.props.clone()), span));
+        }
+        if m.entities.is_empty() {
+            // A property alone: `mass`. Of what?
+            return Err(Error::new(
+                ErrorKind::Unexpected {
+                    found: self.text(&it.span),
+                    expected: "`of` and a thing: mass of earth",
+                },
+                it.span.clone(),
+            ));
+        }
+        self.pos += 1;
+        let mention = Mention {
+            hits: m.entities.clone(),
+            chosen: None,
+            name_span: it.span.clone(),
+        };
+        if let Some(Sym::Possessive | Sym::Op('.')) = self.peek().map(|n| &n.sym) {
+            return match self.peek_at(1) {
+                Some(
+                    p @ Item {
+                        sym: Sym::Name(pm), ..
+                    },
+                ) if !pm.props.is_empty() => {
+                    self.pos += 2;
+                    let span = it.span.start..p.span.end;
+                    Ok(Node::new(Expr::Prop(mention, pm.props.clone()), span))
+                }
+                Some(p) => Err(self.unexpected(p, "a property, like mass")),
+                None => Err(Error::new(
+                    ErrorKind::UnexpectedEnd {
+                        expected: "a property, like mass",
+                    },
+                    self.end_span(),
+                )),
+            };
+        }
+        Ok(Node::new(Expr::Entity(mention), it.span.clone()))
     }
 
     fn call(&mut self, f: Func, start: usize) -> Result<Node, Error> {
@@ -577,7 +690,7 @@ impl<'a> Parser<'a> {
             ));
         };
         let (u, e): (UnitRef, Rational) = match &it.sym {
-            Sym::Unit(u) => (*u, Rational::ONE),
+            Sym::Unit(u) | Sym::Name(Meaning { unit: Some(u), .. }) => (*u, Rational::ONE),
             Sym::UnitPow(u, e) => (*u, Rational::int(*e)),
             Sym::Foot => (lookup_symbol("ft").expect("ft"), Rational::ONE),
             Sym::Inch | Sym::Kw(Kw::In) => (lookup_symbol("in").expect("in"), Rational::ONE),
@@ -684,10 +797,19 @@ impl<'a> Parser<'a> {
 }
 
 fn starts_unit(sym: &Sym) -> bool {
-    matches!(
-        sym,
-        Sym::Unit(_) | Sym::UnitPow(..) | Sym::Foot | Sym::Inch | Sym::Kw(Kw::Square | Kw::Cubic)
-    )
+    match sym {
+        // `calories` is a unit and a property; as a unit only where no entity
+        // or `of` claims it.
+        Sym::Name(m) => m.unit.is_some() && !m.has_entity(),
+        _ => matches!(
+            sym,
+            Sym::Unit(_)
+                | Sym::UnitPow(..)
+                | Sym::Foot
+                | Sym::Inch
+                | Sym::Kw(Kw::Square | Kw::Cubic)
+        ),
+    }
 }
 
 fn starts_operand(sym: &Sym) -> bool {
@@ -699,6 +821,7 @@ fn starts_operand(sym: &Sym) -> bool {
             | Sym::UnitPow(..)
             | Sym::Const(_)
             | Sym::Func(_)
+            | Sym::Name(_)
             | Sym::Op('(')
             | Sym::Kw(
                 Kw::Square | Kw::Cubic | Kw::Half | Kw::Twice | Kw::SquareRootOf | Kw::CubeRootOf
@@ -732,7 +855,7 @@ mod tests {
     use crate::{lex::lex, resolve::resolve};
 
     fn q(s: &str) -> Query {
-        parse(resolve(&lex(s).unwrap()).unwrap(), s).unwrap()
+        parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap()
     }
 
     /// Compact S-expression for asserting structure.
@@ -772,6 +895,8 @@ mod tests {
                 )
             }
             Expr::Group(x) => sx(x),
+            Expr::Entity(m) => format!("<{}>", m.hits[0].entity.display()),
+            Expr::Prop(m, p) => format!("<{} {}>", p[0].name(), m.hits[0].entity.display()),
         }
     }
 
@@ -858,10 +983,10 @@ mod tests {
     #[test]
     fn errors_point_at_the_problem() {
         let s = "5 km in 3";
-        let err = parse(resolve(&lex(s).unwrap()).unwrap(), s).unwrap_err();
+        let err = parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap_err();
         assert_eq!(&s[err.span.clone()], "3");
         let s = "(1 + 2";
-        let err = parse(resolve(&lex(s).unwrap()).unwrap(), s).unwrap_err();
+        let err = parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap_err();
         assert!(matches!(*err.kind, ErrorKind::UnexpectedEnd { .. }));
     }
 }

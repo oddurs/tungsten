@@ -61,3 +61,26 @@ sin(30°)
 3 @ 4
 (1 + 2
 sin(3 m)
+
+# ─── Knowledge base: properties (0033) ───────────────────────────────────────
+density of gold * 1 L
+mass of earth
+earth's mass
+earth.mass in kg
+the mass of the earth
+melting point of gold
+mass of the moon / mass of earth
+distance of mars in km
+atomic mass of gold
+3 coffees in mg of caffeine
+3 coffees a day for a year in grams of caffeine
+how much caffeine in 3 coffees
+mass of gold
+mass
+
+# ─── Knowledge base: cards (0036) ─────────────────────────────────────────────
+gold
+tungsten
+G
+the moon
+coffee

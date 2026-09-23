@@ -142,6 +142,23 @@ impl UnitExpr {
             }
         }
         out.retain(|(_, e)| !e.is_zero());
+        // Pairs whose dimensions cancel drop out: L·cm⁻³ is a pure number, so
+        // g·L/cm³ is g.
+        let mut i = 0;
+        while i < out.len() {
+            let di = out[i].0.dim().pow(out[i].1);
+            let partner = (i + 1..out.len()).find(|&j| {
+                let dj = out[j].0.dim().pow(out[j].1);
+                !out[i].0.is_affine() && matches!((di, dj), (Some(a), Some(b)) if a.mul(&b).is_some_and(|d| d.is_none()) && !a.is_none())
+            });
+            match partner {
+                Some(j) => {
+                    out.remove(j);
+                    out.remove(i);
+                }
+                None => i += 1,
+            }
+        }
         Self(out)
     }
 
@@ -433,6 +450,7 @@ mod tests {
         assert_eq!(u("kg m/s^2").simplify(), u("N"));
         assert_eq!(u("kW h").simplify(), u("kW h"), "h is not SI, so no J");
         assert_eq!(u("m/s").simplify(), u("m/s"));
+        assert_eq!(u("g L/cm^3").simplify(), u("g"));
     }
 
     #[test]

@@ -8,6 +8,7 @@
 
 mod ast;
 mod check;
+mod entities;
 mod error;
 mod eval;
 mod interp;
@@ -16,12 +17,14 @@ mod parse;
 mod resolve;
 mod suggest;
 
-pub use ast::{BinOp, Expr, Node, PostOp, Query, Style, Target};
+pub use ast::{BinOp, Choice, Expr, Mention, Node, PostOp, Query, Style, Target};
+pub use entities::Assumption;
 pub use error::{Error, ErrorKind, Hint};
-pub use eval::{Value, is_scale};
+pub use eval::{Value, is_scale, quantity};
 pub use interp::{Piece, interpret};
 pub use resolve::{Const, Func};
 pub use suggest::suggest;
+pub use tungsten_kb::{Entity, Kind, Prop};
 
 use tungsten_units::{MathError, Number, Rational, UnitExpr};
 
@@ -36,6 +39,16 @@ pub enum Answer {
     },
     /// A mixed-unit answer, largest unit first: `27 h 46 min 40 s`.
     Parts(Vec<(Number, UnitExpr)>),
+    /// A lone entity, to be shown as a card: `gold`.
+    Card(Entity),
+}
+
+/// How to read a query.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Options {
+    /// `--as element`: prefer this kind when a name means several things,
+    /// and let names shadowed by units (`W`) mean it.
+    pub prefer: Option<Kind>,
 }
 
 #[derive(Clone, Debug)]
@@ -44,13 +57,31 @@ pub struct Outcome {
     /// The value before conversion, in SI.
     pub value: Value,
     pub answer: Answer,
+    /// Names that could have meant several things, and what was assumed.
+    pub assumptions: Vec<Assumption>,
 }
 
 /// Parses, checks and evaluates one query.
 pub fn evaluate(src: &str) -> Result<Outcome, Error> {
+    evaluate_with(src, Options::default())
+}
+
+pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
     let tokens = lex::lex(src)?;
-    let items = resolve::resolve(&tokens)?;
-    let query = parse::parse(items, src)?;
+    let items = resolve::resolve(&tokens, opts.prefer)?;
+    let mut query = parse::parse(items, src)?;
+    let assumptions = entities::choose(&mut query, opts.prefer)?;
+    if entities::is_card(&query)
+        && let Expr::Entity(m) = &query.expr.expr
+        && let Some(c) = m.chosen
+    {
+        return Ok(Outcome {
+            value: Value::scalar(Number::ZERO),
+            answer: Answer::Card(c.entity),
+            query,
+            assumptions,
+        });
+    }
     check::check_query(&query, src)?;
     let value = eval::eval(&query.expr)?;
     let math = |e: MathError| Error::new(ErrorKind::Math(e), query.expr.span.clone());
@@ -67,13 +98,14 @@ pub fn evaluate(src: &str) -> Result<Outcome, Error> {
         query,
         value,
         answer,
+        assumptions,
     })
 }
 
 /// Parses without evaluating, for fuzzing and the REPL highlighter.
 pub fn parse(src: &str) -> Result<Query, Error> {
     let tokens = lex::lex(src)?;
-    let items = resolve::resolve(&tokens)?;
+    let items = resolve::resolve(&tokens, None)?;
     parse::parse(items, src)
 }
 
@@ -137,7 +169,7 @@ mod tests {
     fn single(s: &str) -> (f64, String) {
         match evaluate(s).unwrap_or_else(|e| panic!("{s}: {e:?}")).answer {
             Answer::Single { num, unit, .. } => (num.to_f64(), unit.display(false)),
-            Answer::Parts(_) => panic!("parts"),
+            Answer::Parts(_) | Answer::Card(_) => panic!("not a single value"),
         }
     }
 
@@ -150,7 +182,7 @@ mod tests {
             )
             .trim()
             .to_string(),
-            Answer::Parts(_) => panic!("parts"),
+            Answer::Parts(_) | Answer::Card(_) => panic!("not a single value"),
         }
     }
 

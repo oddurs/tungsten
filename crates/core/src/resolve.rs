@@ -1,13 +1,17 @@
-//! Turns words into meanings: units, keywords, functions, constants.
+//! Turns words into meanings: units, keywords, functions, constants, and the
+//! entities and properties of the knowledge base.
 //!
 //! Multi-word phrases are matched longest-first, so `miles per hour` is one
-//! unit, `speed of light` is a constant-like unit, and `divided by` is an
-//! operator, before any single word is looked at.
+//! unit, `melting point` one property and `divided by` one operator, before
+//! any single word is looked at. A word can mean several things (`calories`
+//! is a unit and a property; `mercury` a planet and an element); the resolver
+//! keeps every meaning and the parser and entity chooser decide by context.
 
 use crate::error::{Error, ErrorKind};
 use crate::lex::{TokKind, Token};
 use crate::suggest;
 use std::ops::Range;
+use tungsten_kb::{Hit, Kind, Prop};
 use tungsten_units::{Number, Rational, UnitRef, lookup, max_name_words};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -131,6 +135,30 @@ pub enum Sym {
     Op(char),
     Foot,
     Inch,
+    /// A word the knowledge base knows: an entity, a property, or both, and
+    /// possibly also a unit.
+    Name(Meaning),
+    /// `'s`
+    Possessive,
+}
+
+/// Everything a knowledge-base word could mean.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Meaning {
+    pub unit: Option<UnitRef>,
+    pub entities: Vec<Hit>,
+    pub props: Vec<Prop>,
+}
+
+impl Meaning {
+    /// Entities this word can stand for as written (not shadowed).
+    pub fn usable(&self) -> impl Iterator<Item = Hit> + '_ {
+        self.entities.iter().copied().filter(|h| !h.shadowed)
+    }
+
+    pub fn has_entity(&self) -> bool {
+        self.usable().next().is_some()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -253,10 +281,47 @@ pub fn vocabulary() -> impl Iterator<Item = &'static str> {
     .into_iter()
 }
 
-fn single(word: &str) -> Option<Sym> {
+/// What a word or phrase means as a unit, entity or property.
+///
+/// Entities whose name is shadowed by a unit (`W` is the watt before it is
+/// tungsten) only count when that unit is not in play, or when `prefer` asks
+/// for their kind (`--as element`).
+fn meaning(words: &str, prefer: Option<Kind>) -> Option<Sym> {
+    let unit = lookup(words);
+    let mut entities = tungsten_kb::lookup(words);
+    let props = tungsten_kb::lookup_prop(words);
+    for h in &mut entities {
+        // Shadowed by a keyword spelled differently (`In` is not `in`), or
+        // explicitly asked for: usable.
+        if unit.is_none() || prefer == Some(h.entity.kind()) {
+            h.shadowed = false;
+        }
+    }
+    let usable = entities.iter().any(|h| !h.shadowed);
+    match (unit, usable || !props.is_empty()) {
+        (Some(u), false) => Some(Sym::Unit(u)),
+        (None, false) if entities.is_empty() => None,
+        _ => Some(Sym::Name(Meaning {
+            unit,
+            entities,
+            props,
+        })),
+    }
+}
+
+fn single(word: &str, prefer: Option<Kind>) -> Option<Sym> {
     let lower = word.to_lowercase();
     if let Some(k) = keyword(word) {
         return Some(Sym::Kw(k));
+    }
+    // --as constant e: the elementary charge, not Euler's number.
+    if let Some(k) = prefer
+        && tungsten_kb::lookup(word)
+            .iter()
+            .any(|h| h.entity.kind() == k)
+        && let Some(sym) = meaning(word, prefer)
+    {
+        return Some(sym);
     }
     if let Some(c) = constant(word) {
         return Some(Sym::Const(c));
@@ -267,8 +332,8 @@ fn single(word: &str) -> Option<Sym> {
     if let Some(m) = magnitude(&lower) {
         return Some(Sym::Magnitude(m));
     }
-    if let Some(u) = lookup(word) {
-        return Some(Sym::Unit(u));
+    if let Some(sym) = meaning(word, prefer) {
+        return Some(sym);
     }
     // km2, m3, s2
     let letters = word.trim_end_matches(|c: char| c.is_ascii_digit());
@@ -280,8 +345,15 @@ fn single(word: &str) -> Option<Sym> {
     None
 }
 
-pub fn resolve(tokens: &[Token]) -> Result<Vec<Item>, Error> {
-    let max_words = max_name_words().max(4);
+pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Error> {
+    // `the` carries no meaning anywhere: `the mass of the earth`.
+    let tokens: Vec<Token> = tokens
+        .iter()
+        .filter(|t| !matches!(&t.kind, TokKind::Word(w) if w.eq_ignore_ascii_case("the")))
+        .cloned()
+        .collect();
+    let tokens = tokens.as_slice();
+    let max_words = max_name_words().max(tungsten_kb::max_name_words()).max(4);
     let mut out = Vec::new();
     let mut i = 0;
     while i < tokens.len() {
@@ -340,6 +412,14 @@ pub fn resolve(tokens: &[Token]) -> Result<Vec<Item>, Error> {
                 i += 1;
                 continue;
             }
+            TokKind::Possessive => {
+                out.push(Item {
+                    sym: Sym::Possessive,
+                    span: t.span.clone(),
+                });
+                i += 1;
+                continue;
+            }
         };
 
         // Longest multi-word phrase starting here: keyword phrase or unit name.
@@ -357,8 +437,8 @@ pub fn resolve(tokens: &[Token]) -> Result<Vec<Item>, Error> {
                 matched = Some((n, Some(Sym::Kw(*k))));
                 break;
             }
-            if let Some(u) = lookup(&words) {
-                matched = Some((n, Some(Sym::Unit(u))));
+            if let Some(sym) = meaning(&words, prefer) {
+                matched = Some((n, Some(sym)));
                 break;
             }
         }
@@ -375,7 +455,7 @@ pub fn resolve(tokens: &[Token]) -> Result<Vec<Item>, Error> {
             i += 1;
             continue;
         }
-        match single(word) {
+        match single(word, prefer) {
             Some(sym) => out.push(Item {
                 sym,
                 span: t.span.clone(),
@@ -415,7 +495,7 @@ mod tests {
     use crate::lex::lex;
 
     fn syms(s: &str) -> Vec<Sym> {
-        resolve(&lex(s).unwrap())
+        resolve(&lex(s).unwrap(), None)
             .unwrap()
             .into_iter()
             .map(|i| i.sym)
@@ -444,7 +524,7 @@ mod tests {
 
     #[test]
     fn unknown_words_suggest() {
-        let e = resolve(&lex("5 kilometers in milez").unwrap()).unwrap_err();
+        let e = resolve(&lex("5 kilometers in milez").unwrap(), None).unwrap_err();
         match *e.kind {
             ErrorKind::UnknownWord { word, suggestion } => {
                 assert_eq!(word, "milez");

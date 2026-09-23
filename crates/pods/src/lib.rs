@@ -4,6 +4,7 @@
 //! so the render crate alone decides formatting, colour and layout.
 //! See docs/concept.md §5 and §7.
 
+mod card;
 mod errors;
 mod other_units;
 
@@ -103,6 +104,16 @@ pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
 fn success(o: &Outcome) -> Report {
     let mut pods = Vec::new();
 
+    if let Answer::Card(e) = o.answer {
+        pods.push(card::card(e));
+        return Report {
+            pods,
+            ok: true,
+            quiet: None,
+            error_line: None,
+        };
+    }
+
     let mut interp = Line::default();
     for p in interpret(&o.query) {
         interp.push(match p {
@@ -115,6 +126,7 @@ fn success(o: &Outcome) -> Report {
             Piece::Op(s) => Seg::Text(s.into()),
             Piece::Sup(n) => Seg::Sup(n),
             Piece::Word(w) => Seg::Text(w.into()),
+            Piece::Text(t) => Seg::Text(t),
             Piece::Space => Seg::Text(" ".into()),
             Piece::Open => Seg::Text("(".into()),
             Piece::Close => Seg::Text(")".into()),
@@ -138,6 +150,7 @@ fn success(o: &Outcome) -> Report {
             };
             (Line(vec![seg]), Quiet::Value(*num))
         }
+        Answer::Card(_) => unreachable!("cards return early"),
         Answer::Parts(parts) => {
             let mut line = Line::default();
             for (i, (n, u)) in parts.iter().enumerate() {

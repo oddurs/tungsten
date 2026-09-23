@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass of the moon / mass of earth
+
+  ◆ interpretation
+  │ mass of the Moon / mass of Earth
+
+  ◆ result
+  │ 0.0123
+
+  ────────────────────────────── W74

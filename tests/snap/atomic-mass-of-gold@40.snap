@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w atomic mass of gold
+
+  ◆ interpretation
+  │ atomic mass of gold
+
+  ◆ result
+  │ 196.96657 u
+
+  ◆ other units
+  │ 3.271×10⁻²⁵ kg
+
+  ──────────────────── W74
