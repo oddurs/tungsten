@@ -29,3 +29,5 @@ git push -q -u origin "$branch"
 # Title and body come from the commits; with one commit, from that commit.
 gh pr view --json url -q .url 2>/dev/null || gh pr create --fill
 gh pr merge --squash --delete-branch
+# Forget the remote branch GitHub just deleted.
+git fetch -q --prune
