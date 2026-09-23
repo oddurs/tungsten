@@ -35,6 +35,11 @@ pub fn number(n: Number, mode: NumMode, f: Fmt) -> String {
 }
 
 fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
+    if let NumMode::Published(d) = mode
+        && f.sig.is_none()
+    {
+        return published(n.to_f64(), d, f.fancy);
+    }
     let sig = f.sig.unwrap_or(DEFAULT_SIG);
     let Number::Exact { value: r, decimal } = n else {
         return rounded(
@@ -74,7 +79,8 @@ fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
             exact_decimal(r)
                 .map_or_else(|| rounded(r.to_f64(), 10, f.fancy), |s| group(&s, f.fancy))
         }
-        NumMode::Result => {
+        // Published with an explicit --sig: the user's precision wins.
+        NumMode::Result | NumMode::Published(_) => {
             if !decimal && r.den() <= MAX_FRACTION_DEN {
                 return fraction(r);
             }
@@ -185,6 +191,43 @@ pub fn rounded(x: f64, sig: u32, fancy: bool) -> String {
     group(&trim_zeros(&format!("{x:.decimals$}")), fancy)
 }
 
+/// Exactly `sig` significant digits, trailing zeros kept, decimals grouped in
+/// threes as CODATA writes them: 6.674 30×10⁻¹¹, 299 792 458.
+fn published(x: f64, sig: u32, fancy: bool) -> String {
+    let sig = sig.clamp(1, 17) as usize;
+    let sci = format!("{:.*e}", sig - 1, x);
+    let (mantissa, exp) = sci.split_once('e').unwrap_or((&sci, "0"));
+    let exp: i32 = exp.parse().unwrap_or(0);
+    let group_frac = |s: &str| {
+        let Some((int, frac)) = s.split_once('.') else {
+            return s.to_string();
+        };
+        if !fancy || frac.len() <= 4 {
+            return s.to_string();
+        }
+        let chunks: Vec<String> = frac
+            .as_bytes()
+            .chunks(3)
+            .map(|c| String::from_utf8_lossy(c).into_owned())
+            .collect();
+        format!("{int}.{}", chunks.join("\u{202F}"))
+    };
+    // A published integer prints in full: 299 792 458.
+    if (0..12).contains(&exp) && sig as i32 <= exp + 1 {
+        return group(&format!("{x:.0}"), fancy);
+    }
+    if !(-3..6).contains(&exp) {
+        let m = group_frac(mantissa);
+        return if fancy {
+            format!("{m}×10{}", superscript(exp))
+        } else {
+            format!("{m}e{exp}")
+        };
+    }
+    let decimals = (sig as i32 - 1 - exp).max(0) as usize;
+    group_frac(&group(&format!("{x:.decimals$}"), fancy))
+}
+
 fn trim_zeros(s: &str) -> String {
     if s.contains('.') {
         s.trim_end_matches('0').trim_end_matches('.').to_string()
@@ -292,6 +335,14 @@ mod tests {
             number(q("8589934592", true), NumMode::Rounded, FANCY),
             "8.59×10⁹"
         );
+        let p = |x: f64, d: u32| {
+            number(Number::Approx(x), NumMode::Published(d), FANCY).replace('\u{202F}', " ")
+        };
+        assert_eq!(p(6.6743e-11, 6), "6.674 30×10⁻¹¹");
+        assert_eq!(p(8611.0, 4), "8611");
+        assert_eq!(p(9.82, 4), "9.820");
+        assert_eq!(p(299_792_458.0, 9), "299 792 458");
+        assert_eq!(p(5.9722e24, 5), "5.9722×10²⁴");
         let r = |s: &str| number(q(s, true), NumMode::Result, FANCY);
         assert_eq!(r("5972200000000000000000000"), "5.9722×10²⁴");
         assert_eq!(r("0.0000000000667430"), "6.6743×10⁻¹¹");

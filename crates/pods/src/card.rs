@@ -70,13 +70,14 @@ pub fn card(e: Entity) -> Pod {
                 unit = show;
             }
         }
+        // Shown in its own unit, a value keeps the digits its source published.
+        let mode = match v.digits {
+            Some(d) if unit == v.unit => NumMode::Published(d),
+            _ => NumMode::Result,
+        };
         lines.push(Line(vec![
             label(v.prop.name(), width),
-            Seg::Value {
-                num,
-                unit,
-                mode: NumMode::Result,
-            },
+            Seg::Value { num, unit, mode },
         ]));
         match v.uncertainty {
             Some("exact") => lines.push(Line(vec![

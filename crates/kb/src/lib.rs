@@ -111,6 +111,29 @@ pub struct Value {
     /// Standard uncertainty as published, or `exact`.
     pub uncertainty: Option<&'static str>,
     pub source: &'static str,
+    /// Significant digits in the value as written: 6.67430e-11 has six. `None`
+    /// for integers with trailing zeros, whose precision the text cannot say.
+    pub digits: Option<u32>,
+}
+
+/// Significant digits of the number at the start of `text`: `6.67430e-11 …` → 6,
+/// `0.0012 g` → 2, `8611 m` → 4, `330000 lb` → `None` (trailing zeros of an
+/// integer are ambiguous).
+pub fn significant_digits(text: &str) -> Option<u32> {
+    let num = text.split_whitespace().next()?;
+    let mantissa = num
+        .trim_start_matches(['-', '+'])
+        .split(['e', 'E'])
+        .next()?;
+    if mantissa.is_empty() || !mantissa.chars().all(|c| c.is_ascii_digit() || c == '.') {
+        return None;
+    }
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    let digits = digits.trim_start_matches('0');
+    if !mantissa.contains('.') && digits.ends_with('0') {
+        return None;
+    }
+    u32::try_from(digits.len()).ok().filter(|n| *n > 0)
 }
 
 /// A text fact: `state: solid`.
@@ -174,6 +197,7 @@ impl Entity {
             unit: UnitExpr::from_terms(parsed.terms),
             uncertainty,
             source: source.unwrap_or(self.def().source),
+            digits: significant_digits(text),
         })
     }
 
@@ -348,6 +372,16 @@ mod tests {
         let h: Vec<Hit> = lookup("h");
         assert!(h.iter().all(|x| x.shadowed), "h is the hour");
         assert!(!lookup("planck constant")[0].shadowed);
+    }
+
+    #[test]
+    fn digits() {
+        assert_eq!(significant_digits("6.67430e-11 m^3 kg^-1 s^-2"), Some(6));
+        assert_eq!(significant_digits("0.0012 g"), Some(2));
+        assert_eq!(significant_digits("8611 m"), Some(4));
+        assert_eq!(significant_digits("330000 lb"), None);
+        assert_eq!(significant_digits("-4.664345550e-4"), Some(10));
+        assert_eq!(significant_digits("c yr"), None);
     }
 
     #[test]
