@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w density of ice / density of water
+
+  ◆ interpretation
+  │ density of ice / density of water
+
+  ◆ result
+  │ 0.9194
+
+  ─────────────────────────────── W74

@@ -1,0 +1,20 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 cups of flour in g
+
+  ◆ interpretation
+  │ 3 × cup of flour(125 g mass)  →  g
+
+  ◆ result
+  │ 375 g
+
+  ◆ other units
+  │ 0.375 kg
+  │ 13.23 oz
+
+  ◆ for scale
+  │ ≈ 7.5 eggs
+  │ ≈ 150 US pennies
+
+  ──────────────────────────────── W74

@@ -141,3 +141,11 @@ distance from earth to moon
 distance between earth and moon
 2 to the power of 3
 how tall is gold
+
+# ─── Substances and kitchen staples (0066) ───────────────────────────────────
+density of water
+boiling point of water
+3 cups of flour in g
+3 L of water in kg
+1 m^3 of air in kg
+density of ice / density of water

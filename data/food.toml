@@ -529,9 +529,9 @@ source = "USDA FoodData Central, SR Legacy, FDC 171413 'Oil, olive, salad or coo
 
 [[entity]]
 kind = "item"
-display = "cup of rice"
-plural = "cups of rice"
-names = ["cup of rice", "cups of rice"]
+display = "cup of cooked rice"
+plural = "cups of cooked rice"
+names = ["cup of rice", "cups of rice", "cup of cooked rice", "cups of cooked rice"]
 default = "mass"
 domain = "food"
 source = "USDA FoodData Central, SR Legacy, FDC 169753 'Rice, white, long-grain, regular, cooked, enriched, with salt': portion 'cup' = 158 g; nutrients scaled from per-100 g values"
@@ -552,6 +552,74 @@ source = "USDA FoodData Central, SR Legacy, FDC 174990 'Doughnuts, cake-type, pl
 "mass" = "54 g"
 "food energy" = "234 kcal"
 "sugar" = "9.8 g"
+
+[[entity]]
+kind = "item"
+display = "cup of flour"
+plural = "cups of flour"
+names = ["cup of flour", "cups of flour"]
+default = "mass"
+domain = "food"
+source = "USDA FoodData Central, SR Legacy, FDC 168894 'Wheat flour, white, all-purpose, enriched, bleached': portion 'cup' = 125 g; nutrients scaled from per-100 g values"
+[entity.props]
+"mass" = "125 g"
+"volume" = "1 cup"
+"food energy" = "455 kcal"
+"sugar" = "0.338 g"
+
+[[entity]]
+kind = "item"
+display = "cup of sugar"
+plural = "cups of sugar"
+names = ["cup of sugar", "cups of sugar"]
+default = "mass"
+domain = "food"
+source = "USDA FoodData Central, SR Legacy, FDC 169655 'Sugars, granulated': portion 'cup' = 200 g; nutrients scaled from per-100 g values"
+[entity.props]
+"mass" = "200 g"
+"volume" = "1 cup"
+"food energy" = "774 kcal"
+"sugar" = "200 g"
+
+[[entity]]
+kind = "item"
+display = "cup of uncooked rice"
+plural = "cups of uncooked rice"
+names = ["cup of uncooked rice", "cups of uncooked rice", "cup of raw rice", "cups of raw rice"]
+default = "mass"
+domain = "food"
+source = "USDA FoodData Central, SR Legacy, FDC 168877 'Rice, white, long-grain, regular, raw, enriched': portion 'cup' = 185 g; nutrients scaled from per-100 g values"
+[entity.props]
+"mass" = "185 g"
+"volume" = "1 cup"
+"food energy" = "675 kcal"
+"sugar" = "0.222 g"
+
+[[entity]]
+kind = "item"
+display = "cup of oats"
+plural = "cups of oats"
+names = ["cup of oats", "cups of oats", "cup of oatmeal", "cups of oatmeal"]
+default = "mass"
+domain = "food"
+source = "USDA FoodData Central, SR Legacy, FDC 173904 'Cereals, oats, regular and quick, not fortified, dry': portion 'cup' = 81 g; nutrients scaled from per-100 g values"
+[entity.props]
+"mass" = "81 g"
+"volume" = "1 cup"
+"food energy" = "307 kcal"
+"sugar" = "0.802 g"
+
+[[entity]]
+kind = "item"
+display = "teaspoon of salt"
+plural = "teaspoons of salt"
+names = ["teaspoon of salt", "teaspoons of salt"]
+default = "mass"
+domain = "food"
+source = "USDA FoodData Central, SR Legacy, FDC 173468 'Salt, table': portion 'tsp' = 6 g; nutrients scaled from per-100 g values"
+[entity.props]
+"mass" = "6 g"
+"food energy" = "0 kcal"
 
 [[entity]]
 kind = "item"

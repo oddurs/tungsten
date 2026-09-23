@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 m^3 of air in kg
+
+  ◆ interpretation
+  │ 1 m³ × air(1.225 kg/m³ density)
+  │   →  kg
+
+  ◆ result
+  │ 1.225 kg
+
+  ◆ other units
+  │ 1225 g
+  │ 2.701 lb
+
+  ◆ for scale
+  │ ≈ 25 eggs
+  │ ≈ 490 US pennies
+
+  ────────────────────────────── W74
