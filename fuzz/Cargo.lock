@@ -222,7 +222,7 @@ checksum = "5d99f8c9a7727884afe522e9bd5edbfc91a3312b36a77b5fb8926e4c31a41801"
 
 [[package]]
 name = "tungsten-core"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "tungsten-kb",
  "tungsten-units",
@@ -240,7 +240,7 @@ dependencies = [
 
 [[package]]
 name = "tungsten-kb"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "indexmap",
  "serde",
@@ -250,7 +250,7 @@ dependencies = [
 
 [[package]]
 name = "tungsten-pods"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "tungsten-core",
  "tungsten-kb",
@@ -260,7 +260,7 @@ dependencies = [
 
 [[package]]
 name = "tungsten-render"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "tungsten-pods",
  "tungsten-units",
@@ -269,7 +269,7 @@ dependencies = [
 
 [[package]]
 name = "tungsten-units"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "serde",
  "toml",
