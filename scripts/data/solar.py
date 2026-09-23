@@ -111,11 +111,26 @@ def toml(s):
     return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
+# Bodies that lend their size to the "for scale" pod.
+SCALE = {
+    "the Sun": ["mass", "radius"],
+    "Earth": ["mass", "radius"],
+    "the Moon": ["mass", "radius"],
+    "Jupiter": ["mass", "radius"],
+}
+PLURALS = {"the Sun": "Suns", "the Moon": "Moons", "Earth": "Earths"}
+
+
 def entity(out, kind, display, names, source, props, facts=None, sources=None):
     out.append("[[entity]]")
     out.append(f"kind = {toml(kind)}")
     out.append(f"display = {toml(display)}")
+    if display in PLURALS:
+        out.append(f"plural = {toml(PLURALS[display])}")
     out.append(f"names = [{', '.join(toml(n) for n in names)}]")
+    if display in SCALE:
+        out.append(f"scale = [{', '.join(toml(p) for p in SCALE[display])}]")
+        out.append('domain = "space"')
     out.append(f"source = {toml(source)}")
     out.append("[entity.props]")
     for k, v in props.items():

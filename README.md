@@ -17,6 +17,10 @@ $ w 60 mph * 2h 15min
   ◆ other units
   │ 217.3 km  ·  237 600 yd  ·  217 261 m
 
+  ◆ for scale
+  │ ≈ 5.1 marathons
+  │ ≈ 25 Mount Everests
+
   ─────────────────────────────────── W74
 ```
 <!-- /snap -->

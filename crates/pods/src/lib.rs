@@ -7,6 +7,7 @@
 mod card;
 mod errors;
 mod other_units;
+mod scale;
 mod why;
 
 use tungsten_core::{Answer, Error, Kind, Outcome, Piece, interpret};
@@ -281,6 +282,9 @@ fn success(input: &str, o: &Outcome) -> Report {
                 error: false,
                 body: Body::List(lines),
             });
+        }
+        if let Some(p) = scale::pod(o) {
+            pods.push(p);
         }
     }
 

@@ -118,6 +118,7 @@ fn line(l: &Line, o: &Options) -> Spans {
 
 fn asciify(s: &str) -> String {
     s.replace('×', "*")
+        .replace('≈', "~")
         .replace('−', "-")
         .replace('→', "->")
         .replace('·', "*")

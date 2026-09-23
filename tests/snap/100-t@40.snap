@@ -1,20 +1,20 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 3 bananas
+$ w 100 t
 
   ◆ interpretation
-  │ 3 × banana(118 g mass)
+  │ 100 t
 
   ◆ result
-  │ 354 g
+  │ 100 t
 
   ◆ other units
-  │ 0.354 kg
-  │ 12.49 oz
+  │ 100 000 kg
+  │ 110.2 tn
 
   ◆ for scale
-  │ ≈ 1.9 apples
-  │ ≈ 140 US pennies
+  │ ≈ 2.8 semi trucks
+  │ ≈ 0.7 × blue whale
 
   ──────────────────── W74

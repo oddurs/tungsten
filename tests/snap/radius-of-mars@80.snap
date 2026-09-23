@@ -1,20 +1,19 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 3 bananas
+$ w radius of mars
 
   ◆ interpretation
-  │ 3 × banana(118 g mass)
+  │ radius of Mars
 
   ◆ result
-  │ 354 g
+  │ 3389.5 km
 
   ◆ other units
-  │ 0.354 kg
-  │ 12.49 oz
+  │ 2106 mi  ·  3.39×10⁶ m
 
   ◆ for scale
-  │ ≈ 1.9 apples
-  │ ≈ 140 US pennies
+  │ ≈ 2 Moons (radius)
+  │ ≈ 380 Mount Everests
 
   ──────────────────── W74

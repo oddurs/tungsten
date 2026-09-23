@@ -6,7 +6,10 @@
 [[entity]]
 kind = "star"
 display = "the Sun"
+plural = "Suns"
 names = ["sun", "the sun", "sol"]
+scale = ["mass", "radius"]
+domain = "space"
 source = "NASA NSSDCA Sun Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html), updated 9 May 2024"
 [entity.props]
 "mass" = "1988400e24 kg"
@@ -70,7 +73,10 @@ source = "NASA NSSDCA Venus Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/
 [[entity]]
 kind = "planet"
 display = "Earth"
+plural = "Earths"
 names = ["earth", "the earth", "planet earth", "terra"]
+scale = ["mass", "radius"]
+domain = "space"
 source = "NASA NSSDCA Earth Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html), updated 15 November 2024"
 [entity.props]
 "mass" = "5.9722e24 kg"
@@ -123,6 +129,8 @@ source = "NASA NSSDCA Mars Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/m
 kind = "planet"
 display = "Jupiter"
 names = ["jupiter"]
+scale = ["mass", "radius"]
+domain = "space"
 source = "NASA NSSDCA Jupiter Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/jupiterfact.html), updated 2 October 2024"
 [entity.props]
 "mass" = "1898.13e24 kg"
@@ -222,7 +230,10 @@ source = "NASA NSSDCA Neptune Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factshee
 [[entity]]
 kind = "moon"
 display = "the Moon"
+plural = "Moons"
 names = ["moon", "the moon", "luna"]
+scale = ["mass", "radius"]
+domain = "space"
 source = "NASA NSSDCA Moon Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html), updated 11 January 2024"
 [entity.props]
 "mass" = "0.07346e24 kg"
