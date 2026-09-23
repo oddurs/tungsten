@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how many calories in a banana
+
+  ◆ interpretation
+  │ banana(105 kcal food energy)  →  food energy
+
+  ◆ result
+  │ 105 kcal
+
+  ◆ other units
+  │ 439.3 kJ  ·  122 Wh  ·  105 000 cal  ·  439 320 J
+
+  ─────────────────────────────────────────────── W74

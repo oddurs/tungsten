@@ -376,7 +376,21 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
         .filter(|t| !matches!(&t.kind, TokKind::Word(w) if w.eq_ignore_ascii_case("the")))
         .cloned()
         .collect();
-    let tokens = tokens.as_slice();
+    // `what's`: the apostrophe is not a possessive.
+    let tokens: &[Token] = match tokens.as_slice() {
+        [
+            Token {
+                kind: TokKind::Word(w),
+                ..
+            },
+            Token {
+                kind: TokKind::Possessive,
+                ..
+            },
+            rest @ ..,
+        ] if w.eq_ignore_ascii_case("what") || w.eq_ignore_ascii_case("who") => rest,
+        all => all,
+    };
     let max_words = max_name_words().max(tungsten_kb::max_name_words()).max(4);
     let mut out = Vec::new();
     let mut i = 0;

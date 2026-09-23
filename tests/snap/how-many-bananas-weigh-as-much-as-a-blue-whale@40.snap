@@ -1,0 +1,13 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how many bananas weigh as much as a blue whale
+
+  ◆ interpretation
+  │ mass of blue whale / banana(118 g
+  │   mass)
+
+  ◆ result
+  │ 1.269×10⁶
+
+  ─────────────────────────────── W74
