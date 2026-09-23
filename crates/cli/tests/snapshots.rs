@@ -68,7 +68,11 @@ fn snapshot(line: &str, width: usize) -> String {
         }
     }
     if q == "--about" {
-        return format!("$ w {line}\n{}", tungsten::render_about(&s).out.trim_end());
+        // The version changes with every release; the screen should not.
+        let out = tungsten::render_about(&s)
+            .out
+            .replace(env!("CARGO_PKG_VERSION"), "[version]");
+        return format!("$ w {line}\n{}", out.trim_end());
     }
     format!("$ w {line}\n{}", render_query(q, &s).out.trim_end())
 }

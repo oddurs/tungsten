@@ -16,7 +16,7 @@ $ w --about
   │   Agricola's Latin lupi spuma, 'wolf's froth', because the ore devoured tin
   │   during smelting as a wolf devours sheep.
 
-  ◆ tungsten 0.2.0
+  ◆ tungsten [version]
   │ what      calculate with quantities and units, in words and math
   │ home      github.com/oddurs/tungsten
   │ data      CODATA 2022 (NIST), PubChem, NASA NSSDCA, USDA FoodData Central
