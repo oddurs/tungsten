@@ -86,6 +86,40 @@ pub struct Report {
     pub quiet: Option<Quiet>,
     /// One-line error summary, for `-q` on stderr.
     pub error_line: Option<String>,
+    /// A quiet aside under the pods: `74 is tungsten's atomic number.`
+    pub footnote: Option<String>,
+}
+
+/// `tungsten --about`: the element card as the version screen.
+pub fn about(version: &str) -> Report {
+    let mut pods = Vec::new();
+    if let Some(w) = tungsten_kb::lookup("tungsten").first() {
+        pods.push(card::card(w.entity));
+    }
+    let row = |k: &str, v: &str| Line(vec![Seg::Dim(format!("{k:<8}  ")), Seg::Text(v.into())]);
+    pods.push(Pod {
+        title: format!("tungsten {version}"),
+        error: false,
+        body: Body::Lines(vec![
+            row(
+                "what",
+                "calculate with quantities and units, in words and math",
+            ),
+            row("home", "github.com/oddurs/tungsten"),
+            row(
+                "data",
+                "CODATA 2022 (NIST), PubChem, NASA NSSDCA, USDA FoodData Central",
+            ),
+            row("licence", "MIT"),
+        ]),
+    });
+    Report {
+        pods,
+        ok: true,
+        quiet: None,
+        error_line: None,
+        footnote: None,
+    }
 }
 
 /// What to include beyond the default pods.
@@ -117,6 +151,7 @@ pub fn build_with(input: &str, result: &Result<Outcome, Error>, b: Build) -> Rep
                 ok: false,
                 quiet: None,
                 error_line: Some(line),
+                footnote: None,
             }
         }
     }
@@ -185,6 +220,7 @@ fn success(input: &str, o: &Outcome) -> Report {
             ok: true,
             quiet,
             error_line,
+            footnote: None,
         };
     }
 
@@ -288,10 +324,18 @@ fn success(input: &str, o: &Outcome) -> Report {
         }
     }
 
+    // Element 74.
+    let footnote = matches!(
+        &o.answer,
+        Answer::Single { num, unit, .. }
+            if unit.is_empty() && num.as_rational() == Some(tungsten_units::Rational::int(74))
+    )
+    .then(|| "74 is tungsten's atomic number.".to_string());
     Report {
         pods,
         ok: true,
         quiet: Some(quiet),
         error_line: None,
+        footnote,
     }
 }

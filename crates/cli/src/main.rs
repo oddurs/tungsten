@@ -66,6 +66,10 @@ struct Args {
     #[arg(long)]
     why: bool,
 
+    /// About tungsten
+    #[arg(long, hide = true)]
+    about: bool,
+
     /// What an ambiguous name means: planet, element, constant, …
     #[arg(long = "as", value_name = "KIND", value_parser = parse_kind)]
     prefer: Option<Kind>,
@@ -131,6 +135,12 @@ fn main() -> ExitCode {
         prefer: args.prefer,
         why: args.why,
     };
+
+    if args.about {
+        let r = tungsten::render_about(&settings);
+        print!("{}", r.out);
+        return ExitCode::SUCCESS;
+    }
 
     let queries: Vec<String> = if !args.query.is_empty() {
         vec![args.query.join(" ")]

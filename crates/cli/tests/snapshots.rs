@@ -67,6 +67,9 @@ fn snapshot(line: &str, width: usize) -> String {
             break;
         }
     }
+    if q == "--about" {
+        return format!("$ w {line}\n{}", tungsten::render_about(&s).out.trim_end());
+    }
     format!("$ w {line}\n{}", render_query(q, &s).out.trim_end())
 }
 

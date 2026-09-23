@@ -254,6 +254,12 @@ pub fn render(r: &Report, o: &Options) -> String {
         out.push('\n');
     }
 
+    if let Some(f) = &r.footnote {
+        out.push_str("  ");
+        t.paint(Style::Dim, f, o.color, &mut out);
+        out.push_str("\n\n");
+    }
+
     let label = match o.elapsed {
         Some(d) => format!("W74 {dot} {}", elapsed(d)),
         None => "W74".into(),

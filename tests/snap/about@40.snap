@@ -1,0 +1,33 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w --about
+
+  ◆ tungsten · W · 74
+  │ atomic mass    183.84 u
+  │ density        19.3 g/cm³
+  │ melting point  3421.85 °C
+  │ boiling point  5554.85 °C
+  │ state          solid
+  │ category       transition metal
+  │ discovered     1783
+  │ named          From Swedish tung
+  │   sten, 'heavy stone'. Its symbol W
+  │   is from wolfram, after the ore
+  │   wolframite: German wolf rahm,
+  │   'wolf's cream', from Agricola's
+  │   Latin lupi spuma, 'wolf's froth',
+  │   because the ore devoured tin
+  │   during smelting as a wolf devours
+  │   sheep.
+
+  ◆ tungsten 0.2.0
+  │ what      calculate with quantities
+  │   and units, in words and math
+  │ home      github.com/oddurs/tungsten
+  │ data      CODATA 2022 (NIST),
+  │   PubChem, NASA NSSDCA, USDA
+  │   FoodData Central
+  │ licence   MIT
+
+  ────────────────────────────────── W74
