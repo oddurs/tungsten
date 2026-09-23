@@ -27,11 +27,17 @@ EXTRA_NAMES = {
     "Tungsten": ["wolfram"],
 }
 
+# Etymology notes: (text, source). Each note cites where it comes from, since
+# PubChem (the entity's source) does not carry etymologies.
 NAMED = {
     "Tungsten": (
         "From Swedish tung sten, 'heavy stone'. Its symbol W is from wolfram, "
-        "after the ore wolframite: German Wolf Rahm, 'wolf's froth', because "
-        "the ore devoured tin during smelting."
+        "after the ore wolframite: German wolf rahm, 'wolf's cream', from "
+        "Agricola's Latin lupi spuma, 'wolf's froth', because the ore "
+        "devoured tin during smelting as a wolf devours sheep.",
+        "Royal Society of Chemistry Periodic Table, Tungsten: Origin of the name "
+        "(rsc.org/periodic-table/element/74/tungsten); Wikipedia, Tungsten "
+        "§ Etymology (wolf rahm, lupi spuma)",
     ),
 }
 
@@ -77,7 +83,10 @@ def main():
         out.append(f"category = {toml(r['GroupBlock'].lower())}")
         out.append(f"discovered = {toml(r['YearDiscovered'].lower())}")
         if name in NAMED:
-            out.append(f"named = {toml(NAMED[name])}")
+            text, source = NAMED[name]
+            out.append(f"named = {toml(text)}")
+            out.append("[entity.sources]")
+            out.append(f"named = {toml(source)}")
         out.append("")
     OUT.write_text("\n".join(out))
     print(f"wrote {OUT} ({len(rows)} elements)")

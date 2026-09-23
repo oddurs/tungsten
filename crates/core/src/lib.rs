@@ -26,7 +26,7 @@ pub use resolve::{Const, Func};
 pub use suggest::suggest;
 pub use tungsten_kb::{Entity, Kind, Prop};
 
-use tungsten_units::{MathError, Number, Rational, UnitExpr};
+use tungsten_units::{MathError, Number, Rational, UnitExpr, UnitRef};
 
 /// What a query came to.
 #[derive(Clone, Debug)]
@@ -59,6 +59,65 @@ pub struct Outcome {
     pub answer: Answer,
     /// Names that could have meant several things, and what was assumed.
     pub assumptions: Vec<Assumption>,
+    /// Every unit and knowledge-base value the query touched, for `--why`.
+    pub sources: Vec<Source>,
+}
+
+/// Something the answer depends on that came from a table.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Source {
+    Unit(UnitRef),
+    Value { entity: Entity, prop: Prop },
+    Entity(Entity),
+}
+
+/// Units and values in the order they appear, each once.
+fn sources(q: &Query, card: Option<Entity>) -> Vec<Source> {
+    fn walk(n: &Node, out: &mut Vec<Source>) {
+        let mut push = |s: Source| {
+            if !out.contains(&s) {
+                out.push(s);
+            }
+        };
+        match &n.expr {
+            Expr::Quantity { unit, .. } => {
+                for (u, _) in unit.terms() {
+                    push(Source::Unit(*u));
+                }
+            }
+            Expr::Entity(m) | Expr::Prop(m, _) => {
+                if let Some(Choice {
+                    entity,
+                    prop: Some(prop),
+                }) = m.chosen
+                {
+                    push(Source::Value { entity, prop });
+                }
+            }
+            Expr::Neg(x) | Expr::Group(x) | Expr::Post(_, x) => walk(x, out),
+            Expr::Bin { lhs, rhs, .. } | Expr::Pow(lhs, rhs) => {
+                walk(lhs, out);
+                walk(rhs, out);
+            }
+            Expr::Call(_, args) => args.iter().for_each(|a| walk(a, out)),
+            Expr::Num(_) | Expr::Const(_) => {}
+        }
+    }
+    let mut out = Vec::new();
+    if let Some(e) = card {
+        out.push(Source::Entity(e));
+        return out;
+    }
+    walk(&q.expr, &mut out);
+    for t in &q.targets {
+        for (u, _) in t.unit.terms() {
+            let s = Source::Unit(*u);
+            if !out.contains(&s) {
+                out.push(s);
+            }
+        }
+    }
+    out
 }
 
 /// Parses, checks and evaluates one query.
@@ -78,6 +137,7 @@ pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
         return Ok(Outcome {
             value: Value::scalar(Number::ZERO),
             answer: Answer::Card(c.entity),
+            sources: sources(&query, Some(c.entity)),
             query,
             assumptions,
         });
@@ -95,6 +155,7 @@ pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
         many => parts(&value, many).map_err(math)?,
     };
     Ok(Outcome {
+        sources: sources(&query, None),
         query,
         value,
         answer,

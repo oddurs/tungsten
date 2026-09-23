@@ -43,16 +43,31 @@ fn slug(q: &str) -> String {
     s.trim_end_matches('-').chars().take(60).collect()
 }
 
-fn snapshot(q: &str, width: usize) -> String {
-    let s = Settings {
+/// Corpus lines may start with flags: `--why earth.mass`, `--as element W`.
+fn snapshot(line: &str, width: usize) -> String {
+    let mut s = Settings {
         width,
         color: false,
         fancy: true,
         sig: None,
         timing: false,
         prefer: None,
+        why: false,
     };
-    format!("$ w {q}\n{}", render_query(q, &s).out.trim_end())
+    let mut q = line;
+    loop {
+        if let Some(rest) = q.strip_prefix("--why ") {
+            s.why = true;
+            q = rest;
+        } else if let Some(rest) = q.strip_prefix("--as ") {
+            let (kind, rest) = rest.split_once(' ').expect("--as KIND query");
+            s.prefer = Some(tungsten_core::Kind::parse(kind).expect("known kind"));
+            q = rest;
+        } else {
+            break;
+        }
+    }
+    format!("$ w {line}\n{}", render_query(q, &s).out.trim_end())
 }
 
 #[test]

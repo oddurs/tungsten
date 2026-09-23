@@ -1,7 +1,7 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w tungsten
+$ w --as element W
 
   ◆ tungsten · W · 74
   │ atomic mass    183.84 u

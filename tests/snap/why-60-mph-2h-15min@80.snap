@@ -1,0 +1,20 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w --why 60 mph * 2h 15min
+
+  ◆ interpretation
+  │ 60 mph × (2 h + 15 min)
+
+  ◆ result
+  │ 135 mi
+
+  ◆ other units
+  │ 217.3 km  ·  237 600 yd  ·  217 261 m
+
+  ◆ sources
+  │ mph  Defined as mi/h (the mile: HB44 C-4)
+  │ h    BIPM SI Brochure (9th ed., 2019), Table 8
+  │ min  BIPM SI Brochure (9th ed., 2019), Table 8
+
+  ──────────────────────────────────────────── W74

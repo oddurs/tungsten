@@ -90,3 +90,13 @@ mercury
 mass of mercury
 melting point of mercury
 5 W
+
+# ─── Provenance (0037, and the data items' --why criteria) ───────────────────
+--why earth.mass
+--why 3 coffees in mg of caffeine
+--why gold.density
+--why mars.gravity
+--why c
+--why 60 mph * 2h 15min
+--why tungsten
+--as element W

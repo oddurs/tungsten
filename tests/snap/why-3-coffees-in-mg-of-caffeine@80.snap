@@ -1,0 +1,22 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w --why 3 coffees in mg of caffeine
+
+  ◆ interpretation
+  │ 3 × coffee(95 mg caffeine)  →  mg of caffeine
+
+  ◆ result
+  │ 285 mg
+
+  ◆ other units
+  │ 0.285 g  ·  0.01005 oz  ·  2.85×10⁻⁴ kg
+
+  ◆ sources
+  │ coffee · caffeine  USDA FoodData Central, Beverages, coffee, brewed,
+  │   prepared with tap water: 40 mg caffeine and 1 kcal per 100 g; an 8 fl oz
+  │   cup weighs 237 g
+  │ mg (g)             BIPM SI Brochure (9th ed., 2019), §2.3.1, Table 2
+  │   (kilogram is the base unit; prefixes attach to gram, §3)
+
+  ──────────────────────────────────────────────────────────────────────── W74
