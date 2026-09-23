@@ -149,3 +149,11 @@ boiling point of water
 3 L of water in kg
 1 m^3 of air in kg
 density of ice / density of water
+
+# ─── Counting things in things (0069) ────────────────────────────────────────
+how many bananas in a blue whale
+how many bananas weigh as much as a blue whale
+how many bananas in 10 kg
+mass of 3 apples
+how many calories in a banana
+what's 12% of 80

@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass of 3 apples
+
+  ◆ interpretation
+  │ 3 × mass of apple
+
+  ◆ result
+  │ 546 g
+
+  ◆ other units
+  │ 0.546 kg  ·  1.204 lb
+
+  ◆ for scale
+  │ ≈ 4.6 bananas
+  │ ≈ 220 US pennies
+
+  ──────────────────── W74

@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w what's 12% of 80
+
+  ◆ interpretation
+  │ 12% × 80
+
+  ◆ result
+  │ 9.6
+
+  ──────────────────── W74

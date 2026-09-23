@@ -208,8 +208,64 @@ fn distance(items: &[Item]) -> Option<Result<Query, Error>> {
 
 /// `how many feet in a mile` → `a mile in feet`;
 /// `how much caffeine in 3 coffees` → `3 coffees` of caffeine.
+/// `how many bananas in a blue whale`: Y's measure of the kind X is
+/// measured by (a banana's default is its mass), divided by X.
+fn count_in(x: &Item, m: &Meaning, y: Node) -> Query {
+    let props: Vec<Prop> = m
+        .usable()
+        .filter_map(|h| h.entity.default())
+        .take(1)
+        .collect();
+    let span = x.span.start.min(y.span.start)..x.span.end.max(y.span.end);
+    let numerator = match y.expr {
+        Expr::Entity(my) if !props.is_empty() => Node::new(Expr::Prop(my, props), y.span),
+        _ => y,
+    };
+    let each = Node::new(
+        Expr::Entity(Mention {
+            hits: m.entities.clone(),
+            chosen: None,
+            name_span: x.span.clone(),
+        }),
+        x.span.clone(),
+    );
+    Query {
+        expr: Node::new(
+            Expr::Bin {
+                op: BinOp::Div,
+                style: Style::Explicit,
+                lhs: Box::new(numerator),
+                rhs: Box::new(each),
+            },
+            span,
+        ),
+        targets: Vec::new(),
+        of: None,
+    }
+}
+
 fn how_many(items: &[Item], src: &str) -> Result<Query, Error> {
     let rest = &items[1..];
+    // how many bananas weigh as much as a blue whale
+    if let [
+        x @ Item {
+            sym: Sym::Name(m), ..
+        },
+        w,
+        a1,
+        much,
+        a2,
+        tail @ ..,
+    ] = rest
+        && m.has_entity()
+        && w.sym == Sym::Kw(Kw::Weigh)
+        && a1.sym == Sym::Kw(Kw::As)
+        && much.sym == Sym::Kw(Kw::Much)
+        && a2.sym == Sym::Kw(Kw::As)
+    {
+        let y = whole(tail, src)?;
+        return Ok(count_in(x, m, y));
+    }
     let split = rest
         .iter()
         .position(|it| matches!(it.sym, Sym::Kw(Kw::In | Kw::Is | Kw::Are)))
@@ -236,6 +292,17 @@ fn how_many(items: &[Item], src: &str) -> Result<Query, Error> {
             e
         }
     })?;
+    // `how many bananas in a blue whale`: a thing, not a unit.
+    if let [
+        x @ Item {
+            sym: Sym::Name(m), ..
+        },
+    ] = &rest[..split]
+        && m.has_entity()
+        && m.props.is_empty()
+    {
+        return Ok(count_in(x, m, expr));
+    }
     // `how much caffeine`: a property, not a unit.
     if let [
         Item {
@@ -582,6 +649,12 @@ impl<'a> Parser<'a> {
             }
             Sym::Kw(Kw::A) => {
                 self.pos += 1;
+                // `a banana` is the banana, not 1 × banana.
+                if let Some(Sym::Name(m)) = self.peek().map(|n| &n.sym)
+                    && !m.entities.is_empty()
+                {
+                    return self.prefix();
+                }
                 let node = self.quantity_from(Number::ONE, it.span.clone(), false)?;
                 Ok(node)
             }
@@ -655,6 +728,24 @@ impl<'a> Parser<'a> {
             if self.peek().is_some_and(|n| n.sym == Sym::Kw(Kw::A)) {
                 self.pos += 1;
             }
+            // `mass of 3 apples`: a count, then the thing.
+            let count = match (self.peek(), self.peek_at(1)) {
+                (
+                    Some(
+                        n @ Item {
+                            sym: Sym::Num { value, .. },
+                            ..
+                        },
+                    ),
+                    Some(Item {
+                        sym: Sym::Name(em), ..
+                    }),
+                ) if !em.entities.is_empty() => {
+                    self.pos += 1;
+                    Some(Node::new(Expr::Num(*value), n.span.clone()))
+                }
+                _ => None,
+            };
             let Some(ent) = self.bump() else {
                 return Err(Error::new(
                     ErrorKind::UnexpectedEnd { expected: THING },
@@ -673,7 +764,19 @@ impl<'a> Parser<'a> {
                 name_span: ent.span.clone(),
             };
             let span = it.span.start..ent.span.end;
-            return Ok(Node::new(Expr::Prop(mention, m.props.clone()), span));
+            let prop = Node::new(Expr::Prop(mention, m.props.clone()), span.clone());
+            return Ok(match count {
+                Some(n) => Node::new(
+                    Expr::Bin {
+                        op: BinOp::Mul,
+                        style: Style::Explicit,
+                        lhs: Box::new(n),
+                        rhs: Box::new(prop),
+                    },
+                    span,
+                ),
+                None => prop,
+            });
         }
         if m.entities.is_empty() {
             // A property alone: `mass`. Of what?

@@ -98,6 +98,20 @@ Rough edges found by dogfooding v0.2 with the questions people actually ask.
 - [ ] `0046` w run --write: stamp results into the file <sup>feature · notebook · p1 · m</sup>
 - [ ] `0047` Editor syntax highlighting for .w files <sup>feature · notebook · p3 · s</sup>
 
+## v0.2.2 — Polish II
+
+`#####·····` 50% · 1 of 2 done
+
+The second dogfooding pass: counting things in other things, and answers that claim no more precision than their sources.
+
+### backlog
+
+- [ ] `0070` Honest precision and bare units <sup>feature · render · p0 · m</sup>
+
+### done
+
+- [x] `0069` Count things in things: how many bananas in a blue whale <sup>feature · language · p0 · m</sup>
+
 ## v0.5 — Solve and plot
 
 `··········` 0% · 0 of 5 done
