@@ -17,6 +17,10 @@ $ w 3 coffees a day for a year in grams of caffeine
   ◆ other units
   │ 0.1039 kg  ·  3.664 oz
 
+  ◆ for scale
+  │ ≈ 2.1 eggs
+  │ ≈ 42 US pennies
+
   ─────────────────────────────── W74 · 0.4ms
 ```
 
