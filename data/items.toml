@@ -882,3 +882,53 @@ domain = "physics"
 source = "U.S. Standard Atmosphere, 1976: speed of sound at sea level (15 °C), 340.294 m/s"
 [entity.props]
 speed = "340.294 m/s"
+
+# ─── Substances ──────────────────────────────────────────────────────────────
+# `3 L of water` multiplies a volume by the default, density, giving a mass.
+
+[[entity]]
+kind = "item"
+display = "water"
+plural = "water"
+names = ["water", "liquid water", "fresh water", "freshwater"]
+default = "density"
+domain = "substance"
+source = "Density at 25 °C: Tanaka et al. (2001), Metrologia 38:301, via Wikipedia, Properties of water. Melting and boiling points at 1 atm (VSMOW): Wikipedia, Properties of water, citing NIST"
+[entity.props]
+density = "0.99704702 g/mL"
+"melting point" = "0.00 °C"
+"boiling point" = "99.98 °C"
+
+[[entity]]
+kind = "item"
+display = "ice"
+plural = "ice"
+names = ["ice"]
+default = "density"
+domain = "substance"
+source = "CRC Handbook, Properties of Ice and Supercooled Water, via Wikipedia, Ice: 0.9167 g/cm³ at 0 °C"
+[entity.props]
+density = "0.9167 g/cm^3"
+"melting point" = "0.00 °C"
+
+[[entity]]
+kind = "item"
+display = "seawater"
+plural = "seawater"
+names = ["seawater", "sea water", "salt water", "saltwater", "ocean water"]
+default = "density"
+domain = "substance"
+source = "Wikipedia, Seawater: average density at the surface is 1.025 kg/L (1020-1029 kg/m³ with temperature and salinity)"
+[entity.props]
+density = "1.025 kg/L"
+
+[[entity]]
+kind = "item"
+display = "air"
+plural = "air"
+names = ["air"]
+default = "density"
+domain = "substance"
+source = "U.S. Standard Atmosphere, 1976 (ISA): sea level, 15 °C, 101.325 kPa, 1.225 kg/m³"
+[entity.props]
+density = "1.225 kg/m^3"

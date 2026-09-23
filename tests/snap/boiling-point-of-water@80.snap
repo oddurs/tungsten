@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w boiling point of water
+
+  ◆ interpretation
+  │ boiling point of water
+
+  ◆ result
+  │ 99.98 °C
+
+  ◆ other units
+  │ 212 °F  ·  373.1 K
+
+  ──────────────────── W74

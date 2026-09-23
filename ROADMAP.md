@@ -75,18 +75,18 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 
 ## v0.2.1 — Polish
 
-`####······` 33% · 1 of 3 done
+`#######···` 67% · 2 of 3 done
 
 Rough edges found by dogfooding v0.2 with the questions people actually ask.
 
 ### backlog
 
-- [ ] `0066` Substances and cups of things: water, air, ice, flour <sup>data · kb · p0 · m</sup>
 - [ ] `0067` Constants keep their published significant digits <sup>feature · render · p1 · s</sup>
 
 ### done
 
 - [x] `0065` Questions: how tall is X, earth radius, distance from X to Y <sup>feature · language · p0 · m</sup>
+- [x] `0066` Substances and cups of things: water, air, ice, flour <sup>data · kb · p0 · m</sup>
 
 ## v0.4 — Notebooks
 

@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w density of water
+
+  ◆ interpretation
+  │ density of water
+
+  ◆ result
+  │ 0.99704702 g/mL
+
+  ◆ other units
+  │ 997 kg/m³
+  │ 62.24 lb/ft³
+
+  ──────────────────── W74

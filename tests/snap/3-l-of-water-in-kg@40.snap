@@ -1,0 +1,20 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 L of water in kg
+
+  ◆ interpretation
+  │ 3 L × water(0.99704702 g/mL density)
+  │    →  kg
+
+  ◆ result
+  │ 2.99114106 kg
+
+  ◆ other units
+  │ 2991 g
+  │ 6.594 lb
+
+  ◆ for scale
+  │ ≈ 25 bananas
+
+  ────────────────────────────────── W74
