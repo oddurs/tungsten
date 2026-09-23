@@ -170,3 +170,9 @@ sin(180°)
 cos(90°)
 tan(90°)
 tan(45°)
+
+# ─── Fuel economy (0073) ─────────────────────────────────────────────────────
+20 mpg in L/100km
+5 L/100km in mpg
+8 l/100 km to mpg
+30 mpg in km/L

@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 20 mpg in L/100km
+
+  ◆ interpretation
+  │ 20 mpg  →  L/100km
+
+  ◆ result
+  │ 11.76 L/100km
+
+  ──────────────────── W74

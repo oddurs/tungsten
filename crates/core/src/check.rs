@@ -31,7 +31,10 @@ impl Ty {
 pub fn check_query(q: &Query, src: &str) -> Result<(), Error> {
     let ty = check(&q.expr, src)?;
     for t in &q.targets {
-        if t.unit.dim() != ty.dim {
+        // mpg ↔ L/100km: reciprocal dimensions convert by inverting.
+        let reciprocal =
+            q.targets.len() == 1 && t.unit.dim() == ty.dim.recip() && !ty.dim.is_none();
+        if t.unit.dim() != ty.dim && !reciprocal {
             return Err(Error::new(
                 ErrorKind::Convert {
                     from: ty.dim,

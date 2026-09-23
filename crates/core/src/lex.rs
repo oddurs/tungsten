@@ -381,6 +381,21 @@ impl Lexer<'_> {
                 break;
             }
         }
+        // L/100km is one unit, written the way people write it.
+        if text.eq_ignore_ascii_case("l") {
+            let rest: String = self.chars[self.i..]
+                .iter()
+                .take(8)
+                .map(|&(_, c)| c)
+                .collect();
+            for form in ["/100km", "/100 km"] {
+                if rest.to_lowercase().starts_with(form) {
+                    self.i += form.chars().count();
+                    self.push(TokKind::Word("L/100km".into()), start, self.i);
+                    return;
+                }
+            }
+        }
         self.push(TokKind::Word(text), start, self.i);
     }
 }

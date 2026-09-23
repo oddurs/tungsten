@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 L/100km in mpg
+
+  ◆ interpretation
+  │ 5 L/100km  →  mpg
+
+  ◆ result
+  │ 47.04 mpg
+
+  ──────────────────── W74

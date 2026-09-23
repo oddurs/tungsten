@@ -310,7 +310,14 @@ fn success(input: &str, o: &Outcome) -> Report {
                 body: Body::Lines(vec![Line(vec![seg])]),
             });
         }
-        let alts = other_units(&o.value, unit);
+        // Fuel consumption has the dimension of area, and an inverted answer
+        // the reciprocal of the value's: neither has sensible alternatives.
+        let comparable = unit.dim() == o.value.dim && unit.display(false) != "L/100km";
+        let alts = if comparable {
+            other_units(&o.value, unit)
+        } else {
+            Vec::new()
+        };
         if !alts.is_empty() {
             let lines = alts
                 .into_iter()
@@ -328,7 +335,7 @@ fn success(input: &str, o: &Outcome) -> Report {
                 body: Body::List(lines),
             });
         }
-        if let Some(p) = scale::pod(o) {
+        if let Some(p) = scale::pod(o).filter(|_| comparable) {
             pods.push(p);
         }
     }
