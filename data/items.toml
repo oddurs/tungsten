@@ -1,0 +1,4 @@
+# data/items.toml — everyday things people measure against.
+#
+# Hand-written; every entity needs a source. See data/properties.toml for
+# property names, and cairn item 0032.

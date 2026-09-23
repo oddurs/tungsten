@@ -46,7 +46,6 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 
 ### backlog
 
-- [ ] `0028` Knowledge-base build pipeline <sup>feature · kb · p0 · m</sup>
 - [ ] `0029` Physical constants (CODATA 2022) <sup>data · kb · p0 · m</sup>
 - [ ] `0030` The 118 elements <sup>data · kb · p1 · m</sup>
 - [ ] `0031` Solar system bodies <sup>data · kb · p2 · s</sup>
@@ -57,6 +56,10 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 - [ ] `0036` Entity card pod <sup>feature · pods · p1 · s</sup>
 - [ ] `0037` Provenance with --why <sup>feature · cli · p2 · s</sup>
 - [ ] `0038` Easter eggs: 74, wolfram, --about <sup>feature · cli · p3 · s</sup>
+
+### in progress
+
+- [ ] `0028` Knowledge-base build pipeline <sup>feature · kb · p0 · m</sup>
 
 ### done
 
