@@ -103,11 +103,17 @@ internal error.
 ## Development
 
 ```sh
+cairn next                     # what to work on
+git switch -c 0028-short-name  # one branch per cairn item
 cargo test                     # unit tests and every snapshot
 cargo insta test --review      # after changing output: review snapshot diffs
 UPDATE_README=1 cargo test     # refresh the examples above from their snapshots
-cairn next                     # what to work on
+scripts/check                  # the whole gate: fmt, clippy, tests, cairn
+scripts/ship                   # check, push, open a PR and squash-merge it
 ```
+
+Changes land as one squash-merged PR per cairn item; see
+[`AGENTS.md`](AGENTS.md#git-workflow).
 
 Every query in [`tests/queries.txt`](tests/queries.txt) is rendered at 80 and
 40 columns and compared against `tests/snap/`. Adding a test is adding a line.

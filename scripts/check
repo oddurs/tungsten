@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Everything that must pass before a change merges. This is the gate; CI only
+# re-runs it on main as a safety net. Quiet on success, loud on failure.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+run() {
+  local name=$1
+  shift
+  local out
+  if out=$("$@" 2>&1); then
+    printf '\033[2m✓ %s\033[0m\n' "$name"
+  else
+    printf '\033[31m✗ %s\033[0m\n%s\n' "$name" "$out"
+    exit 1
+  fi
+}
+
+run fmt cargo fmt --all --check
+run clippy cargo clippy --workspace --all-targets -- -D warnings
+run test env INSTA_UPDATE=no cargo test --workspace
+run cairn cairn check --strict --render

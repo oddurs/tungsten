@@ -10,6 +10,28 @@ and units. The design lives in `docs/concept.md`; the roadmap lives in cairn
 - If the implementation departs from `docs/concept.md`, update the concept in
   the same change.
 
+## Git workflow
+
+One cairn item, one branch, one squash-merged PR. `main` is linear and always
+passes `scripts/check`.
+
+```sh
+cairn claim 0028
+git switch -c 0028-kb-build-pipeline     # <item id>-<short name>
+# ...work, commit...                     # close the item in the same branch
+scripts/ship                             # check, push, PR, squash-merge, back on main
+```
+
+- `scripts/check` is the gate: fmt, clippy, tests (including every snapshot
+  and the README examples), `cairn check`. Run it whenever; `ship` runs it too.
+- Commit subjects are imperative and name the change, not the item number
+  (`Compile the knowledge base into phf tables`). With one commit per branch,
+  its subject and body become the PR and the squash commit.
+- The item's status, notes and ticked criteria change in the same PR as the
+  code, so history shows both together.
+- CI is one Linux job on `main`, a safety net after merge. Nothing waits for it.
+- Never commit to `main` directly, never force-push `main`.
+
 <!-- cairn:begin -->
 ## Roadmap and issues
 

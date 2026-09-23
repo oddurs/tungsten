@@ -1,43 +1,23 @@
-name: CI
+# One quiet job. Local `scripts/check` is the gate on every PR; this re-runs it
+# on Linux after merging, as a safety net. It never blocks anything.
+name: main
 
 on:
   push:
     branches: [main]
-  pull_request:
 
-env:
-  CARGO_TERM_COLOR: always
-  RUSTFLAGS: -D warnings
+concurrency:
+  group: main
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: test (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+  check:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
-      - run: cargo fmt --all --check
-      - run: cargo clippy --workspace --all-targets -- -D warnings
-      # Includes every snapshot in tests/snap/ and the README examples.
-      - run: cargo test --workspace
-        env:
-          INSTA_UPDATE: "no"
-
-  roadmap:
-    name: cairn
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install cairn
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      # Items valid against cairn.toml, and ROADMAP.md matches the items.
-      - run: cairn check --strict --render
+      - run: curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh | sh
+      - run: PATH="$HOME/.local/bin:$PATH" scripts/check
