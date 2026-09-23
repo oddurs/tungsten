@@ -208,27 +208,54 @@ fn distance(items: &[Item]) -> Option<Result<Query, Error>> {
 
 /// `how many feet in a mile` → `a mile in feet`;
 /// `how much caffeine in 3 coffees` → `3 coffees` of caffeine.
-/// `how many bananas in a blue whale`: Y's measure of the kind X is
-/// measured by (a banana's default is its mass), divided by X.
+/// `how many bananas in a blue whale`: Y divided by X, both measured by the
+/// same property. Counted in a quantity (`in a litre`), X is measured by its
+/// property of that dimension (a cup of coffee's volume); counted in another
+/// thing, by a property both have, X's default first.
 fn count_in(x: &Item, m: &Meaning, y: Node) -> Query {
-    let props: Vec<Prop> = m
-        .usable()
-        .filter_map(|h| h.entity.default())
-        .take(1)
-        .collect();
     let span = x.span.start.min(y.span.start)..x.span.end.max(y.span.end);
-    let numerator = match y.expr {
-        Expr::Entity(my) if !props.is_empty() => Node::new(Expr::Prop(my, props), y.span),
-        _ => y,
+    let things: Vec<tungsten_kb::Entity> = m.usable().map(|h| h.entity).collect();
+    let props_of = |e: tungsten_kb::Entity| -> Vec<Prop> {
+        e.default()
+            .into_iter()
+            .chain(e.values().map(|v| v.prop))
+            .collect()
     };
-    let each = Node::new(
-        Expr::Entity(Mention {
-            hits: m.entities.clone(),
-            chosen: None,
-            name_span: x.span.clone(),
-        }),
-        x.span.clone(),
-    );
+    let (numerator, prop) = match y.expr {
+        Expr::Quantity { ref unit, .. } => {
+            let dim = unit.dim();
+            let p = things
+                .iter()
+                .find_map(|e| e.values().find(|v| v.unit.dim() == dim).map(|v| v.prop));
+            (y, p)
+        }
+        Expr::Entity(my) => {
+            let others: Vec<tungsten_kb::Entity> = my
+                .hits
+                .iter()
+                .filter(|h| !h.shadowed)
+                .map(|h| h.entity)
+                .collect();
+            let shared = things
+                .iter()
+                .flat_map(|e| props_of(*e))
+                .find(|p| others.iter().any(|o| o.has(*p)));
+            match shared {
+                Some(p) => (Node::new(Expr::Prop(my, vec![p]), y.span), Some(p)),
+                None => (Node::new(Expr::Entity(my), y.span), None),
+            }
+        }
+        _ => (y, None),
+    };
+    let mention = Mention {
+        hits: m.entities.clone(),
+        chosen: None,
+        name_span: x.span.clone(),
+    };
+    let each = match prop {
+        Some(p) => Node::new(Expr::Prop(mention, vec![p]), x.span.clone()),
+        None => Node::new(Expr::Entity(mention), x.span.clone()),
+    };
     Query {
         expr: Node::new(
             Expr::Bin {

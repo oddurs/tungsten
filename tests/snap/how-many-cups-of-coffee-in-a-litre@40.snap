@@ -1,12 +1,12 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w how many bananas in 10 kg
+$ w how many cups of coffee in a litre
 
   ◆ interpretation
-  │ 10 kg / mass of banana
+  │ 1 L / volume of coffee
 
   ◆ result
-  │ 84.75
+  │ 4.227
 
   ──────────────────── W74

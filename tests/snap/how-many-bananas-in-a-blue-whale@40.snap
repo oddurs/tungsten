@@ -4,10 +4,9 @@ source: crates/cli/tests/snapshots.rs
 $ w how many bananas in a blue whale
 
   ◆ interpretation
-  │ mass of blue whale / banana(118 g
-  │   mass)
+  │ mass of blue whale / mass of banana
 
   ◆ result
   │ 1.269×10⁶
 
-  ─────────────────────────────── W74
+  ───────────────────────────────── W74

@@ -1,12 +1,12 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w how many bananas in 10 kg
+$ w tan(45°)
 
   ◆ interpretation
-  │ 10 kg / mass of banana
+  │ tan(45°)
 
   ◆ result
-  │ 84.75
+  │ 1
 
   ──────────────────── W74

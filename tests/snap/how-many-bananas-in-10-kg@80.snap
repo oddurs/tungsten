@@ -4,9 +4,9 @@ source: crates/cli/tests/snapshots.rs
 $ w how many bananas in 10 kg
 
   ◆ interpretation
-  │ 10 kg / banana(118 g mass)
+  │ 10 kg / mass of banana
 
   ◆ result
   │ 84.75
 
-  ──────────────────────── W74
+  ──────────────────── W74

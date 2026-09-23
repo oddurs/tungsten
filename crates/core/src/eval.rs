@@ -322,9 +322,15 @@ fn call(f: Func, v: &Value) -> Result<Value, MathError> {
     match f {
         Func::Sqrt => rooted(2),
         Func::Cbrt => rooted(3),
-        Func::Sin => scalar(x.sin()),
-        Func::Cos => scalar(x.cos()),
-        Func::Tan => scalar(x.tan()),
+        // sin(180°) is 0, not 1.2×10⁻¹⁶: float noise at exact angles is snapped.
+        Func::Sin => scalar(snap(x.sin())),
+        Func::Cos => scalar(snap(x.cos())),
+        Func::Tan => {
+            if x.cos().abs() < 1e-12 {
+                return Err(MathError::NotReal);
+            }
+            scalar(snap(x.tan()))
+        }
         Func::Asin | Func::Acos | Func::Atan => {
             let r = match f {
                 Func::Asin => x.asin(),
@@ -358,6 +364,12 @@ fn call(f: Func, v: &Value) -> Result<Value, MathError> {
             f64::ceil,
         ),
     }
+}
+
+/// Within 10⁻¹² of a whole number, it is that number.
+fn snap(x: f64) -> f64 {
+    let r = x.round();
+    if (x - r).abs() < 1e-12 { r } else { x }
 }
 
 fn round_half_away(r: Rational) -> Option<Rational> {

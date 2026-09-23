@@ -1,12 +1,12 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w how many bananas in 10 kg
+$ w cos(90°)
 
   ◆ interpretation
-  │ 10 kg / mass of banana
+  │ cos(90°)
 
   ◆ result
-  │ 84.75
+  │ 0
 
   ──────────────────── W74
