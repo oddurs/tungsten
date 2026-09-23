@@ -9,13 +9,13 @@ and math, answered in a stack of *pods*.
 $ w 3 coffees a day for a year in grams of caffeine
 
   ◆ interpretation
-  │ 3 × coffee(95 mg caffeine) / d × 1 yr  →  g of caffeine
+  │ 3 × coffee(94.8 mg caffeine) / d × 1 yr  →  g of caffeine
 
   ◆ result
-  │ 104.09625 g
+  │ 103.8771 g
 
   ◆ other units
-  │ 0.1041 kg  ·  3.672 oz
+  │ 0.1039 kg  ·  3.664 oz
 
   ─────────────────────────────── W74 · 0.4ms
 ```
@@ -133,8 +133,11 @@ volume = "8 floz"
 - **Elements:** all 118, from PubChem (`scripts/data/elements.py`).
 - **Solar system:** the Sun, planets, Pluto and 21 moons, from NASA's NSSDCA
   fact sheets (`scripts/data/solar.py`).
-- **Everyday items**, hand-written with sources, some tagged as **for-scale**
-  references.
+- **Foods:** 43 household portions from USDA FoodData Central, SR Legacy
+  (`scripts/data/food.py`): mass, energy, caffeine, sugar.
+- **Everyday things:** 69 hand-written entries (sport, standards, coins,
+  buildings, vehicles, nature), each citing its source, some tagged as
+  **for-scale** references. Values that could not be checked were left out.
 
 Every value carries a `source`; `w --why` shows it.
 

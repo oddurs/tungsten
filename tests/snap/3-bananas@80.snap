@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 bananas
+
+  ◆ interpretation
+  │ 3 × banana(118 g mass)
+
+  ◆ result
+  │ 354 g
+
+  ◆ other units
+  │ 0.354 kg  ·  12.49 oz
+
+  ──────────────────── W74

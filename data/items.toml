@@ -1,20 +1,884 @@
 # data/items.toml — everyday things people measure against.
 #
-# Hand-written; every entity needs a source. See data/properties.toml for
-# property names, and cairn item 0032.
+# Hand-written. Every entity cites where its numbers come from; where a
+# standard gives a range, the midpoint is used and the source says so. Values
+# that could not be checked against a source were left out rather than
+# guessed. Foods are generated separately (data/food.toml, from USDA).
+#
+#   domain  groups references so the "for scale" pod does not compare a
+#           result to two things of the same sort
+#   scale   properties this entity lends to the "for scale" pod
+#
+# See data/properties.toml for property names, and cairn item 0032.
 
-# ─── Food and drink ──────────────────────────────────────────────────────────
+# ─── Sport ───────────────────────────────────────────────────────────────────
 
 [[entity]]
 kind = "item"
-display = "coffee"
-plural = "cups of coffee"
-names = ["coffee", "coffees", "cup of coffee", "cups of coffee", "brewed coffee"]
-default = "caffeine"
-domain = "food"
-source = "USDA FoodData Central, Beverages, coffee, brewed, prepared with tap water: 40 mg caffeine and 1 kcal per 100 g; an 8 fl oz cup weighs 237 g"
+display = "Olympic pool"
+plural = "Olympic pools"
+names = ["olympic pool", "olympic pools", "olympic swimming pool", "olympic swimming pools", "olympic-size swimming pool", "olympic-size pool"]
+default = "volume"
+scale = ["volume"]
+domain = "sport"
+source = "World Aquatics Facilities Rules: 50 m by 25 m; volume at the nominal 2 m depth (2,500,000 L, as in Wikipedia, Olympic-size swimming pool)"
 [entity.props]
-caffeine = "95 mg"
-volume = "8 floz"
-mass = "237 g"
-"food energy" = "2 kcal"
+length = "50 m"
+width = "25 m"
+depth = "2 m"
+volume = "2500 m^3"
+
+[[entity]]
+kind = "item"
+display = "football pitch"
+plural = "football pitches"
+names = ["football pitch", "football pitches", "soccer pitch", "soccer pitches", "soccer field", "soccer fields"]
+default = "area"
+scale = ["area"]
+domain = "sport"
+source = "FIFA Football Stadiums: Technical Recommendations and Requirements (recommended pitch 105 m by 68 m)"
+[entity.props]
+length = "105 m"
+width = "68 m"
+area = "7140 m^2"
+
+[[entity]]
+kind = "item"
+display = "American football field"
+plural = "American football fields"
+names = ["american football field", "american football fields", "football field", "football fields"]
+default = "area"
+scale = ["area", "length"]
+domain = "sport"
+source = "NFL Official Playing Rules, Rule 1 Section 1: 360 ft by 160 ft including end zones"
+[entity.props]
+length = "360 ft"
+width = "160 ft"
+area = "57600 ft^2"
+
+[[entity]]
+kind = "item"
+display = "tennis court"
+plural = "tennis courts"
+names = ["tennis court", "tennis courts"]
+default = "area"
+scale = ["area"]
+domain = "sport"
+source = "ITF Rules of Tennis, Rule 1: doubles court 23.77 m by 10.97 m"
+[entity.props]
+length = "23.77 m"
+width = "10.97 m"
+area = "260.7569 m^2"
+
+[[entity]]
+kind = "item"
+display = "basketball court"
+plural = "basketball courts"
+names = ["basketball court", "basketball courts"]
+default = "area"
+domain = "sport"
+source = "NBA Official Rules, Rule 1 Section I: 94 ft by 50 ft"
+[entity.props]
+length = "94 ft"
+width = "50 ft"
+area = "4700 ft^2"
+
+[[entity]]
+kind = "item"
+display = "marathon"
+plural = "marathons"
+names = ["marathon", "marathons"]
+default = "length"
+scale = ["length"]
+domain = "sport"
+source = "World Athletics Competition Rules: the marathon is 42.195 km"
+[entity.props]
+length = "42.195 km"
+
+[[entity]]
+kind = "item"
+display = "running track"
+plural = "running tracks"
+names = ["running track", "running tracks", "athletics track", "lap of a track"]
+default = "length"
+domain = "sport"
+source = "World Athletics Track and Field Facilities Manual: the standard track is 400 m"
+[entity.props]
+length = "400 m"
+
+[[entity]]
+kind = "item"
+display = "football"
+plural = "footballs"
+names = ["football", "footballs", "soccer ball", "soccer balls"]
+default = "mass"
+domain = "sport"
+source = "IFAB Laws of the Game, Law 2: circumference 68-70 cm, mass 410-450 g; midpoints used"
+[entity.props]
+circumference = "69 cm"
+mass = "430 g"
+
+[[entity]]
+kind = "item"
+display = "baseball"
+plural = "baseballs"
+names = ["baseball", "baseballs"]
+default = "mass"
+domain = "sport"
+source = "MLB Official Baseball Rules 3.01: 5 to 5.25 oz, 9 to 9.25 in circumference; midpoints used"
+[entity.props]
+circumference = "9.125 in"
+mass = "5.125 oz"
+
+[[entity]]
+kind = "item"
+display = "golf ball"
+plural = "golf balls"
+names = ["golf ball", "golf balls"]
+default = "mass"
+domain = "sport"
+source = "R&A and USGA Equipment Rules, Part 4: mass no more than 45.93 g, diameter no less than 42.67 mm (the limits)"
+[entity.props]
+diameter = "42.67 mm"
+mass = "45.93 g"
+
+[[entity]]
+kind = "item"
+display = "tennis ball"
+plural = "tennis balls"
+names = ["tennis ball", "tennis balls"]
+default = "mass"
+domain = "sport"
+source = "ITF Rules of Tennis, Appendix I: mass 56.0-59.4 g, diameter 6.54-6.86 cm; midpoints used"
+[entity.props]
+diameter = "6.7 cm"
+mass = "57.7 g"
+
+[[entity]]
+kind = "item"
+display = "hockey puck"
+plural = "hockey pucks"
+names = ["hockey puck", "hockey pucks", "puck", "pucks"]
+default = "mass"
+domain = "sport"
+source = "NHL Official Rules, Rule 25: 1 in thick, 3 in in diameter, 5.5-6 oz; midpoint used"
+[entity.props]
+diameter = "3 in"
+thickness = "1 in"
+mass = "5.75 oz"
+
+# ─── Paper, cards and coins ──────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "sheet of A4 paper"
+plural = "sheets of A4 paper"
+names = ["sheet of a4 paper", "sheets of a4 paper", "a4 sheet", "a4 sheets", "sheet of paper", "sheets of paper"]
+default = "area"
+scale = ["area"]
+domain = "paper"
+source = "ISO 216: A4 is 210 mm by 297 mm; mass at the common 80 g/m² grammage"
+[entity.props]
+length = "297 mm"
+width = "210 mm"
+area = "0.06237 m^2"
+mass = "4.9896 g"
+
+[[entity]]
+kind = "item"
+display = "sheet of US letter paper"
+plural = "sheets of US letter paper"
+names = ["sheet of letter paper", "sheets of letter paper", "letter paper", "us letter"]
+default = "area"
+domain = "paper"
+source = "ANSI/ASME Y14.1 (ANSI A, US letter): 8.5 in by 11 in"
+[entity.props]
+length = "11 in"
+width = "8.5 in"
+area = "93.5 in^2"
+
+[[entity]]
+kind = "item"
+display = "credit card"
+plural = "credit cards"
+names = ["credit card", "credit cards", "bank card", "bank cards", "id card", "id cards"]
+default = "length"
+scale = ["length"]
+domain = "paper"
+source = "ISO/IEC 7810, ID-1 format: 85.60 mm by 53.98 mm by 0.76 mm"
+[entity.props]
+length = "85.60 mm"
+width = "53.98 mm"
+thickness = "0.76 mm"
+area = "4620.6880 mm^2"
+
+[[entity]]
+kind = "item"
+display = "US quarter"
+plural = "US quarters"
+names = ["us quarter", "us quarters", "quarter coin", "quarter coins", "quarter dollar"]
+default = "mass"
+domain = "coin"
+source = "United States Mint, Coin Specifications: quarter dollar"
+[entity.props]
+mass = "5.670 g"
+diameter = "24.26 mm"
+thickness = "1.75 mm"
+
+[[entity]]
+kind = "item"
+display = "US dime"
+plural = "US dimes"
+names = ["dime", "dimes", "us dime"]
+default = "mass"
+domain = "coin"
+source = "United States Mint, Coin Specifications: dime"
+[entity.props]
+mass = "2.268 g"
+diameter = "17.91 mm"
+thickness = "1.35 mm"
+
+[[entity]]
+kind = "item"
+display = "US nickel"
+plural = "US nickels"
+names = ["us nickel", "us nickels", "nickel coin", "nickel coins"]
+default = "mass"
+domain = "coin"
+source = "United States Mint, Coin Specifications: nickel"
+[entity.props]
+mass = "5.000 g"
+diameter = "21.21 mm"
+thickness = "1.95 mm"
+
+[[entity]]
+kind = "item"
+display = "US penny"
+plural = "US pennies"
+names = ["penny", "pennies", "us penny", "one cent coin"]
+default = "mass"
+scale = ["mass"]
+domain = "coin"
+source = "United States Mint, Coin Specifications: cent"
+[entity.props]
+mass = "2.500 g"
+diameter = "19.05 mm"
+thickness = "1.52 mm"
+
+[[entity]]
+kind = "item"
+display = "one euro coin"
+plural = "one euro coins"
+names = ["euro coin", "euro coins", "one euro coin", "one euro coins"]
+default = "mass"
+domain = "coin"
+source = "European Central Bank, euro coins: 1 euro, 23.25 mm, 7.50 g"
+[entity.props]
+mass = "7.50 g"
+diameter = "23.25 mm"
+thickness = "2.33 mm"
+
+[[entity]]
+kind = "item"
+display = "two euro coin"
+plural = "two euro coins"
+names = ["two euro coin", "two euro coins"]
+default = "mass"
+domain = "coin"
+source = "European Central Bank, euro coins: 2 euro, 25.75 mm, 8.50 g"
+[entity.props]
+mass = "8.50 g"
+diameter = "25.75 mm"
+thickness = "2.20 mm"
+
+# ─── Household and technology ────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "AA battery"
+plural = "AA batteries"
+names = ["aa battery", "aa batteries"]
+default = "length"
+domain = "household"
+source = "IEC 60086-2, LR6: 14.5 mm diameter, 50.5 mm height"
+[entity.props]
+length = "50.5 mm"
+diameter = "14.5 mm"
+
+[[entity]]
+kind = "item"
+display = "AAA battery"
+plural = "AAA batteries"
+names = ["aaa battery", "aaa batteries"]
+default = "length"
+domain = "household"
+source = "IEC 60086-2, LR03: 10.5 mm diameter, 44.5 mm height"
+[entity.props]
+length = "44.5 mm"
+diameter = "10.5 mm"
+
+[[entity]]
+kind = "item"
+display = "brick"
+plural = "bricks"
+names = ["brick", "bricks", "modular brick"]
+default = "length"
+domain = "household"
+source = "Brick Industry Association, Technical Note 10: US modular brick, 7-5/8 in by 3-5/8 in by 2-1/4 in"
+[entity.props]
+length = "7.625 in"
+width = "3.625 in"
+height = "2.25 in"
+
+[[entity]]
+kind = "item"
+display = "sheet of plywood"
+plural = "sheets of plywood"
+names = ["sheet of plywood", "sheets of plywood", "plywood sheet"]
+default = "area"
+domain = "household"
+source = "US Product Standard PS 1: standard panel, 4 ft by 8 ft"
+[entity.props]
+length = "8 ft"
+width = "4 ft"
+area = "32 ft^2"
+
+[[entity]]
+kind = "item"
+display = "toilet flush"
+plural = "toilet flushes"
+names = ["toilet flush", "toilet flushes", "flush", "flushes"]
+default = "volume"
+domain = "household"
+source = "US Energy Policy Act of 1992: new toilets use at most 1.6 gallons per flush"
+[entity.props]
+volume = "1.6 gal"
+
+[[entity]]
+kind = "item"
+display = "shipping container"
+plural = "shipping containers"
+names = ["shipping container", "shipping containers", "container", "containers", "twenty-foot container"]
+default = "length"
+domain = "vehicle"
+source = "ISO 668, series 1 freight container 1C (20 ft): 6.058 m by 2.438 m by 2.591 m"
+[entity.props]
+length = "6.058 m"
+width = "2.438 m"
+height = "2.591 m"
+
+[[entity]]
+kind = "item"
+display = "CD"
+plural = "CDs"
+names = ["compact disc", "compact discs", "cd-rom", "cd-roms"]
+default = "storage"
+scale = ["storage"]
+domain = "technology"
+source = "ECMA-130 (CD-ROM): 120 mm disc; an 80-minute disc holds 360,000 sectors of 2,048 bytes"
+[entity.props]
+diameter = "120 mm"
+storage = "737280000 B"
+
+[[entity]]
+kind = "item"
+display = "DVD"
+plural = "DVDs"
+names = ["dvd", "dvds"]
+default = "storage"
+domain = "technology"
+source = "ECMA-267 (DVD-ROM): 120 mm disc, single layer 4.7 GB"
+[entity.props]
+diameter = "120 mm"
+storage = "4.7 GB"
+
+[[entity]]
+kind = "item"
+display = "Blu-ray disc"
+plural = "Blu-ray discs"
+names = ["blu-ray", "blu-rays", "blu-ray disc", "blu-ray discs", "bluray"]
+default = "storage"
+domain = "technology"
+source = "Blu-ray Disc Association: single-layer disc, 25 GB"
+[entity.props]
+diameter = "120 mm"
+storage = "25 GB"
+
+[[entity]]
+kind = "item"
+display = "floppy disk"
+plural = "floppy disks"
+names = ["floppy disk", "floppy disks", "floppy", "floppies"]
+default = "storage"
+scale = ["storage"]
+domain = "technology"
+source = "3.5-inch high-density floppy (ECMA-125 format): 1,474,560 bytes, sold as 1.44 MB"
+[entity.props]
+storage = "1474560 B"
+
+[[entity]]
+kind = "item"
+display = "iPhone 15"
+plural = "iPhone 15s"
+names = ["iphone 15", "iphone", "iphones"]
+default = "mass"
+domain = "technology"
+source = "Apple, iPhone 15 Technical Specifications: 147.6 by 71.6 by 7.80 mm, 171 g"
+[entity.props]
+length = "147.6 mm"
+width = "71.6 mm"
+thickness = "7.80 mm"
+mass = "171 g"
+
+[[entity]]
+kind = "item"
+display = "13-inch MacBook Air"
+plural = "13-inch MacBook Airs"
+names = ["macbook air", "macbook airs", "macbook"]
+default = "mass"
+domain = "technology"
+source = "Apple, MacBook Air 13-inch (M2) Technical Specifications: 30.41 by 21.5 by 1.13 cm, 1.24 kg"
+[entity.props]
+length = "30.41 cm"
+width = "21.5 cm"
+thickness = "1.13 cm"
+mass = "1.24 kg"
+
+# ─── People ──────────────────────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "person"
+plural = "people"
+names = ["person", "people", "human", "humans", "adult", "adults"]
+default = "mass"
+scale = ["mass"]
+domain = "human"
+source = "Walpole et al. (2012), The weight of nations, BMC Public Health 12:439: average adult body mass worldwide, 62 kg"
+[entity.props]
+mass = "62 kg"
+
+[[entity]]
+kind = "item"
+display = "human lifetime"
+plural = "human lifetimes"
+names = ["human lifetime", "human lifetimes", "human lifespan"]
+default = "lifespan"
+scale = ["lifespan"]
+domain = "human"
+source = "WHO Global Health Estimates: global life expectancy at birth, 71.4 years (2021)"
+[entity.props]
+lifespan = "71.4 yr"
+
+# ─── Animals ─────────────────────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "blue whale"
+plural = "blue whales"
+names = ["blue whale", "blue whales"]
+default = "mass"
+scale = ["mass", "length"]
+domain = "animal"
+source = "NOAA Fisheries, Blue Whale species page: up to 110 feet long and 330,000 pounds (the upper figures)"
+[entity.props]
+length = "110 ft"
+mass = "330000 lb"
+
+[[entity]]
+kind = "item"
+display = "cheetah"
+plural = "cheetahs"
+names = ["cheetah", "cheetahs"]
+default = "speed"
+domain = "animal"
+source = "Smithsonian's National Zoo, Cheetah: top speed averages between 60 and 70 miles per hour; midpoint used"
+[entity.props]
+speed = "65 mph"
+
+# ─── Buildings and structures ────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "Eiffel Tower"
+plural = "Eiffel Towers"
+names = ["eiffel tower", "eiffel towers"]
+default = "height"
+scale = ["height", "mass"]
+domain = "building"
+source = "Height: Wikipedia, Eiffel Tower (330 m since 2022, citing CTBUH). Mass: toureiffel.paris, Key figures (total weight 10,100 tons)"
+[entity.props]
+height = "330 m"
+mass = "10100 t"
+
+[[entity]]
+kind = "item"
+display = "Empire State Building"
+plural = "Empire State Buildings"
+names = ["empire state building", "empire state buildings"]
+default = "height"
+scale = ["height"]
+domain = "building"
+source = "Empire State Building, Facts & Figures (esbnyc.com): 1,454 ft to the tip, 1,250 ft to the 102nd-floor roof"
+[entity.props]
+height = "1454 ft"
+
+[[entity]]
+kind = "item"
+display = "Burj Khalifa"
+plural = "Burj Khalifas"
+names = ["burj khalifa"]
+default = "height"
+scale = ["height"]
+domain = "building"
+source = "Wikipedia, Burj Khalifa (architectural height 828 m, citing CTBUH)"
+[entity.props]
+height = "828 m"
+
+[[entity]]
+kind = "item"
+display = "Statue of Liberty"
+plural = "Statues of Liberty"
+names = ["statue of liberty", "statues of liberty", "lady liberty"]
+default = "height"
+scale = ["height"]
+domain = "building"
+source = "Wikipedia, Statue of Liberty (ground level to tip of torch: 305 ft 1 in, 93 m)"
+[entity.props]
+height = "93 m"
+
+[[entity]]
+kind = "item"
+display = "Great Pyramid of Giza"
+plural = "Great Pyramids"
+names = ["great pyramid", "great pyramid of giza", "pyramid of giza", "great pyramids"]
+default = "height"
+scale = ["volume"]
+domain = "building"
+source = "Wikipedia, Great Pyramid of Giza: current height 138.5 m (146.6 m originally), base 230.33 m, volume about 2.6 million m³"
+[entity.props]
+height = "138.5 m"
+length = "230.33 m"
+volume = "2.6e6 m^3"
+
+[[entity]]
+kind = "item"
+display = "CN Tower"
+plural = "CN Towers"
+names = ["cn tower"]
+default = "height"
+domain = "building"
+source = "Wikipedia, CN Tower (553.3 m)"
+[entity.props]
+height = "553.3 m"
+
+[[entity]]
+kind = "item"
+display = "Tokyo Skytree"
+plural = "Tokyo Skytrees"
+names = ["tokyo skytree", "skytree"]
+default = "height"
+domain = "building"
+source = "Wikipedia, Tokyo Skytree (634.0 m)"
+[entity.props]
+height = "634.0 m"
+
+[[entity]]
+kind = "item"
+display = "Space Needle"
+plural = "Space Needles"
+names = ["space needle"]
+default = "height"
+domain = "building"
+source = "Wikipedia, Space Needle (605 ft)"
+[entity.props]
+height = "605 ft"
+
+[[entity]]
+kind = "item"
+display = "Golden Gate Bridge"
+plural = "Golden Gate Bridges"
+names = ["golden gate bridge", "golden gate"]
+default = "length"
+scale = ["length"]
+domain = "building"
+source = "Golden Gate Bridge District, Design & Construction Stats: 1.7 miles (8,981 ft) with approaches; main span 4,200 ft; towers 746 ft above water"
+[entity.props]
+length = "8981 ft"
+height = "746 ft"
+
+[[entity]]
+kind = "item"
+display = "Great Wall of China"
+plural = "Great Walls"
+names = ["great wall", "great wall of china"]
+default = "length"
+scale = ["length"]
+domain = "building"
+source = "Wikipedia, Great Wall of China (21,196.18 km, the 2012 State Administration of Cultural Heritage survey)"
+[entity.props]
+length = "21196.18 km"
+
+[[entity]]
+kind = "item"
+display = "Hoover Dam"
+plural = "Hoover Dams"
+names = ["hoover dam"]
+default = "height"
+domain = "building"
+source = "US Bureau of Reclamation, Hoover Dam FAQs: 726.4 feet from foundation rock to the crest roadway"
+[entity.props]
+height = "726.4 ft"
+
+# ─── Vehicles and machines ───────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "Boeing 747-400"
+plural = "Boeing 747s"
+names = ["boeing 747", "boeing 747s", "jumbo jet", "jumbo jets"]
+default = "mass"
+scale = ["mass"]
+domain = "vehicle"
+source = "Wikipedia, Boeing 747-400 (maximum takeoff weight 875,000 lb; length 231 ft 10 in; wingspan 211 ft 5 in)"
+[entity.props]
+mass = "875000 lb"
+length = "70.6 m"
+wingspan = "64.4 m"
+
+[[entity]]
+kind = "item"
+display = "Airbus A380"
+plural = "Airbus A380s"
+names = ["airbus a380", "a380", "a380s"]
+default = "length"
+domain = "vehicle"
+source = "Wikipedia, Airbus A380 (length 72.72 m, wingspan 79.75 m)"
+[entity.props]
+length = "72.72 m"
+wingspan = "79.75 m"
+
+[[entity]]
+kind = "item"
+display = "Boeing 737-800"
+plural = "Boeing 737s"
+names = ["boeing 737", "boeing 737s"]
+default = "mass"
+domain = "vehicle"
+source = "Wikipedia, Boeing 737 Next Generation (737-800 maximum takeoff weight 174,200 lb)"
+[entity.props]
+mass = "174200 lb"
+
+[[entity]]
+kind = "item"
+display = "Titanic"
+plural = "Titanics"
+names = ["titanic", "rms titanic"]
+default = "mass"
+scale = ["mass", "length"]
+domain = "vehicle"
+source = "Wikipedia, Titanic (displacement 52,310 tonnes; length 882 ft 9 in)"
+[entity.props]
+mass = "52310 t"
+length = "882.75 ft"
+
+[[entity]]
+kind = "item"
+display = "International Space Station"
+plural = "space stations"
+names = ["international space station", "space station", "iss"]
+default = "mass"
+scale = ["mass"]
+domain = "vehicle"
+source = "NASA, Space Station Facts and Figures: mass 925,335 pounds; solar array wingspan 356 feet"
+[entity.props]
+mass = "925335 lb"
+wingspan = "356 ft"
+
+[[entity]]
+kind = "item"
+display = "semi truck"
+plural = "semi trucks"
+names = ["semi truck", "semi trucks", "semi-truck", "semi-trucks", "semi trailer truck", "big rig"]
+default = "mass"
+scale = ["mass"]
+domain = "vehicle"
+source = "23 CFR 658.17: 80,000 lb maximum gross vehicle weight on the US Interstate system"
+[entity.props]
+mass = "80000 lb"
+
+[[entity]]
+kind = "item"
+display = "TGV speed record"
+plural = "TGV speed records"
+names = ["tgv", "tgv record", "tgv speed record"]
+default = "speed"
+domain = "vehicle"
+source = "Wikipedia, TGV world speed record (574.8 km/h, 3 April 2007)"
+[entity.props]
+speed = "574.8 km/h"
+
+# ─── Places and nature ───────────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "Mount Everest"
+plural = "Mount Everests"
+names = ["mount everest", "everest", "mt everest"]
+default = "height"
+scale = ["height"]
+domain = "nature"
+source = "Wikipedia, Mount Everest (8,848.86 m, the 2020 China–Nepal survey)"
+[entity.props]
+height = "8848.86 m"
+
+[[entity]]
+kind = "item"
+display = "K2"
+plural = "K2s"
+names = ["k2"]
+default = "height"
+domain = "nature"
+source = "Wikipedia, K2 (8,611 m)"
+[entity.props]
+height = "8611 m"
+
+[[entity]]
+kind = "item"
+display = "Kilimanjaro"
+plural = "Kilimanjaros"
+names = ["kilimanjaro", "mount kilimanjaro"]
+default = "height"
+domain = "nature"
+source = "Wikipedia, Mount Kilimanjaro (5,895 m)"
+[entity.props]
+height = "5895 m"
+
+[[entity]]
+kind = "item"
+display = "Denali"
+plural = "Denalis"
+names = ["denali", "mount mckinley"]
+default = "height"
+domain = "nature"
+source = "Wikipedia, Denali (20,310 ft)"
+[entity.props]
+height = "20310 ft"
+
+[[entity]]
+kind = "item"
+display = "Amazon River"
+plural = "Amazon Rivers"
+names = ["amazon river", "amazon"]
+default = "length"
+domain = "nature"
+source = "Wikipedia, Amazon River (usually given as at least 6,400 km, after Britannica)"
+[entity.props]
+length = "6400 km"
+
+[[entity]]
+kind = "item"
+display = "Lake Superior"
+plural = "Lake Superiors"
+names = ["lake superior"]
+default = "volume"
+scale = ["volume", "area"]
+domain = "nature"
+source = "US EPA, Lake Superior: water area 31,700 sq mi, volume 2,900 cubic miles, maximum depth 1,332 ft"
+[entity.props]
+area = "31700 mi^2"
+volume = "2900 mi^3"
+depth = "1332 ft"
+
+[[entity]]
+kind = "item"
+display = "Central Park"
+plural = "Central Parks"
+names = ["central park"]
+default = "area"
+scale = ["area"]
+domain = "nature"
+source = "Central Park Conservancy: 843 acres"
+[entity.props]
+area = "843 acre"
+
+[[entity]]
+kind = "item"
+display = "General Sherman"
+plural = "General Shermans"
+names = ["general sherman", "general sherman tree"]
+default = "height"
+domain = "nature"
+source = "US National Park Service, The General Sherman Tree: 274.9 ft (83.8 m) above base, trunk volume 1,486.6 m³"
+[entity.props]
+height = "83.8 m"
+volume = "1486.6 m^3"
+
+[[entity]]
+kind = "item"
+display = "Hyperion"
+plural = "Hyperions"
+names = ["hyperion", "hyperion tree"]
+default = "height"
+domain = "nature"
+source = "Wikipedia, Hyperion (tree): 116.07 m, measured in 2019"
+[entity.props]
+height = "116.07 m"
+
+[[entity]]
+kind = "item"
+display = "Vatican City"
+plural = "Vatican Cities"
+names = ["vatican city", "vatican"]
+default = "area"
+domain = "place"
+source = "CIA World Factbook, Holy See (Vatican City): 0.44 sq km"
+[entity.props]
+area = "0.44 km^2"
+
+[[entity]]
+kind = "item"
+display = "Texas"
+plural = "Texases"
+names = ["texas"]
+default = "area"
+scale = ["area"]
+domain = "place"
+source = "US Census Bureau, State Area Measurements: Texas total area 268,596 sq mi"
+[entity.props]
+area = "268596 mi^2"
+
+# ─── Energy and time ─────────────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "Tsar Bomba"
+plural = "Tsar Bombas"
+names = ["tsar bomba"]
+default = "energy"
+domain = "energy"
+source = "Wikipedia, Tsar Bomba (yield 50 megatons of TNT); 1 ton of TNT = 4.184 GJ by convention (SP811 B.8)"
+[entity.props]
+energy = "2.092e17 J"
+
+[[entity]]
+kind = "item"
+display = "the universe"
+plural = "universes"
+names = ["universe"]
+default = "age"
+domain = "time"
+source = "Planck Collaboration (2020), Planck 2018 results VI, A&A 641 A6: age 13.787 ± 0.020 Gyr"
+[entity.props]
+age = "13.787 Gyr"
+
+[[entity]]
+kind = "item"
+display = "speed of sound"
+plural = "speeds of sound"
+names = ["speed of sound", "sound"]
+default = "speed"
+domain = "physics"
+source = "U.S. Standard Atmosphere, 1976: speed of sound at sea level (15 °C), 340.294 m/s"
+[entity.props]
+speed = "340.294 m/s"

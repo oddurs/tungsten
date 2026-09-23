@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w age of universe / age of earth
+
+  ◆ interpretation
+  │ age of the universe / age of Earth
+
+  ◆ result
+  │ 3.037
+
+  ──────────────────────────────── W74

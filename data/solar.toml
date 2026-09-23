@@ -87,10 +87,12 @@ source = "NASA NSSDCA Earth Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet/
 "day length" = "24.0000 h"
 "axial tilt" = "23.44 deg"
 "mean temperature" = "15 °C"
+"age" = "4.54 Gyr"
 [entity.facts]
 "orbits" = "the Sun"
 [entity.sources]
 "mean temperature" = "NASA NSSDCA Planetary Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet), updated 18 March 2025"
+"age" = "USGS, Age of the Earth (pubs.usgs.gov/gip/geotime/age.html): 4.54 Ga"
 
 [[entity]]
 kind = "planet"

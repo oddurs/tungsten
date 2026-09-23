@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 2 olympic pools in L
+
+  ◆ interpretation
+  │ 2 × Olympic pool(2500 m³ volume)  →  L
+
+  ◆ result
+  │ 5 000 000 L
+
+  ◆ other units
+  │ 5000 m³  ·  1.321×10⁶ gal
+
+  ──────────────────────────────────── W74

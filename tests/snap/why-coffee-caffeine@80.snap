@@ -1,22 +1,20 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w --why 3 coffees in mg of caffeine
+$ w --why coffee.caffeine
 
   ◆ interpretation
-  │ 3 × coffee(94.8 mg caffeine)  →  mg of caffeine
+  │ caffeine of coffee
 
   ◆ result
-  │ 284.4 mg
+  │ 94.8 mg
 
   ◆ other units
-  │ 0.2844 g  ·  0.01003 oz  ·  2.844×10⁻⁴ kg
+  │ 0.0948 g  ·  0.003344 oz  ·  9.48×10⁻⁵ kg
 
   ◆ sources
   │ coffee · caffeine  USDA FoodData Central, SR Legacy, FDC 171890 'Beverages,
   │   coffee, brewed, prepared with tap water': portion 'cup (8 fl oz)' = 237 g;
   │   nutrients scaled from per-100 g values
-  │ mg (g)             BIPM SI Brochure (9th ed., 2019), §2.3.1, Table 2
-  │   (kilogram is the base unit; prefixes attach to gram, §3)
 
   ────────────────────────────────────────────────────────────────────────── W74

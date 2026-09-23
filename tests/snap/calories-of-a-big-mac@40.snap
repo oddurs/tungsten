@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w calories of a big mac
+
+  ◆ interpretation
+  │ food energy of Big Mac
+
+  ◆ result
+  │ 563 kcal
+
+  ◆ other units
+  │ 2.356 MJ
+  │ 654.3 Wh
+  │ 563 000 cal
+  │ 2.356×10⁶ J
+
+  ──────────────────── W74
