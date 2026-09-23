@@ -1,0 +1,3 @@
+# Cards and footnotes keep their pods in the compact view.
+mercury
+74

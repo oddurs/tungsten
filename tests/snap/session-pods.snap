@@ -1,0 +1,36 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› 5 mi in km
+  8.04672 km
+
+W› :pods on
+  pods on
+
+W› 5 mi in km
+  ◆ interpretation
+  │ 5 mi  →  km
+
+  ◆ result
+  │ 8.04672 km
+
+  ◆ other units
+  │ 8047 m  ·  5 mi
+
+  ◆ for scale
+  │ ≈ 2.9 Golden Gate Bridges
+  │ ≈ 30 Titanics (length)
+
+W› :pods off
+  pods off
+
+W› 3 m + 2 s
+  ◆ can't add these
+  │ 3 m + 2 s
+  │ ─┬─   ─┬─
+  │  │     └ time
+  │  └ length
+  │ hint: did you mean 3 m / 2 s  (= 1.5 m/s)?
+
+W› :pods
+  pods on

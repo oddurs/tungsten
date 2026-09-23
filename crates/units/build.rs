@@ -157,15 +157,15 @@ fn main() {
     let mut symbols: BTreeMap<String, (usize, u8)> = BTreeMap::new();
     let mut names: BTreeMap<String, (usize, u8)> = BTreeMap::new();
     let insert = |map: &mut BTreeMap<String, (usize, u8)>, key: String, v: (usize, u8), what| {
-        if let Some(prev) = map.get(&key) {
-            if *prev != v {
-                let who = |(u, _): (usize, u8)| file.unit[u].names[0].clone();
-                fail(format!(
-                    "{what} {key:?} names both {:?} and {:?}",
-                    who(*prev),
-                    who(v)
-                ));
-            }
+        if let Some(prev) = map.get(&key)
+            && *prev != v
+        {
+            let who = |(u, _): (usize, u8)| file.unit[u].names[0].clone();
+            fail(format!(
+                "{what} {key:?} names both {:?} and {:?}",
+                who(*prev),
+                who(v)
+            ));
         }
         map.insert(key, v);
     };
@@ -265,13 +265,13 @@ fn main() {
     // A name must not shadow a symbol of a different unit: `min` is a symbol,
     // and must not also be some unit's name.
     for (k, v) in &names {
-        if let Some(s) = symbols.get(k) {
-            if s != v {
-                fail(format!(
-                    "{k:?} is a symbol of {:?} and a name of {:?}",
-                    file.unit[s.0].names[0], file.unit[v.0].names[0]
-                ));
-            }
+        if let Some(s) = symbols.get(k)
+            && s != v
+        {
+            fail(format!(
+                "{k:?} is a symbol of {:?} and a name of {:?}",
+                file.unit[s.0].names[0], file.unit[v.0].names[0]
+            ));
         }
     }
 

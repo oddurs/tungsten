@@ -19,6 +19,7 @@ const HELP: &str = "\
 
 Usage: tungsten [OPTIONS] <QUERY>...
        echo \"3 ft in cm\" | tungsten -q
+       tungsten                      (interactive; :help inside)
 
 Examples:
   tungsten 60 mph x 2h 15min in km
@@ -152,11 +153,14 @@ fn main() -> ExitCode {
             .filter(|l| !l.trim().is_empty() && !l.trim_start().starts_with('#'))
             .collect()
     } else {
-        // Interactive mode arrives in v0.3 (cairn item 0040).
-        let mut cmd = <Args as clap::CommandFactory>::command();
-        let _ = cmd.print_help();
-        println!();
-        return ExitCode::SUCCESS;
+        let width = move || args.width.unwrap_or_else(terminal_width);
+        return match tungsten::editor::run(settings, width) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(e) => {
+                eprintln!("tungsten: {e}");
+                ExitCode::from(1)
+            }
+        };
     };
 
     // Lines read from stdin share one session: `rent = …` then `rent * 12`.

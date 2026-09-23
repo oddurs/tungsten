@@ -208,25 +208,104 @@ fn body(b: &Body, o: &Options, avail: usize) -> Vec<Spans> {
 
 pub fn render(r: &Report, o: &Options) -> String {
     let t = FILAMENT;
-    let (glyph, gutter, rule, dot) = if o.fancy {
-        ("◆", "│", "─", "·")
-    } else {
-        ("*", "|", "-", "-")
-    };
-    let avail = o.width.saturating_sub(4).max(20);
+    let (rule, dot) = if o.fancy { ("─", "·") } else { ("-", "-") };
+    let (mut out, content) = pods(&r.pods, o);
+    out.insert(0, '\n');
 
-    let rendered: Vec<(&Pod, Vec<Spans>)> = r
+    if let Some(f) = &r.footnote {
+        out.push_str("  ");
+        t.paint(Style::Dim, f, o.color, &mut out);
+        out.push_str("\n\n");
+    }
+
+    let label = match o.elapsed {
+        Some(d) => format!("W74 {dot} {}", elapsed(d)),
+        None => "W74".into(),
+    };
+    let rule_len = content
+        .clamp(24, o.width.saturating_sub(2).max(24))
+        .saturating_sub(label.width() + 1);
+    out.push_str("  ");
+    t.paint(Style::Dim, &rule.repeat(rule_len), o.color, &mut out);
+    out.push(' ');
+    t.paint(Style::Dim, &label, o.color, &mut out);
+    out.push_str("\n\n");
+    out
+}
+
+/// Pods alone, with no footer: the REPL's `:pods on`, and meta-commands.
+pub fn render_pods(r: &Report, o: &Options) -> String {
+    let (mut out, _) = pods(&r.pods, o);
+    if let Some(f) = &r.footnote {
+        out.push_str("  ");
+        FILAMENT.paint(Style::Dim, f, o.color, &mut out);
+        out.push_str("\n\n");
+    }
+    out
+}
+
+/// The REPL's default: just the answer, indented, then any footnote.
+/// Errors, cards and anything without a result pod render as pods.
+///
+/// ```text
+/// W› 5 mi in km
+///   8.047 km
+/// ```
+pub fn render_compact(r: &Report, o: &Options) -> String {
+    let answer = r
         .pods
         .iter()
-        .map(|p| (p, body(&p.body, o, avail)))
-        .collect();
+        .find(|p| p.title == "result" || p.title == "defined");
+    let Some(pod) = answer.filter(|_| r.ok) else {
+        return render_pods(r, o);
+    };
+    let t = FILAMENT;
+    let avail = o.width.saturating_sub(4).max(20);
+    let mut out = String::new();
+    // An assumption changes what the answer means; it stays, quietly.
+    for p in r.pods.iter().filter(|p| p.title == "assuming") {
+        for l in body(&p.body, o, avail) {
+            out.push_str("  ");
+            for (text, _) in &l {
+                t.paint(Style::Dim, text, o.color, &mut out);
+            }
+            out.push('\n');
+        }
+    }
+    for l in body(&pod.body, o, avail) {
+        out.push_str("  ");
+        for (text, style) in &l {
+            t.paint(*style, text, o.color, &mut out);
+        }
+        while out.ends_with(' ') {
+            out.pop();
+        }
+        out.push('\n');
+    }
+    if let Some(f) = &r.footnote {
+        out.push_str("  ");
+        t.paint(Style::Dim, f, o.color, &mut out);
+        out.push('\n');
+    }
+    out.push('\n');
+    out
+}
+
+/// The pods, each followed by a blank line, and the widest line's width.
+fn pods(pods: &[Pod], o: &Options) -> (String, usize) {
+    let t = FILAMENT;
+    let (glyph, gutter) = if o.fancy { ("◆", "│") } else { ("*", "|") };
+    let avail = o.width.saturating_sub(4).max(20);
+
+    let rendered: Vec<(&Pod, Vec<Spans>)> =
+        pods.iter().map(|p| (p, body(&p.body, o, avail))).collect();
     let content = rendered
         .iter()
         .flat_map(|(p, ls)| ls.iter().map(|l| width(l) + 2).chain([p.title.width() + 2]))
         .max()
         .unwrap_or(0);
 
-    let mut out = String::from("\n");
+    let mut out = String::new();
     for (p, lines) in &rendered {
         let title_style = if p.error {
             Style::ErrorTitle
@@ -253,26 +332,7 @@ pub fn render(r: &Report, o: &Options) -> String {
         }
         out.push('\n');
     }
-
-    if let Some(f) = &r.footnote {
-        out.push_str("  ");
-        t.paint(Style::Dim, f, o.color, &mut out);
-        out.push_str("\n\n");
-    }
-
-    let label = match o.elapsed {
-        Some(d) => format!("W74 {dot} {}", elapsed(d)),
-        None => "W74".into(),
-    };
-    let rule_len = content
-        .clamp(24, o.width.saturating_sub(2).max(24))
-        .saturating_sub(label.width() + 1);
-    out.push_str("  ");
-    t.paint(Style::Dim, &rule.repeat(rule_len), o.color, &mut out);
-    out.push(' ');
-    t.paint(Style::Dim, &label, o.color, &mut out);
-    out.push_str("\n\n");
-    out
+    (out, content)
 }
 
 fn elapsed(d: Duration) -> String {

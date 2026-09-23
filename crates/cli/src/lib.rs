@@ -1,6 +1,9 @@
 //! The `tungsten` command. `main.rs` handles arguments and I/O; this is the
 //! part the snapshot tests drive directly, so tests see exactly what users see.
 
+pub mod editor;
+pub mod repl;
+
 use std::time::Instant;
 use tungsten_core::Session;
 use tungsten_render::Options;
@@ -42,7 +45,7 @@ pub struct Rendered {
     pub ok: bool,
 }
 
-fn options(s: &Settings, elapsed: Option<std::time::Duration>) -> Options {
+pub(crate) fn options(s: &Settings, elapsed: Option<std::time::Duration>) -> Options {
     Options {
         width: s.width,
         color: s.color,

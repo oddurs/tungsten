@@ -44,8 +44,8 @@ fn slug(q: &str) -> String {
 }
 
 /// Corpus lines may start with flags: `--why earth.mass`, `--as element W`.
-fn snapshot(line: &str, width: usize) -> String {
-    let mut s = Settings {
+fn settings(width: usize) -> Settings {
+    Settings {
         width,
         color: false,
         fancy: true,
@@ -53,7 +53,11 @@ fn snapshot(line: &str, width: usize) -> String {
         timing: false,
         prefer: None,
         why: false,
-    };
+    }
+}
+
+fn snapshot(line: &str, width: usize) -> String {
+    let mut s = settings(width);
     let mut q = line;
     loop {
         if let Some(rest) = q.strip_prefix("--why ") {
@@ -102,7 +106,9 @@ fn corpus() {
 }
 
 /// README blocks between `<!-- snap: SLUG -->` and `<!-- /snap -->` must equal
-/// the 80-column snapshot of that query. `UPDATE_README=1` rewrites them.
+/// the 80-column snapshot of that query, and blocks between
+/// `<!-- session: NAME -->` and `<!-- /session -->` the transcript of
+/// tests/sessions/NAME.txt. `UPDATE_README=1` rewrites them.
 #[test]
 fn readme_matches_snapshots() {
     let path = root().join("README.md");
@@ -110,20 +116,36 @@ fn readme_matches_snapshots() {
         return;
     };
     let by_slug: HashMap<String, String> = queries().iter().map(|q| (slug(q), q.clone())).collect();
+    let session = |name: &str| {
+        let path = root().join(format!("tests/sessions/{name}.txt"));
+        let script = std::fs::read_to_string(&path)
+            .unwrap_or_else(|_| panic!("README names unknown session {name}"));
+        tungsten::repl::transcript(&script, settings(80))
+    };
     let mut out = String::new();
     let mut rest = readme.as_str();
-    while let Some(start) = rest.find("<!-- snap: ") {
+    loop {
+        let next = ["<!-- snap: ", "<!-- session: "]
+            .into_iter()
+            .filter_map(|m| rest.find(m).map(|i| (i, m)))
+            .min();
+        let Some((start, marker)) = next else { break };
         let open_end = start + rest[start..].find("-->").expect("unclosed marker") + 3;
-        let name = rest[start + 11..open_end - 3].trim();
+        let name = rest[start + marker.len()..open_end - 3].trim();
+        let (closer, block) = if marker == "<!-- snap: " {
+            let q = by_slug
+                .get(name)
+                .unwrap_or_else(|| panic!("README names unknown query {name}"));
+            ("<!-- /snap -->", snapshot(q, 80))
+        } else {
+            ("<!-- /session -->", session(name))
+        };
         let close = open_end
             + rest[open_end..]
-                .find("<!-- /snap -->")
-                .expect("missing /snap");
-        let q = by_slug
-            .get(name)
-            .unwrap_or_else(|| panic!("README names unknown query {name}"));
+                .find(closer)
+                .expect("missing closing marker");
         out.push_str(&rest[..open_end]);
-        out.push_str(&format!("\n```text\n{}\n```\n", snapshot(q, 80)));
+        out.push_str(&format!("\n```text\n{block}\n```\n"));
         rest = &rest[close..];
     }
     out.push_str(rest);

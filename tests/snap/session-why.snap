@@ -1,0 +1,22 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› :why
+  nothing calculated yet
+
+W› earth's mass in kg
+  5.9722×10²⁴ kg
+
+W› :why
+  ◆ sources
+  │ Earth · mass  NASA NSSDCA Earth Fact Sheet
+  │   (nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html), updated 15
+  │   November 2024
+  │ kg (g)        BIPM SI Brochure (9th ed., 2019), §2.3.1, Table 2 (kilogram is
+  │   the base unit; prefixes attach to gram, §3)
+
+W› 2 + 2
+  4
+
+W› :why
+  2 + 2 used no units or data

@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› :help
+  ◆ commands
+  │ :vars         variables and functions defined so far
+  │ :clear        forget them all
+  │ :pods on|off  every pod, or just the answer
+  │ :sig N        significant figures (:sig alone resets to 4)
+  │ :why          where the last answer's units and values came from
+  │ :help         this list
+  │ :quit         leave (or Ctrl-D)
+  │ Tab completes; Ctrl-C clears the line; history is kept between sessions
+
+W› :frobnicate
+  ◆ unknown command
+  │ :frobnicate
+  │ not a command; try :help

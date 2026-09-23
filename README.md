@@ -98,6 +98,30 @@ w "f(x) = x^2 - 3x; f(5)"     # 10
 printf 'r = 3 cm\npi r^2 in mm^2\n' | w -q
 ```
 
+### Interactive
+
+`w` on its own opens a REPL: the answer alone, highlighted as you type, with
+Tab completion (`earth's <Tab>` lists Earth's properties) and history kept in
+`~/.local/share/tungsten/history`.
+
+<!-- session: readme -->
+```text
+W› rent = 2400 USD/month
+  2400 USD/mo
+
+W› it * 12 month
+  28 800 USD
+
+W› :vars
+  ◆ variables
+  │ rent = 2400 USD/mo
+  │ it   = 28 800 USD
+```
+<!-- /session -->
+
+`:vars` `:clear` `:pods on|off` `:sig N` `:why` `:help` `:quit`. Ctrl-C clears
+the line, Ctrl-D leaves.
+
 Shells treat `*` `?` `'` `"` `(` `)` specially. Quote the query, or write `x`
 for `*`, `per` for `/`, and `ft`/`in` for `'` and `"`.
 

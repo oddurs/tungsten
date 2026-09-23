@@ -1,0 +1,8 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› 1 + 1
+  2
+
+W› :quit
+(exit)
