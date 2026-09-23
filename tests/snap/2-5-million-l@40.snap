@@ -1,20 +1,19 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 3 bananas
+$ w 2.5 million L
 
   ◆ interpretation
-  │ 3 × banana(118 g mass)
+  │ 2 500 000 L
 
   ◆ result
-  │ 354 g
+  │ 2 500 000 L
 
   ◆ other units
-  │ 0.354 kg
-  │ 12.49 oz
+  │ 2500 m³
+  │ 660 430 gal
 
   ◆ for scale
-  │ ≈ 1.9 apples
-  │ ≈ 140 US pennies
+  │ ≈ 1 Olympic pool
 
   ──────────────────── W74

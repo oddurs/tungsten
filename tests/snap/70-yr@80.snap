@@ -1,21 +1,18 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 60 mph * 2h 15min
+$ w 70 yr
 
   ◆ interpretation
-  │ 60 mph × (2 h + 15 min)
+  │ 70 yr
 
   ◆ result
-  │ 135 mi
+  │ 70 yr
 
   ◆ other units
-  │ 217.3 km
-  │ 237 600 yd
-  │ 217 261 m
+  │ 3652 wk  ·  2.209×10⁹ s
 
   ◆ for scale
-  │ ≈ 5.1 marathons
-  │ ≈ 25 Mount Everests
+  │ ≈ 1 human lifetime
 
   ───────────────────── W74

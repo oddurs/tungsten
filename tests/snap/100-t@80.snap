@@ -1,21 +1,19 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 60 mph * 2h 15min
+$ w 100 t
 
   ◆ interpretation
-  │ 60 mph × (2 h + 15 min)
+  │ 100 t
 
   ◆ result
-  │ 135 mi
+  │ 100 t
 
   ◆ other units
-  │ 217.3 km
-  │ 237 600 yd
-  │ 217 261 m
+  │ 100 000 kg  ·  110.2 tn
 
   ◆ for scale
-  │ ≈ 5.1 marathons
-  │ ≈ 25 Mount Everests
+  │ ≈ 2.8 semi trucks
+  │ ≈ 0.7 × blue whale
 
   ───────────────────── W74

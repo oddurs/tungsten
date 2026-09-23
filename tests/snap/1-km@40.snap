@@ -1,20 +1,20 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 1/2 km in m
+$ w 1 km
 
   ◆ interpretation
-  │ 1/2 km  →  m
+  │ 1 km
 
   ◆ result
-  │ 500 m
+  │ 1 km
 
   ◆ other units
-  │ 0.5 km
-  │ 546.8 yd
+  │ 1000 m
+  │ 1094 yd
 
   ◆ for scale
-  │ ≈ 1.5 Eiffel Towers
-  │ ≈ 15 blue whales (length)
+  │ ≈ 3 Eiffel Towers
+  │ ≈ 30 blue whales (length)
 
   ─────────────────────── W74

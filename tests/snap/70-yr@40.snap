@@ -1,20 +1,19 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w 3 bananas
+$ w 70 yr
 
   ◆ interpretation
-  │ 3 × banana(118 g mass)
+  │ 70 yr
 
   ◆ result
-  │ 354 g
+  │ 70 yr
 
   ◆ other units
-  │ 0.354 kg
-  │ 12.49 oz
+  │ 3652 wk
+  │ 2.209×10⁹ s
 
   ◆ for scale
-  │ ≈ 1.9 apples
-  │ ≈ 140 US pennies
+  │ ≈ 1 human lifetime
 
   ──────────────────── W74

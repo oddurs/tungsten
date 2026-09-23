@@ -110,3 +110,11 @@ eiffel tower
 calories of a big mac
 age of universe / age of earth
 boeing 747
+
+# ─── For scale (0035) ────────────────────────────────────────────────────────
+2.5 million L
+100 t
+1 km
+70 yr
+mass of jupiter
+radius of mars
