@@ -12,6 +12,12 @@ pub struct Settings {
     pub sig: Option<u32>,
     /// Show evaluation time in the footer. Off in tests.
     pub timing: bool,
+    /// `--as element`: what an ambiguous name should mean.
+    pub prefer: Option<tungsten_core::Kind>,
+}
+
+fn evaluate(query: &str, s: &Settings) -> Result<tungsten_core::Outcome, tungsten_core::Error> {
+    tungsten_core::evaluate_with(query, tungsten_core::Options { prefer: s.prefer })
 }
 
 #[derive(Debug)]
@@ -36,7 +42,7 @@ fn options(s: &Settings, elapsed: Option<std::time::Duration>) -> Options {
 /// Evaluates one query and renders its pods.
 pub fn render_query(query: &str, s: &Settings) -> Rendered {
     let start = Instant::now();
-    let result = tungsten_core::evaluate(query);
+    let result = evaluate(query, s);
     let report = tungsten_pods::build(query, &result);
     let elapsed = s.timing.then(|| start.elapsed());
     let out = tungsten_render::render(&report, &options(s, elapsed));
@@ -49,7 +55,7 @@ pub fn render_query(query: &str, s: &Settings) -> Rendered {
 
 /// Evaluates one query and prints only its value: `8.04672`.
 pub fn render_quiet(query: &str, s: &Settings) -> Rendered {
-    let result = tungsten_core::evaluate(query);
+    let result = evaluate(query, s);
     let report = tungsten_pods::build(query, &result);
     match tungsten_render::render_quiet(&report, &options(s, None)) {
         Some(v) => Rendered {

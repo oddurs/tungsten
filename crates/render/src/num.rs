@@ -103,9 +103,17 @@ pub fn quiet(n: Number, sig: Option<u32>) -> String {
     }
     match n {
         Number::Exact { value, .. } if value.is_integer() => value.num().to_string(),
-        Number::Exact { value, .. } => exact_decimal(value)
-            .filter(|s| s.len() <= 32)
-            .unwrap_or_else(|| format!("{}", value.to_f64())),
+        Number::Exact { value, .. } => match exact_decimal(value) {
+            // Tiny exact values in e-notation, every digit kept: 1.602176634e-19.
+            Some(d) if value.abs() < Rational::new(1, 10_000).unwrap_or(Rational::ZERO) => {
+                rounded(value.to_f64(), significant(&d).max(1) as u32, false)
+            }
+            Some(d) if d.len() <= 32 => d,
+            _ => format!("{}", value.to_f64()),
+        },
+        Number::Approx(x) if x != 0.0 && (x.abs() < 1e-4 || x.abs() >= 1e21) => {
+            format!("{x:e}")
+        }
         Number::Approx(x) => format!("{x}"),
     }
 }
@@ -317,5 +325,10 @@ mod tests {
         assert_eq!(quiet(q("712800", true), None), "712800");
         assert_eq!(quiet(q("1/3", false), None), "0.3333333333333333");
         assert_eq!(quiet(q("25146/3125", true), Some(3)), "8.05");
+        assert_eq!(
+            quiet(q("0.0000000000000000001602176634", true), None),
+            "1.602176634e-19"
+        );
+        assert_eq!(quiet(Number::Approx(6.6743e-11), None), "6.6743e-11");
     }
 }

@@ -1,0 +1,26 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mercury
+
+  ◆ assuming
+  │ "mercury" is a planet  ·  use --as element for the element
+
+  ◆ Mercury · planet
+  │ mass               3.301×10²³ kg
+  │ radius             2439.7 km
+  │ equatorial radius  2440.5 km
+  │ density            5429 kg/m³
+  │ gravity            3.7 m/s²
+  │ escape velocity    4.3 km/s
+  │ distance from sun  0.3871 au
+  │ orbital period     87.969 d
+  │ orbital velocity   47.36 km/s
+  │ rotation period    1407.6 h
+  │ day length         4222.6 h
+  │ axial tilt         0.034°
+  │ mean temperature   167 °C
+  │ moons              0
+  │ orbits             the Sun
+
+  ──────────────────────────────────────────────────────── W74

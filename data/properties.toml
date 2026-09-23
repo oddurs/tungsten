@@ -25,31 +25,11 @@ names = ["atomic mass", "atomic weight", "standard atomic weight", "relative ato
 dim = "kg"
 show = "u"
 
-# ─── Bulk ────────────────────────────────────────────────────────────────────
+# ─── Mass and size ───────────────────────────────────────────────────────────
 
 [[property]]
 names = ["mass", "weight"]
 dim = "kg"
-
-[[property]]
-names = ["volume", "capacity"]
-dim = "m^3"
-
-[[property]]
-names = ["density"]
-dim = "kg/m^3"
-
-[[property]]
-names = ["melting point", "melting temperature", "freezing point"]
-dim = "K"
-show = "°C"
-
-[[property]]
-names = ["boiling point", "boiling temperature"]
-dim = "K"
-show = "°C"
-
-# ─── Size ────────────────────────────────────────────────────────────────────
 
 [[property]]
 names = ["radius", "mean radius"]
@@ -94,6 +74,26 @@ dim = "m"
 [[property]]
 names = ["area", "surface area"]
 dim = "m^2"
+
+# ─── Bulk ────────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["volume", "capacity"]
+dim = "m^3"
+
+[[property]]
+names = ["density"]
+dim = "kg/m^3"
+
+[[property]]
+names = ["melting point", "melting temperature", "freezing point"]
+dim = "K"
+show = "°C"
+
+[[property]]
+names = ["boiling point", "boiling temperature"]
+dim = "K"
+show = "°C"
 
 # ─── Motion and energy ───────────────────────────────────────────────────────
 

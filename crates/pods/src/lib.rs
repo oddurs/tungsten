@@ -8,7 +8,7 @@ mod card;
 mod errors;
 mod other_units;
 
-use tungsten_core::{Answer, Error, Outcome, Piece, interpret};
+use tungsten_core::{Answer, Error, Kind, Outcome, Piece, interpret};
 use tungsten_units::{Number, UnitExpr};
 
 pub use other_units::other_units;
@@ -88,7 +88,7 @@ pub struct Report {
 
 pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
     match result {
-        Ok(o) => success(o),
+        Ok(o) => success(input, o),
         Err(e) => {
             let (pod, line) = errors::pod(input, e);
             Report {
@@ -101,16 +101,69 @@ pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
     }
 }
 
-fn success(o: &Outcome) -> Report {
-    let mut pods = Vec::new();
+/// `a planet`, `an element`.
+fn with_article(kind: Kind) -> String {
+    let name = kind.name();
+    let article = if name.starts_with(['a', 'e', 'i', 'o', 'u']) {
+        "an"
+    } else {
+        "a"
+    };
+    format!("{article} {name}")
+}
+
+/// ```text
+/// ◆ assuming
+/// │ "mercury" is a planet  ·  use --as element for the element
+/// ```
+fn assuming(input: &str, o: &Outcome) -> Option<Pod> {
+    let lines: Vec<Line> = o
+        .assumptions
+        .iter()
+        .map(|a| {
+            let word = input.get(a.span.clone()).unwrap_or("").trim();
+            let others: Vec<String> = a
+                .others
+                .iter()
+                .map(|e| {
+                    format!(
+                        "use --as {} for the {}",
+                        e.kind().name().replace(' ', "-"),
+                        e.kind().name()
+                    )
+                })
+                .collect();
+            Line(vec![
+                Seg::Text(format!("\"{word}\" is {}", with_article(a.chosen.kind()))),
+                Seg::Dim(format!("  ·  {}", others.join(", "))),
+            ])
+        })
+        .collect();
+    (!lines.is_empty()).then(|| Pod {
+        title: "assuming".into(),
+        error: false,
+        body: Body::Lines(lines),
+    })
+}
+
+fn success(input: &str, o: &Outcome) -> Report {
+    let mut pods: Vec<Pod> = assuming(input, o).into_iter().collect();
 
     if let Answer::Card(e) = o.answer {
         pods.push(card::card(e));
+        // `-q G` prints G's value: a card with a default has one number.
+        let quiet = e
+            .default()
+            .and_then(|p| e.value(p))
+            .map(|v| Quiet::Value(v.num));
+        let error_line = quiet
+            .is_none()
+            .then(|| format!("{} is a thing, not a quantity", e.display()));
         return Report {
             pods,
             ok: true,
-            quiet: None,
-            error_line: None,
+            quiet,
+            error_line,
         };
     }
 
