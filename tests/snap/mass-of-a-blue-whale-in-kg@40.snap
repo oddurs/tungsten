@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass of a blue whale in kg
+
+  ◆ interpretation
+  │ mass of blue whale  →  kg
+
+  ◆ result
+  │ 149 685.4821 kg
+
+  ◆ other units
+  │ 149.7 t
+  │ 165 tn
+
+  ─────────────────────── W74

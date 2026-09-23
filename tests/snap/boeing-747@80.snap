@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w boeing 747
+
+  ◆ Boeing 747-400
+  │ mass      875 000 lb
+  │ length    70.6 m
+  │ wingspan  64.4 m
+
+  ──────────────────── W74

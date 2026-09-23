@@ -189,6 +189,9 @@ def main():
             props["mean temperature"] = f"{num(temps[p])} °C"
             sources["mean temperature"] = overview
         names = [p, "the earth", "planet earth", "terra"] if p == "earth" else [p]
+        if p == "earth":
+            props["age"] = "4.54 Gyr"
+            sources["age"] = "USGS, Age of the Earth (pubs.usgs.gov/gip/geotime/age.html): 4.54 Ga"
         if p in ("jupiter", "saturn", "uranus", "neptune") and "gravity" in props:
             sources["gravity"] = sheet(p) + "; at the 1 bar pressure level"
         entity(out, "planet", p.capitalize(), names, sheet(p), props, facts, sources)

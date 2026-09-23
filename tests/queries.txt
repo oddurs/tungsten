@@ -100,3 +100,13 @@ melting point of mercury
 --why 60 mph * 2h 15min
 --why tungsten
 --as element W
+
+# ─── Everyday items (0032) ───────────────────────────────────────────────────
+--why coffee.caffeine
+3 bananas
+mass of a blue whale in kg
+eiffel tower
+2 olympic pools in L
+calories of a big mac
+age of universe / age of earth
+boeing 747

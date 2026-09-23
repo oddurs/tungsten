@@ -477,12 +477,18 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
 }
 
 /// `n` consecutive word tokens starting at `i`, joined by single spaces.
+/// Whole numbers may appear after the first word: `boeing 747`, `iphone 15`.
 fn phrase(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     let slice = tokens.get(i..i + n)?;
     let mut words = Vec::with_capacity(n);
-    for t in slice {
+    for (k, t) in slice.iter().enumerate() {
         match &t.kind {
-            TokKind::Word(w) => words.push(w.as_str()),
+            TokKind::Word(w) => words.push(w.clone()),
+            TokKind::Num {
+                value,
+                decimal: false,
+                superscript: false,
+            } if k > 0 && value.is_integer() => words.push(value.num().to_string()),
             _ => return None,
         }
     }

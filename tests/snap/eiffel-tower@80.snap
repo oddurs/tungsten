@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w eiffel tower
+
+  ◆ Eiffel Tower
+  │ mass    10 100 t
+  │ height  330 m
+
+  ──────────────────── W74

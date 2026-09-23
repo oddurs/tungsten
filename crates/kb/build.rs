@@ -20,7 +20,7 @@ use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use toml::Spanned;
 
-const FILES: &[&str] = &["constants", "elements", "solar", "items"];
+const FILES: &[&str] = &["constants", "elements", "solar", "food", "items"];
 
 const KINDS: &[(&str, &str)] = &[
     ("constant", "Constant"),
@@ -253,7 +253,7 @@ fn main() {
                 if *n != n.to_lowercase() {
                     ctx.fail(at, format!("name {n:?} must be lowercase"));
                 }
-                if prop_index.contains_key(n) {
+                if prop_names.iter().any(|(p, ..)| p == n) {
                     ctx.fail(at, format!("name {n:?} is also a property"));
                 }
                 let shadow = taken(n);

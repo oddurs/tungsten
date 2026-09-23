@@ -4,15 +4,15 @@ source: crates/cli/tests/snapshots.rs
 $ w 3 coffees in mg of caffeine
 
   ◆ interpretation
-  │ 3 × coffee(95 mg caffeine)  →  mg of
-  │   caffeine
+  │ 3 × coffee(94.8 mg caffeine)  →  mg
+  │   of caffeine
 
   ◆ result
-  │ 285 mg
+  │ 284.4 mg
 
   ◆ other units
-  │ 0.285 g
-  │ 0.01005 oz
-  │ 2.85×10⁻⁴ kg
+  │ 0.2844 g
+  │ 0.01003 oz
+  │ 2.844×10⁻⁴ kg
 
-  ────────────────────────────────── W74
+  ───────────────────────────────── W74

@@ -40,13 +40,12 @@ The smallest `w` worth using: arithmetic on quantities with units, conversion, a
 
 ## v0.2 — Knows things
 
-`########··` 75% · 9 of 12 done
+`#########·` 83% · 10 of 12 done
 
 The knowledge base arrives: constants, elements, the solar system and everyday items, addressable by possessive, with the for-scale pod that gives results a sense of size.
 
 ### backlog
 
-- [ ] `0032` Everyday items (~150) <sup>data · kb · p0 · l</sup>
 - [ ] `0035` For-scale pod <sup>feature · pods · p1 · m</sup>
 - [ ] `0038` Easter eggs: 74, wolfram, --about <sup>feature · cli · p3 · s</sup>
 
@@ -56,6 +55,7 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 - [x] `0029` Physical constants (CODATA 2022) <sup>data · kb · p0 · m</sup>
 - [x] `0030` The 118 elements <sup>data · kb · p1 · m</sup>
 - [x] `0031` Solar system bodies <sup>data · kb · p2 · s</sup>
+- [x] `0032` Everyday items (~150) <sup>data · kb · p0 · l</sup>
 - [x] `0033` Property access: possessives and of <sup>feature · language · p0 · m</sup>
 - [x] `0034` Word resolver scoring and the assuming pod <sup>feature · pods · p0 · m</sup>
 - [x] `0036` Entity card pod <sup>feature · pods · p1 · s</sup>
