@@ -8,10 +8,12 @@
 
 mod ast;
 mod check;
+mod complete;
 mod entities;
 mod env;
 mod error;
 mod eval;
+mod highlight;
 mod interp;
 mod lex;
 mod parse;
@@ -20,10 +22,12 @@ mod session;
 mod suggest;
 
 pub use ast::{BinOp, Choice, Expr, Mention, Node, PostOp, Query, Style, Target};
+pub use complete::{Candidate, Completion, complete};
 pub use entities::Assumption;
 pub use env::UserFunc;
 pub use error::{Error, ErrorKind, Hint};
 pub use eval::{Value, is_scale, quantity};
+pub use highlight::{Class, classify};
 pub use interp::{Piece, interpret};
 pub use resolve::{Const, Func, Scope};
 pub use session::{Binding, Session};

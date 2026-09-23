@@ -68,10 +68,10 @@ pub fn other_units(v: &Value, shown: &UnitExpr) -> Vec<(Number, UnitExpr)> {
         }
         for g in &q.extra {
             // Extra groups speak when spoken to, or when nothing else fits.
-            if g.contains(shown) || picks.is_empty() {
-                if let Some(u) = best(g, &picks) {
-                    picks.push(u);
-                }
+            if (g.contains(shown) || picks.is_empty())
+                && let Some(u) = best(g, &picks)
+            {
+                picks.push(u);
             }
         }
     }

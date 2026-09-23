@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› :sig 8
+  8 significant figures
+
+W› pi
+  3.1415927
+
+W› :sig
+  4 significant figures
+
+W› pi
+  3.142
+
+W› :sig 40
+  ◆ can't set that
+  │ :sig 40
+  │ significant figures are a whole number from 1 to 17

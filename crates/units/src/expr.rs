@@ -121,10 +121,11 @@ impl UnitExpr {
         } else {
             merged
         };
-        if best.len() >= 2 && best.0.iter().all(|(u, _)| u.system() == table::System::Si) {
-            if let Some(d) = quantity::quantity_for(&best.dim()).and_then(|q| q.derived.clone()) {
-                return d;
-            }
+        if best.len() >= 2
+            && best.0.iter().all(|(u, _)| u.system() == table::System::Si)
+            && let Some(d) = quantity::quantity_for(&best.dim()).and_then(|q| q.derived.clone())
+        {
+            return d;
         }
         best
     }

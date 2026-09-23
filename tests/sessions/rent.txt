@@ -1,0 +1,4 @@
+# A three-line session using it (0039), in the REPL (0040).
+rent = 2400 USD/month
+rent * 12 month
+it / 52 wk

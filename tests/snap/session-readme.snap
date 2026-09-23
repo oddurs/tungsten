@@ -1,0 +1,13 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› rent = 2400 USD/month
+  2400 USD/mo
+
+W› it * 12 month
+  28 800 USD
+
+W› :vars
+  ◆ variables
+  │ rent = 2400 USD/mo
+  │ it   = 28 800 USD

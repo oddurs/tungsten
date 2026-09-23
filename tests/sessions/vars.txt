@@ -1,0 +1,5 @@
+:vars
+rent = 2400 USD/month
+f(x) = x^2 - 3x
+dist = 5 km in mi
+:vars

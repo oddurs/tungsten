@@ -18,10 +18,15 @@ tungsten-pods.workspace = true
 tungsten-render.workspace = true
 clap.workspace = true
 terminal_size.workspace = true
+reedline.workspace = true
+nu-ansi-term.workspace = true
 
 [dev-dependencies]
 insta.workspace = true
 tungsten-core.workspace = true
+
+[target.'cfg(unix)'.dev-dependencies]
+rexpect.workspace = true
 
 [lints]
 workspace = true

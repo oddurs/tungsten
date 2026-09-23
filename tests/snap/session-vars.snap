@@ -1,0 +1,22 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› :vars
+  ◆ variables
+  │ nothing defined yet; try rent = 2400 USD/month
+
+W› rent = 2400 USD/month
+  2400 USD/mo
+
+W› f(x) = x^2 - 3x
+  f(x) = x^2 - 3x
+
+W› dist = 5 km in mi
+  3.107 mi
+
+W› :vars
+  ◆ variables
+  │ dist = 3.107 mi
+  │ rent = 2400 USD/mo
+  │ it   = 3.107 mi
+  │ f(x) = x^2 - 3x

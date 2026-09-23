@@ -345,6 +345,12 @@ fn meaning(words: &str, prefer: Option<Kind>) -> Option<Sym> {
     }
 }
 
+/// Built-in function names, for completion.
+pub const FUNCTIONS: &[&str] = &[
+    "sqrt", "cbrt", "sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "log2", "exp", "abs",
+    "round", "floor", "ceil",
+];
+
 /// A built-in function or constant name: `sqrt`, `pi`.
 pub fn is_builtin(word: &str) -> bool {
     constant(word).is_some() || function(&word.to_lowercase()).is_some()
@@ -384,15 +390,35 @@ fn single(word: &str, prefer: Option<Kind>, scope: &Scope) -> Option<Sym> {
     }
     // km2, m3, s2
     let letters = word.trim_end_matches(|c: char| c.is_ascii_digit());
-    if letters.len() < word.len() && !letters.is_empty() {
-        if let (Some(u), Ok(e)) = (lookup(letters), word[letters.len()..].parse::<i128>()) {
-            return Some(Sym::UnitPow(u, e));
-        }
+    if letters.len() < word.len()
+        && !letters.is_empty()
+        && let (Some(u), Ok(e)) = (lookup(letters), word[letters.len()..].parse::<i128>())
+    {
+        return Some(Sym::UnitPow(u, e));
     }
     None
 }
 
 pub fn resolve(tokens: &[Token], prefer: Option<Kind>, scope: &Scope) -> Result<Vec<Item>, Error> {
+    resolve_inner(tokens, prefer, scope, None)
+}
+
+/// As [`resolve`], but unknown words are collected in `unknown` rather than
+/// ending resolution, for highlighting a line as it is typed.
+pub fn resolve_lenient(
+    tokens: &[Token],
+    scope: &Scope,
+    unknown: &mut Vec<Range<usize>>,
+) -> Vec<Item> {
+    resolve_inner(tokens, None, scope, Some(unknown)).unwrap_or_default()
+}
+
+fn resolve_inner(
+    tokens: &[Token],
+    prefer: Option<Kind>,
+    scope: &Scope,
+    mut unknown: Option<&mut Vec<Range<usize>>>,
+) -> Result<Vec<Item>, Error> {
     // `the` carries no meaning anywhere: `the mass of the earth`.
     let tokens: Vec<Token> = tokens
         .iter()
@@ -527,6 +553,11 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>, scope: &Scope) -> Result<
                 sym,
                 span: t.span.clone(),
             }),
+            None if unknown.is_some() => {
+                if let Some(u) = unknown.as_deref_mut() {
+                    u.push(t.span.clone());
+                }
+            }
             None if word == "it" => {
                 return Err(Error::new(ErrorKind::NoIt, t.span.clone()));
             }
