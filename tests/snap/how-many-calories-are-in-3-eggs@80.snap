@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how many calories are in 3 eggs
+
+  ◆ interpretation
+  │ 3 × egg(71.5 kcal food energy)  →  food energy
+
+  ◆ result
+  │ 214.5 kcal
+
+  ◆ other units
+  │ 897.5 kJ  ·  249.3 Wh  ·  897 468 J
+
+  ──────────────────────────────────────────── W74

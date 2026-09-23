@@ -7,10 +7,10 @@ $ w --why c
   │ c
 
   ◆ result
-  │ 1 c
+  │ 299 792 458 m/s
 
   ◆ other units
-  │ 2.998×10⁸ m/s
+  │ 1 c
 
   ◆ sources
   │ c  BIPM SI Brochure (9th ed., 2019), §2.2 (exact by definition)

@@ -157,3 +157,8 @@ how many bananas in 10 kg
 mass of 3 apples
 how many calories in a banana
 what's 12% of 80
+
+# ─── Honest precision and bare units (0070) ──────────────────────────────────
+speed of light
+mile
+how many calories are in 3 eggs

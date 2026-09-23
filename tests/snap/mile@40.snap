@@ -1,18 +1,21 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w how many calories in a banana
+$ w mile
 
   ◆ interpretation
-  │ banana(105 kcal food energy)
-  │   →  food energy
+  │ mi
 
   ◆ result
-  │ 105 kcal
+  │ 1609.344 m
 
   ◆ other units
-  │ 439.3 kJ
-  │ 122 Wh
-  │ 439 320 J
+  │ 1.609 km
+  │ 1 mi
+
+  ◆ for scale
+  │ ≈ 1.9 Burj Khalifas
+  │ ≈ 15 American football fields
+  │   (length)
 
   ─────────────────────────── W74

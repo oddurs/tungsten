@@ -12,7 +12,7 @@ $ w 3 coffees a day for a year in grams of caffeine
   │ 3 × coffee(94.8 mg caffeine) / d × 1 yr  →  g of caffeine
 
   ◆ result
-  │ 103.8771 g
+  │ 103.9 g
 
   ◆ other units
   │ 0.1039 kg  ·  3.664 oz
@@ -197,6 +197,9 @@ echo "3 ft in cm" | w   stdin, one query per line
   0.001–999 999 (`1.813×10¹⁴`, or `1.813e14` under `--plain`).
 - Integer parts of five or more digits are grouped in threes with a narrow
   no-break space, or commas under `--plain`.
+- An answer computed from knowledge-base values shows no more significant
+  digits than the least precise value it used (at least 4): a blue whale,
+  "up to 330,000 pounds", is 149 685 kg, not 149 685.4821 kg.
 - On entity cards, a value shown in its own unit keeps the significant digits
   its source published, trailing zeros included, grouped as CODATA writes
   them: G is `6.674 30×10⁻¹¹`, c is `299 792 458`. Input accepts either, and plain

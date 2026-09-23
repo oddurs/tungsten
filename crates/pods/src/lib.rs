@@ -28,6 +28,9 @@ pub enum NumMode {
     /// A knowledge-base value as its source published it: exactly this many
     /// significant digits, trailing zeros kept (6.674 30×10⁻¹¹).
     Published(u32),
+    /// An answer computed from knowledge-base values: as `Result`, but never
+    /// more significant digits than this (exact integers are kept whole).
+    Measured(u32),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -254,12 +257,15 @@ fn success(input: &str, o: &Outcome) -> Report {
         body: Body::Lines(vec![interp]),
     });
 
+    // No more precision than the data had, and never fewer than 4 digits.
+    let mode = tungsten_core::precision(&o.sources)
+        .map_or(NumMode::Result, |d| NumMode::Measured(d.max(4)));
     let (result_line, quiet) = match &o.answer {
         Answer::Single { num, unit, .. } => {
             let seg = Seg::Value {
                 num: *num,
                 unit: unit.clone(),
-                mode: NumMode::Result,
+                mode,
             };
             (Line(vec![seg]), Quiet::Value(*num))
         }

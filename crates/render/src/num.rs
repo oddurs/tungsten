@@ -71,6 +71,13 @@ fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
             );
         }
     }
+    if let NumMode::Measured(d) = mode
+        && f.sig.is_none()
+        && let Some(s) = exact_decimal(r)
+        && significant(&s) > d as usize
+    {
+        return rounded(r.to_f64(), d, f.fancy);
+    }
     match mode {
         NumMode::Literal => {
             if !decimal {
@@ -80,7 +87,7 @@ fn unsigned(n: Number, mode: NumMode, f: Fmt) -> String {
                 .map_or_else(|| rounded(r.to_f64(), 10, f.fancy), |s| group(&s, f.fancy))
         }
         // Published with an explicit --sig: the user's precision wins.
-        NumMode::Result | NumMode::Published(_) => {
+        NumMode::Result | NumMode::Published(_) | NumMode::Measured(_) => {
             if !decimal && r.den() <= MAX_FRACTION_DEN {
                 return fraction(r);
             }
