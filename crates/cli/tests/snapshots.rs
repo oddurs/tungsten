@@ -50,6 +50,7 @@ fn snapshot(q: &str, width: usize) -> String {
         fancy: true,
         sig: None,
         timing: false,
+        prefer: None,
     };
     format!("$ w {q}\n{}", render_query(q, &s).out.trim_end())
 }

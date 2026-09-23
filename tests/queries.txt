@@ -84,3 +84,9 @@ tungsten
 G
 the moon
 coffee
+
+# ─── Knowledge base: which thing a name means (0034) ─────────────────────────
+mercury
+mass of mercury
+melting point of mercury
+5 W

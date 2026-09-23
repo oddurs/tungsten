@@ -104,3 +104,41 @@ fn colour_when_forced() {
     let out = run(&["--color", "always", "1", "km"], None);
     assert!(text(&out.stdout).contains("\x1b["));
 }
+
+#[test]
+fn as_picks_the_kind() {
+    let out = text(&run(&["--color", "never", "--as", "element", "mercury"], None).stdout);
+    assert!(out.contains("mercury · Hg · 80"), "{out}");
+    assert!(
+        !out.contains("assuming"),
+        "asked for, so nothing was assumed"
+    );
+
+    // W is the watt, until you ask for the element.
+    let out = text(&run(&["--color", "never", "--as", "element", "W"], None).stdout);
+    assert!(out.contains("tungsten · W · 74"), "{out}");
+
+    // e is Euler's number, until you ask for the constant.
+    let out = run(&["-q", "--as", "constant", "e"], None);
+    assert_eq!(text(&out.stdout), "1.602176634e-19\n");
+    let out = run(&["-q", "e"], None);
+    assert_eq!(text(&out.stdout), "2.718281828459045\n");
+}
+
+#[test]
+fn as_rejects_unknown_kinds() {
+    let out = run(&["--as", "vegetable", "1"], None);
+    assert!(!out.status.success());
+    assert!(text(&out.stderr).contains("expected one of: star, planet"));
+}
+
+#[test]
+fn quiet_cards() {
+    assert_eq!(text(&run(&["-q", "G"], None).stdout), "6.6743e-11\n");
+    let out = run(&["-q", "gold"], None);
+    assert_eq!(out.status.code(), Some(2));
+    assert_eq!(
+        text(&out.stderr),
+        "tungsten: gold is a thing, not a quantity\n"
+    );
+}

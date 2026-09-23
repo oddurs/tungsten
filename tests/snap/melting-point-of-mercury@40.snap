@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w melting point of mercury
+
+  ◆ interpretation
+  │ melting point of mercury
+
+  ◆ result
+  │ −38.83 °C
+
+  ◆ other units
+  │ −37.89 °F
+  │ 234.3 K
+
+  ────────────────────── W74

@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 W
+
+  ◆ interpretation
+  │ 5 W
+
+  ◆ result
+  │ 5 W
+
+  ◆ other units
+  │ 5000 mW
+  │ 0.006705 hp
+
+  ──────────────────── W74

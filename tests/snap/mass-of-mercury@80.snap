@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass of mercury
+
+  ◆ interpretation
+  │ mass of Mercury
+
+  ◆ result
+  │ 3.301×10²³ kg
+
+  ──────────────────── W74

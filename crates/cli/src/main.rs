@@ -2,6 +2,17 @@ use clap::{ArgAction, Parser, ValueEnum};
 use std::io::{BufRead, IsTerminal, Write};
 use std::process::ExitCode;
 use tungsten::{Settings, render_query, render_quiet};
+use tungsten_core::Kind;
+
+fn parse_kind(s: &str) -> Result<Kind, String> {
+    Kind::parse(s).ok_or_else(|| {
+        let all: Vec<String> = Kind::ALL
+            .iter()
+            .map(|k| k.name().replace(' ', "-"))
+            .collect();
+        format!("expected one of: {}", all.join(", "))
+    })
+}
 
 const HELP: &str = "\
 {name} {version} — calculate with quantities and units
@@ -50,6 +61,10 @@ struct Args {
     /// Significant figures [default: 4]
     #[arg(long, value_name = "N", value_parser = clap::value_parser!(u32).range(1..=17))]
     sig: Option<u32>,
+
+    /// What an ambiguous name means: planet, element, constant, …
+    #[arg(long = "as", value_name = "KIND", value_parser = parse_kind)]
+    prefer: Option<Kind>,
 
     /// Colour: auto, always or never
     #[arg(
@@ -109,6 +124,7 @@ fn main() -> ExitCode {
         fancy: !args.plain,
         sig: args.sig,
         timing: true,
+        prefer: args.prefer,
     };
 
     let queries: Vec<String> = if !args.query.is_empty() {
