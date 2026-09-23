@@ -62,6 +62,10 @@ struct Args {
     #[arg(long, value_name = "N", value_parser = clap::value_parser!(u32).range(1..=17))]
     sig: Option<u32>,
 
+    /// Show where every unit and value came from
+    #[arg(long)]
+    why: bool,
+
     /// What an ambiguous name means: planet, element, constant, …
     #[arg(long = "as", value_name = "KIND", value_parser = parse_kind)]
     prefer: Option<Kind>,
@@ -125,6 +129,7 @@ fn main() -> ExitCode {
         sig: args.sig,
         timing: true,
         prefer: args.prefer,
+        why: args.why,
     };
 
     let queries: Vec<String> = if !args.query.is_empty() {

@@ -353,7 +353,7 @@ mod tests {
     #[test]
     fn facts() {
         let w = one("tungsten");
-        assert!(w.fact("named").unwrap().text.contains("Wolf Rahm"));
+        assert!(w.fact("named").unwrap().text.contains("wolf rahm"));
         assert_eq!(w.fact("state").unwrap().text, "solid");
     }
 }

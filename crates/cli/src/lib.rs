@@ -14,6 +14,8 @@ pub struct Settings {
     pub timing: bool,
     /// `--as element`: what an ambiguous name should mean.
     pub prefer: Option<tungsten_core::Kind>,
+    /// `--why`: list where every unit and value came from.
+    pub why: bool,
 }
 
 fn evaluate(query: &str, s: &Settings) -> Result<tungsten_core::Outcome, tungsten_core::Error> {
@@ -43,7 +45,7 @@ fn options(s: &Settings, elapsed: Option<std::time::Duration>) -> Options {
 pub fn render_query(query: &str, s: &Settings) -> Rendered {
     let start = Instant::now();
     let result = evaluate(query, s);
-    let report = tungsten_pods::build(query, &result);
+    let report = tungsten_pods::build_with(query, &result, tungsten_pods::Build { why: s.why });
     let elapsed = s.timing.then(|| start.elapsed());
     let out = tungsten_render::render(&report, &options(s, elapsed));
     Rendered {
@@ -56,7 +58,7 @@ pub fn render_query(query: &str, s: &Settings) -> Rendered {
 /// Evaluates one query and prints only its value: `8.04672`.
 pub fn render_quiet(query: &str, s: &Settings) -> Rendered {
     let result = evaluate(query, s);
-    let report = tungsten_pods::build(query, &result);
+    let report = tungsten_pods::build_with(query, &result, tungsten_pods::Build { why: s.why });
     match tungsten_render::render_quiet(&report, &options(s, None)) {
         Some(v) => Rendered {
             out: format!("{v}\n"),

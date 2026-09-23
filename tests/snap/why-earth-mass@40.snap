@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w --why earth.mass
+
+  ◆ interpretation
+  │ mass of Earth
+
+  ◆ result
+  │ 5.9722×10²⁴ kg
+
+  ◆ sources
+  │ Earth · mass  NASA NSSDCA Earth Fact
+  │   Sheet
+  │   (nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html),
+  │   updated 15 November 2024
+
+  ────────────────────────────────── W74

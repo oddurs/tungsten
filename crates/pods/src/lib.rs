@@ -7,6 +7,7 @@
 mod card;
 mod errors;
 mod other_units;
+mod why;
 
 use tungsten_core::{Answer, Error, Kind, Outcome, Piece, interpret};
 use tungsten_units::{Number, UnitExpr};
@@ -86,9 +87,28 @@ pub struct Report {
     pub error_line: Option<String>,
 }
 
+/// What to include beyond the default pods.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Build {
+    /// `--why`: a sources pod listing where every unit and value came from.
+    pub why: bool,
+}
+
 pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
+    build_with(input, result, Build::default())
+}
+
+pub fn build_with(input: &str, result: &Result<Outcome, Error>, b: Build) -> Report {
     match result {
-        Ok(o) => success(input, o),
+        Ok(o) => {
+            let mut report = success(input, o);
+            if b.why
+                && let Some(p) = why::pod(&o.sources)
+            {
+                report.pods.push(p);
+            }
+            report
+        }
         Err(e) => {
             let (pod, line) = errors::pod(input, e);
             Report {

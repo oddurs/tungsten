@@ -929,7 +929,7 @@ symbols = ["mph"]
 def = "mi/h"
 expand = true
 system = "imperial"
-source = "HB44 (derived)"
+source = "Defined as mi/h (the mile: HB44 C-4)"
 
 [[unit]]
 names = ["kilometre per hour", "kilometer per hour"]
@@ -939,7 +939,7 @@ display = "km/h"
 def = "km/h"
 expand = true
 system = "metric"
-source = "BIPM (derived)"
+source = "Defined as km/h (BIPM Table 8 for the hour)"
 
 [[unit]]
 names = ["knot"]
