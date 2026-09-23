@@ -1,0 +1,36 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w rent = 2400 USD/month; rent * 12 month; it / 52 wk
+
+  ◆ interpretation
+  │ rent = 2400 USD / mo
+
+  ◆ result
+  │ 2400 USD/mo
+
+  ◆ other units
+  │ 9.126×10⁻⁴ USD/s
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ rent × 12 mo
+
+  ◆ result
+  │ 28 800 USD
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ it / 52 wk
+
+  ◆ result
+  │ 553.8 USD/wk
+
+  ◆ other units
+  │ 9.158×10⁻⁴ USD/s
+
+  ──────────────────── W74

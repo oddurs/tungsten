@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w m = 5
+
+  ◆ can't define m
+  │ m = 5
+  │ ^ it is the unit m (metre)
+
+  ──────────────────────── W74

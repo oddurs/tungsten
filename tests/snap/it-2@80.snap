@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w it * 2
+
+  ◆ no previous answer
+  │ it * 2
+  │ ^^ nothing has been calculated yet
+
+  ──────────────────────────────── W74

@@ -1,7 +1,7 @@
 use clap::{ArgAction, Parser, ValueEnum};
 use std::io::{BufRead, IsTerminal, Write};
 use std::process::ExitCode;
-use tungsten::{Settings, render_query, render_quiet};
+use tungsten::{Settings, quiet_line, render_line};
 use tungsten_core::Kind;
 
 fn parse_kind(s: &str) -> Result<Kind, String> {
@@ -159,13 +159,15 @@ fn main() -> ExitCode {
         return ExitCode::SUCCESS;
     };
 
+    // Lines read from stdin share one session: `rent = …` then `rent * 12`.
+    let mut session = settings.session();
     let mut ok = true;
     let mut out = stdout.lock();
     for q in &queries {
         let r = if args.quiet {
-            render_quiet(q, &settings)
+            quiet_line(q, &mut session, &settings)
         } else {
-            render_query(q, &settings)
+            render_line(q, &mut session, &settings)
         };
         ok &= r.ok;
         let _ = out.write_all(r.out.as_bytes());

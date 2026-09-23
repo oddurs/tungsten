@@ -88,6 +88,18 @@ fn emit(n: &Node, parent: u8, right: bool, out: &mut Vec<Piece>) {
             out.push(Piece::Unit(unit.clone()));
         }
         Expr::Const(c) => out.push(Piece::Word(c.symbol())),
+        Expr::Var(name) => out.push(Piece::Text(name.clone())),
+        Expr::UserCall(name, args) => {
+            out.push(Piece::Text(name.clone()));
+            out.push(Piece::Open);
+            for (i, a) in args.iter().enumerate() {
+                if i > 0 {
+                    out.push(Piece::Comma);
+                }
+                emit(a, 0, false, out);
+            }
+            out.push(Piece::Close);
+        }
         Expr::Entity(m) => {
             if let Some(Choice {
                 entity,

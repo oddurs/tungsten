@@ -275,6 +275,35 @@ pub fn pod(input: &str, e: &Error) -> (Pod, String) {
                 format!("{} is not a quantity", entity.display()),
             )
         }
+        ErrorKind::NoIt => {
+            lines.push(caret(input, &e.span, "nothing has been calculated yet"));
+            (
+                "no previous answer".into(),
+                "no previous answer for it".into(),
+            )
+        }
+        ErrorKind::CannotAssign { name, reason } => {
+            lines.push(caret(input, &e.span, reason));
+            (
+                format!("can't define {name}"),
+                format!("can't define {name}: {reason}"),
+            )
+        }
+        ErrorKind::UserArity {
+            name,
+            expected,
+            found,
+        } => {
+            let s = if *expected == 1 { "" } else { "s" };
+            let note = format!("{name} takes {expected} argument{s}, not {found}");
+            lines.push(caret(input, &e.span, &note));
+            ("wrong number of arguments".into(), note)
+        }
+        ErrorKind::TooDeep { name } => {
+            let note = format!("{name} calls functions more than 16 deep");
+            lines.push(caret(input, &e.span, &note));
+            ("too deep".into(), note)
+        }
         ErrorKind::NotAThing => {
             lines.push(caret(input, &e.span, "means something else here; see --as"));
             ("not a thing here".into(), "not a thing here".into())

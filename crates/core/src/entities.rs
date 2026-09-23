@@ -69,13 +69,13 @@ fn walk(
             walk(lhs, of, prefer, out)?;
             walk(rhs, of, prefer, out)
         }
-        Expr::Call(_, args) => {
+        Expr::Call(_, args) | Expr::UserCall(_, args) => {
             for a in args {
                 walk(a, of, prefer, out)?;
             }
             Ok(())
         }
-        Expr::Num(_) | Expr::Quantity { .. } | Expr::Const(_) => Ok(()),
+        Expr::Num(_) | Expr::Quantity { .. } | Expr::Const(_) | Expr::Var(_) => Ok(()),
     }
 }
 

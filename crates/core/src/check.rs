@@ -4,6 +4,7 @@
 //! of both operands, so the error pod can draw brackets under them.
 
 use crate::ast::{BinOp, Expr, Node, PostOp, Query};
+use crate::env::Env;
 use crate::error::{Error, ErrorKind, Hint};
 use crate::eval::{self, is_scale};
 use crate::resolve::Func;
@@ -28,8 +29,8 @@ impl Ty {
     }
 }
 
-pub fn check_query(q: &Query, src: &str) -> Result<(), Error> {
-    let ty = check(&q.expr, src)?;
+pub fn check_query(q: &Query, src: &str, env: &Env) -> Result<(), Error> {
+    let ty = check(&q.expr, src, env)?;
     for t in &q.targets {
         // mpg ↔ L/100km: reciprocal dimensions convert by inverting.
         let reciprocal =
@@ -51,10 +52,27 @@ fn text<'a>(src: &'a str, n: &Node) -> &'a str {
     src.get(n.span.clone()).unwrap_or("").trim()
 }
 
-fn check(node: &Node, src: &str) -> Result<Ty, Error> {
+fn check(node: &Node, src: &str, env: &Env) -> Result<Ty, Error> {
     let span = node.span.clone();
     Ok(match &node.expr {
         Expr::Num(_) | Expr::Const(_) => Ty::plain(Dim::NONE),
+        // Variables and calls have a value already; its dimension is theirs.
+        Expr::Var(_) | Expr::UserCall(..) => {
+            let v = eval::eval(node, env)?;
+            if let Expr::UserCall(..) = node.expr {
+                env.memo
+                    .borrow_mut()
+                    .insert(node as *const Node as usize, v.clone());
+            }
+            match v.unit.single().filter(|u| is_scale(*u) && v.point) {
+                Some(u) => Ty {
+                    dim: v.dim,
+                    point: true,
+                    affine: u.is_affine(),
+                },
+                None => Ty::plain(v.dim),
+            }
+        }
         Expr::Entity(m) | Expr::Prop(m, _) => {
             let v = m
                 .chosen
@@ -77,9 +95,9 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             },
             None => Ty::plain(unit.dim()),
         },
-        Expr::Group(x) => check(x, src)?,
+        Expr::Group(x) => check(x, src, env)?,
         Expr::Neg(x) => {
-            let t = check(x, src)?;
+            let t = check(x, src, env)?;
             if t.affine {
                 return Err(Error::new(ErrorKind::NegateTemperature, span));
             }
@@ -91,15 +109,15 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             rhs,
             ..
         } => {
-            let a = check(lhs, src)?;
-            let b = check(rhs, src)?;
+            let a = check(lhs, src, env)?;
+            let b = check(rhs, src, env)?;
             if a.dim != b.dim {
                 let sym = if *op == BinOp::Add { '+' } else { '-' };
                 return Err(Error::new(
                     ErrorKind::Mismatch {
                         op: sym,
                         operands: vec![(lhs.span.clone(), a.dim), (rhs.span.clone(), b.dim)],
-                        hint: mismatch_hint(lhs, rhs, src),
+                        hint: mismatch_hint(lhs, rhs, src, env),
                     },
                     span,
                 ));
@@ -107,7 +125,7 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             if *op == BinOp::Add && a.point && b.point && (a.affine || b.affine) {
                 return Err(Error::new(
                     ErrorKind::AddTemperatures {
-                        hint: temperature_hint(lhs, rhs, src),
+                        hint: temperature_hint(lhs, rhs, src, env),
                     },
                     span,
                 ));
@@ -120,8 +138,8 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             }
         }
         Expr::Bin { op, lhs, rhs, .. } => {
-            let a = check(lhs, src)?;
-            let b = check(rhs, src)?;
+            let a = check(lhs, src, env)?;
+            let b = check(rhs, src, env)?;
             let dim = if *op == BinOp::Mul {
                 a.dim.mul(&b.dim)
             } else {
@@ -130,8 +148,8 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             Ty::plain(dim.ok_or_else(|| Error::new(ErrorKind::NumberTooLarge, span))?)
         }
         Expr::Pow(base, exp) => {
-            let b = check(base, src)?;
-            let e = check(exp, src)?;
+            let b = check(base, src, env)?;
+            let e = check(exp, src, env)?;
             if !e.dim.is_none() {
                 return Err(Error::new(
                     ErrorKind::NeedsNumber {
@@ -144,7 +162,7 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             if b.dim.is_none() {
                 Ty::plain(Dim::NONE)
             } else {
-                let r = eval::eval(exp)?.num.as_rational();
+                let r = eval::eval(exp, env)?.num.as_rational();
                 let Some(r) = r else {
                     return Err(Error::new(ErrorKind::IrrationalPower { dim: b.dim }, span));
                 };
@@ -156,7 +174,7 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
             }
         }
         Expr::Post(op, x) => {
-            let t = check(x, src)?;
+            let t = check(x, src, env)?;
             if !t.dim.is_none() {
                 let what = if *op == PostOp::Percent {
                     "a percentage"
@@ -181,7 +199,7 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
                     span,
                 ));
             }
-            let t = check(&args[0], src)?;
+            let t = check(&args[0], src, env)?;
             match f {
                 Func::Sqrt | Func::Cbrt => {
                     let r = Rational::new(1, if *f == Func::Sqrt { 2 } else { 3 }).expect("root");
@@ -211,9 +229,9 @@ fn check(node: &Node, src: &str) -> Result<Ty, Error> {
 
 /// `3 m + 2 s` → `did you mean 3 m / 2 s (= 1.5 m/s)?`, when the division or
 /// product of the operands is a named quantity.
-fn mismatch_hint(lhs: &Node, rhs: &Node, src: &str) -> Option<Hint> {
-    let a = eval::eval(lhs).ok()?;
-    let b = eval::eval(rhs).ok()?;
+fn mismatch_hint(lhs: &Node, rhs: &Node, src: &str, env: &Env) -> Option<Hint> {
+    let a = eval::eval(lhs, env).ok()?;
+    let b = eval::eval(rhs, env).ok()?;
     for (op, sym) in [(BinOp::Div, "/"), (BinOp::Mul, "×")] {
         let v = eval::binary(op, &a, &b).ok()?;
         if quantity_for(&v.dim).is_some() {
@@ -227,14 +245,14 @@ fn mismatch_hint(lhs: &Node, rhs: &Node, src: &str) -> Option<Hint> {
 }
 
 /// `20 °C + 5 °C` → `did you mean 20 °C + 5 Δ°C (= 25 °C)?`
-fn temperature_hint(lhs: &Node, rhs: &Node, src: &str) -> Option<Hint> {
+fn temperature_hint(lhs: &Node, rhs: &Node, src: &str, env: &Env) -> Option<Hint> {
     let Expr::Quantity { value, unit } = &rhs.expr else {
         return None;
     };
     let u = unit.single()?;
     let delta = u.delta()?;
     let v = value.unwrap_or(Number::ONE);
-    let a = eval::eval(lhs).ok()?;
+    let a = eval::eval(lhs, env).ok()?;
     let d = eval::Value {
         num: v.mul(delta.factor()).ok()?,
         dim: delta.dim(),

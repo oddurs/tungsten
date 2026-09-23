@@ -2,6 +2,7 @@
 //! part the snapshot tests drive directly, so tests see exactly what users see.
 
 use std::time::Instant;
+use tungsten_core::Session;
 use tungsten_render::Options;
 
 #[derive(Clone, Copy, Debug)]
@@ -18,8 +19,18 @@ pub struct Settings {
     pub why: bool,
 }
 
-fn evaluate(query: &str, s: &Settings) -> Result<tungsten_core::Outcome, tungsten_core::Error> {
-    tungsten_core::evaluate_with(query, tungsten_core::Options { prefer: s.prefer })
+impl Settings {
+    /// A new session that evaluates with these settings.
+    pub fn session(&self) -> Session {
+        Session::new(tungsten_core::Options {
+            prefer: self.prefer,
+        })
+    }
+}
+
+/// `rent = 2400 USD/month; rent * 12 month`: statements, in order.
+pub fn statements(line: &str) -> impl Iterator<Item = &str> {
+    line.split(';').map(str::trim).filter(|s| !s.is_empty())
 }
 
 #[derive(Debug)]
@@ -41,39 +52,65 @@ fn options(s: &Settings, elapsed: Option<std::time::Duration>) -> Options {
     }
 }
 
-/// Evaluates one query and renders its pods.
+/// Evaluates one query, in a session of its own, and renders its pods.
 pub fn render_query(query: &str, s: &Settings) -> Rendered {
-    let start = Instant::now();
-    let result = evaluate(query, s);
-    let report = tungsten_pods::build_with(query, &result, tungsten_pods::Build { why: s.why });
-    let elapsed = s.timing.then(|| start.elapsed());
-    let out = tungsten_render::render(&report, &options(s, elapsed));
-    Rendered {
-        out,
+    render_line(query, &mut s.session(), s)
+}
+
+/// Evaluates a line of `;`-separated statements in `session` and renders
+/// each one's pods.
+pub fn render_line(line: &str, session: &mut Session, s: &Settings) -> Rendered {
+    let mut all = Rendered {
+        out: String::new(),
         err: String::new(),
-        ok: report.ok,
+        ok: true,
+    };
+    let mut any = false;
+    for stmt in statements(line) {
+        any = true;
+        let start = Instant::now();
+        let result = session.run(stmt);
+        let report = tungsten_pods::build_with(stmt, &result, tungsten_pods::Build { why: s.why });
+        let elapsed = s.timing.then(|| start.elapsed());
+        all.out
+            .push_str(&tungsten_render::render(&report, &options(s, elapsed)));
+        all.ok &= report.ok;
     }
+    if !any {
+        // An empty query still explains itself.
+        let result = session.run(line);
+        let report = tungsten_pods::build_with(line, &result, tungsten_pods::Build::default());
+        all.out = tungsten_render::render(&report, &options(s, None));
+        all.ok = report.ok;
+    }
+    all
 }
 
 /// Evaluates one query and prints only its value: `8.04672`.
 pub fn render_quiet(query: &str, s: &Settings) -> Rendered {
-    let result = evaluate(query, s);
-    let report = tungsten_pods::build_with(query, &result, tungsten_pods::Build { why: s.why });
-    match tungsten_render::render_quiet(&report, &options(s, None)) {
-        Some(v) => Rendered {
-            out: format!("{v}\n"),
-            err: String::new(),
-            ok: true,
-        },
-        None => {
-            let line = report.error_line.unwrap_or_else(|| "error".into());
-            Rendered {
-                out: String::new(),
-                err: format!("tungsten: {line}\n"),
-                ok: false,
+    quiet_line(query, &mut s.session(), s)
+}
+
+/// Evaluates a line of statements in `session`, printing only values.
+pub fn quiet_line(line: &str, session: &mut Session, s: &Settings) -> Rendered {
+    let mut all = Rendered {
+        out: String::new(),
+        err: String::new(),
+        ok: true,
+    };
+    for stmt in statements(line) {
+        let result = session.run(stmt);
+        let report = tungsten_pods::build_with(stmt, &result, tungsten_pods::Build { why: s.why });
+        match tungsten_render::render_quiet(&report, &options(s, None)) {
+            Some(v) => all.out.push_str(&format!("{v}\n")),
+            None => {
+                let line = report.error_line.unwrap_or_else(|| "error".into());
+                all.err.push_str(&format!("tungsten: {line}\n"));
+                all.ok = false;
             }
         }
     }
+    all
 }
 
 /// `tungsten --about`: the element card as the version screen.

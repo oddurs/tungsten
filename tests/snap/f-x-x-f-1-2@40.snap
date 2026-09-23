@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w f(x) = x; f(1, 2)
+
+  ◆ defined
+  │ f(x) = x
+
+  ──────────────────── W74
+
+
+  ◆ wrong number of arguments
+  │ f(1, 2)
+  │ ^^^^^^^ f takes 1 argument, not 2
+
+  ─────────────────────────────── W74

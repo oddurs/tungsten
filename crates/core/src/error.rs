@@ -86,4 +86,21 @@ pub enum ErrorKind {
     },
     /// A name that only means something shadowed (asked for with `--as`).
     NotAThing,
+    /// `it` before there is a previous answer.
+    NoIt,
+    /// `m = 5`: the name already means something that cannot be rebound.
+    CannotAssign {
+        name: String,
+        reason: String,
+    },
+    /// A user function called with the wrong number of arguments.
+    UserArity {
+        name: String,
+        expected: usize,
+        found: usize,
+    },
+    /// A user function that calls itself too deeply.
+    TooDeep {
+        name: String,
+    },
 }

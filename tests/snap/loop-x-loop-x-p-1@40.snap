@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w loop(x) = loop(x) + 1
+
+  ◆ can't define loop
+  │ loop(x) = loop(x) + 1
+  │ ^^^^^^^^^ it would call itself, which never ends
+
+  ────────────────────────────────── W74

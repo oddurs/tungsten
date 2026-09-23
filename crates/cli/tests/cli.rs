@@ -142,3 +142,32 @@ fn quiet_cards() {
         "tungsten: gold is a thing, not a quantity\n"
     );
 }
+
+#[test]
+fn stdin_lines_share_a_session() {
+    let out = run(
+        &["-q"],
+        Some("rent = 2400 USD/month\nrent * 12 month\nit / 4\n"),
+    );
+    assert!(out.status.success());
+    assert_eq!(text(&out.stdout), "2400\n28800\n7200\n");
+}
+
+#[test]
+fn statements_split_on_semicolons() {
+    let out = run(&["-q", "a = 2; a * 3"], None);
+    assert_eq!(text(&out.stdout), "2\n6\n");
+    let out = run(&["-q", "f(x) = x^2; f(4)"], None);
+    assert_eq!(text(&out.stdout), "f(x) = x^2\n16\n");
+}
+
+#[test]
+fn units_cannot_be_assigned() {
+    let out = run(&["-q", "m = 5"], None);
+    assert_eq!(out.status.code(), Some(2));
+    assert!(
+        text(&out.stderr).contains("can't define m"),
+        "{}",
+        text(&out.stderr)
+    );
+}
