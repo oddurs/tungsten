@@ -25,6 +25,9 @@ pub enum NumMode {
     Rounded,
     /// As written in the query (interpretation).
     Literal,
+    /// A knowledge-base value as its source published it: exactly this many
+    /// significant digits, trailing zeros kept (6.674 30×10⁻¹¹).
+    Published(u32),
 }
 
 #[derive(Clone, Debug, PartialEq)]

@@ -196,7 +196,10 @@ echo "3 ft in cm" | w   stdin, one query per line
   digits below a million (`217 261`), and goes scientific outside
   0.001–999 999 (`1.813×10¹⁴`, or `1.813e14` under `--plain`).
 - Integer parts of five or more digits are grouped in threes with a narrow
-  no-break space, or commas under `--plain`. Input accepts either, and plain
+  no-break space, or commas under `--plain`.
+- On entity cards, a value shown in its own unit keeps the significant digits
+  its source published, trailing zeros included, grouped as CODATA writes
+  them: G is `6.674 30×10⁻¹¹`, c is `299 792 458`. Input accepts either, and plain
   spaces too (`1 000 000`).
 
 ## §7 Errors
