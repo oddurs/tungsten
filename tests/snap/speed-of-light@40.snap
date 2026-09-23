@@ -1,17 +1,15 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w big mac calories
+$ w speed of light
 
   ◆ interpretation
-  │ food energy of Big Mac
+  │ c
 
   ◆ result
-  │ 563 kcal
+  │ 299 792 458 m/s
 
   ◆ other units
-  │ 2.356 MJ
-  │ 654.3 Wh
-  │ 2.356×10⁶ J
+  │ 1 c
 
   ──────────────────── W74

@@ -71,6 +71,28 @@ pub enum Source {
     Entity(Entity),
 }
 
+/// The fewest significant digits among the knowledge-base values a query
+/// used, if it used any. An integer's trailing zeros do not count: NOAA's
+/// "up to 330,000 pounds" has two.
+pub fn precision(sources: &[Source]) -> Option<u32> {
+    sources
+        .iter()
+        .filter_map(|s| match s {
+            Source::Value { entity, prop } => entity.value(*prop),
+            _ => None,
+        })
+        .map(|v| {
+            v.digits.unwrap_or_else(|| {
+                let digits = match v.num.as_rational() {
+                    Some(r) if r.is_integer() => r.num().unsigned_abs().to_string(),
+                    _ => return 4,
+                };
+                u32::try_from(digits.trim_end_matches('0').len().max(1)).unwrap_or(4)
+            })
+        })
+        .min()
+}
+
 /// Units and values in the order they appear, each once.
 fn sources(q: &Query, card: Option<Entity>) -> Vec<Source> {
     fn walk(n: &Node, out: &mut Vec<Source>) {
@@ -145,14 +167,27 @@ pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
     check::check_query(&query, src)?;
     let value = eval::eval(&query.expr)?;
     let math = |e: MathError| Error::new(ErrorKind::Math(e), query.expr.span.clone());
-    let answer = match query.targets.as_slice() {
-        [] => Answer::Single {
+    // A bare unit asks what it is: `speed of light` is 299 792 458 m/s.
+    let bare = match &query.expr.expr {
+        Expr::Quantity { value: None, unit }
+            if query.targets.is_empty()
+                && !value.dim.is_none()
+                && !unit.single().is_some_and(is_scale) =>
+        {
+            let si = tungsten_units::coherent(&value.dim);
+            (si != *unit).then_some(si)
+        }
+        _ => None,
+    };
+    let answer = match (query.targets.as_slice(), bare) {
+        ([], Some(si)) => convert(&value, &si).map_err(math)?,
+        ([], None) => Answer::Single {
             num: value.shown().map_err(math)?,
             unit: value.unit.clone(),
             point: value.point,
         },
-        [t] => convert(&value, &t.unit).map_err(math)?,
-        many => parts(&value, many).map_err(math)?,
+        ([t], _) => convert(&value, &t.unit).map_err(math)?,
+        (many, _) => parts(&value, many).map_err(math)?,
     };
     Ok(Outcome {
         sources: sources(&query, None),

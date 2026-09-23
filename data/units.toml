@@ -1178,7 +1178,7 @@ groups = [["GPa", "MPa", "kPa", "Pa"]]
 name = "energy"
 dim = "J"
 derived = "J"
-groups = [["TJ", "GJ", "MJ", "kJ", "J", "mJ"], ["GWh", "MWh", "kWh", "Wh"], ["kcal", "cal"]]
+groups = [["TJ", "GJ", "MJ", "kJ", "J", "mJ"], ["GWh", "MWh", "kWh", "Wh"], ["kcal"]]
 extra = [["GeV", "MeV", "keV", "eV"], ["E_h"]]
 
 [[quantity]]
