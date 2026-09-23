@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Ship the current branch: check, push, open a PR, squash-merge it, return to
+# an up-to-date main.
+#
+#   git switch -c 0028-kb-build-pipeline     # branch named after the cairn item
+#   ...commit...
+#   scripts/ship
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+branch=$(git branch --show-current)
+if [[ $branch == main ]]; then
+  echo "ship: on main. Branch first, named after the cairn item: git switch -c 0028-short-name" >&2
+  exit 1
+fi
+if [[ -n $(git status --porcelain) ]]; then
+  echo "ship: uncommitted changes; commit or stash them first" >&2
+  exit 1
+fi
+
+scripts/check
+git fetch -q origin main
+if ! git merge-base --is-ancestor origin/main HEAD; then
+  echo "ship: main has moved; run: git rebase origin/main" >&2
+  exit 1
+fi
+
+git push -q -u origin "$branch"
+# Title and body come from the commits; with one commit, from that commit.
+gh pr view --json url -q .url 2>/dev/null || gh pr create --fill
+gh pr merge --squash --delete-branch
