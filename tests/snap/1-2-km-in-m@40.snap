@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1/2 km in m
+
+  ◆ interpretation
+  │ 1/2 km  →  m
+
+  ◆ result
+  │ 500 m
+
+  ◆ other units
+  │ 0.5 km
+  │ 546.8 yd
+
+  ──────────────────── W74

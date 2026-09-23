@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1.5k * 2
+
+  ◆ interpretation
+  │ 1500 × 2
+
+  ◆ result
+  │ 3000
+
+  ──────────────────── W74

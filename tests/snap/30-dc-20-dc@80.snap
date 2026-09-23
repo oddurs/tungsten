@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 30 °C - 20 °C
+
+  ◆ interpretation
+  │ 30 °C − 20 °C
+
+  ◆ result
+  │ 10 Δ°C
+
+  ◆ other units
+  │ 18 Δ°F  ·  10 K
+
+  ──────────────────── W74

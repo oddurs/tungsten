@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w half of 3 km in m
+
+  ◆ interpretation
+  │ 1/2 × 3 km  →  m
+
+  ◆ result
+  │ 1500 m
+
+  ◆ other units
+  │ 1.5 km  ·  0.9321 mi
+
+  ──────────────────── W74

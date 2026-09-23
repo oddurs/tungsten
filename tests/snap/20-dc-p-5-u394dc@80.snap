@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 20 °C + 5 Δ°C
+
+  ◆ interpretation
+  │ 20 °C + 5 Δ°C
+
+  ◆ result
+  │ 25 °C
+
+  ◆ other units
+  │ 77 °F  ·  298.1 K
+
+  ──────────────────── W74

@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 60 mph * 2h 15min
+
+  ◆ interpretation
+  │ 60 mph × (2 h + 15 min)
+
+  ◆ result
+  │ 135 mi
+
+  ◆ other units
+  │ 217.3 km  ·  237 600 yd  ·  217 261 m
+
+  ─────────────────────────────────── W74

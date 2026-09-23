@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 h / 30 min
+
+  ◆ interpretation
+  │ 1 h / 30 min
+
+  ◆ result
+  │ 2
+
+  ──────────────────── W74

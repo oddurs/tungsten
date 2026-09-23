@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w sqrt(2 m)
+
+  ◆ interpretation
+  │ sqrt(2 m)
+
+  ◆ result
+  │ 1.414 m^(1/2)
+
+  ──────────────────── W74

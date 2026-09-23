@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 20 °C + 5 °C
+
+  ◆ can't add two temperatures
+  │ 20 °C + 5 °C
+  │ both are readings on a temperature scale; add a difference instead
+  │ hint: did you mean 20 °C + 5 Δ°C  (= 25 °C)?
+
+  ──────────────────────────────────────────────────────────────── W74

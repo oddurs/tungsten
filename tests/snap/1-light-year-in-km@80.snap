@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 light year in km
+
+  ◆ interpretation
+  │ 1 ly  →  km
+
+  ◆ result
+  │ 9.461×10¹² km
+
+  ◆ other units
+  │ 1 ly  ·  9.461×10¹⁵ m
+
+  ──────────────────── W74

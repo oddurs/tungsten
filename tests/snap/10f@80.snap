@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 10!
+
+  ◆ interpretation
+  │ 10!
+
+  ◆ result
+  │ 3 628 800
+
+  ──────────────────── W74

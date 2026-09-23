@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 2^3^2
+
+  ◆ interpretation
+  │ 2^(3²)
+
+  ◆ result
+  │ 512
+
+  ──────────────────── W74

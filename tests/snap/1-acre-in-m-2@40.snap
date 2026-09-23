@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 acre in m^2
+
+  ◆ interpretation
+  │ 1 ac  →  m²
+
+  ◆ result
+  │ 4046.8564224 m²
+
+  ◆ other units
+  │ 0.4047 ha
+  │ 1 ac
+
+  ──────────────────── W74

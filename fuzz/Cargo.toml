@@ -1,0 +1,23 @@
+[package]
+name = "tungsten-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+tungsten-core = { path = "../crates/core" }
+tungsten-pods = { path = "../crates/pods" }
+tungsten-render = { path = "../crates/render" }
+
+[[bin]]
+name = "query"
+path = "fuzz_targets/query.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]

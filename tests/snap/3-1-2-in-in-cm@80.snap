@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 1/2 in in cm
+
+  ◆ interpretation
+  │ 7/2 in  →  cm
+
+  ◆ result
+  │ 8.89 cm
+
+  ◆ other units
+  │ 88.9 mm  ·  3.5 in  ·  0.0889 m
+
+  ───────────────────────────── W74

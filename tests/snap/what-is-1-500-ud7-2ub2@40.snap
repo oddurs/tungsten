@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w what is 1,500 × 2²?
+
+  ◆ interpretation
+  │ 1500 × 2²
+
+  ◆ result
+  │ 6000
+
+  ──────────────────── W74

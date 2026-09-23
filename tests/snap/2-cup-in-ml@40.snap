@@ -1,0 +1,17 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 2 cup in mL
+
+  ◆ interpretation
+  │ 2 cup  →  mL
+
+  ◆ result
+  │ 473.176473 mL
+
+  ◆ other units
+  │ 0.4732 L
+  │ 2 cups
+  │ 4.732×10⁻⁴ m³
+
+  ──────────────────── W74

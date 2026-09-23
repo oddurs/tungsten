@@ -1,0 +1,1234 @@
+# data/units.toml — every unit tungsten knows.
+#
+# Compiled into the binary by crates/units/build.rs, which fails the build on a
+# missing source, an unknown system, or two units answering to the same name.
+# Definitions are resolved and checked by `cargo test -p tungsten-units`.
+#
+# [[prefix]]  symbol, name, factor, kind ("si" | "binary"), aliases, source
+#
+# [[unit]]
+#   names     long names; matched case-insensitively. First is canonical.
+#   plurals   optional; defaults to each name + "s" (or "es"/"ies" by spelling)
+#   symbols   matched case-sensitively. First is the display symbol unless
+#             `display` is given.
+#   base      a base dimension (with optional `scale`), or
+#   def       an expression in other units: "0.3048 m", "kg m/s^2", "pi/180 rad"
+#   offset    affine units only: the kelvin value of this scale's zero
+#   delta     affine units only: symbol of the matching difference unit
+#   prefixes  "si", "binary", "si binary", "large", or explicit symbols "k M G"
+#   expand    true for compound units (mph = mi/h) that may be expanded so
+#             terms cancel: mph × h → mi
+#   system    si | metric | imperial | us | nautical | astronomical |
+#             information | physics | other
+#   source    where the definition comes from. Required.
+#
+# [[quantity]] names a dimension and lists the units offered in the
+# "other units" pod. `groups` each contribute their best candidate; `extra`
+# groups are consulted only when the result is already in one of their units.
+
+# ─── Sources ─────────────────────────────────────────────────────────────────
+# BIPM    The International System of Units (SI Brochure), 9th ed., 2019, v3.01 (2024)
+# CGPM22  27th CGPM (2022), Resolution 3: prefixes ronna, quetta, ronto, quecto
+# SP811   NIST Special Publication 811 (2008), Guide for the Use of the SI, App. B
+# HB44    NIST Handbook 44 (2024), Appendix C: General Tables of Units of Measurement
+# IEC     IEC 80000-13:2008, Quantities and units — Information science and technology
+# IAU     IAU 2012 Resolution B2 (astronomical unit); IAU Style Manual (light year)
+# ISO     ISO 80000-3:2019 (time, angle)
+# WMA     UK Weights and Measures Act 1985, Schedule 1 (imperial units)
+
+# ─── Prefixes ────────────────────────────────────────────────────────────────
+
+[[prefix]]
+symbol = "Q"
+name = "quetta"
+factor = "1e30"
+kind = "si"
+source = "CGPM22"
+
+[[prefix]]
+symbol = "R"
+name = "ronna"
+factor = "1e27"
+kind = "si"
+source = "CGPM22"
+
+[[prefix]]
+symbol = "Y"
+name = "yotta"
+factor = "1e24"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "Z"
+name = "zetta"
+factor = "1e21"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "E"
+name = "exa"
+factor = "1e18"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "P"
+name = "peta"
+factor = "1e15"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "T"
+name = "tera"
+factor = "1e12"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "G"
+name = "giga"
+factor = "1e9"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "M"
+name = "mega"
+factor = "1e6"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "k"
+name = "kilo"
+factor = "1e3"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "h"
+name = "hecto"
+factor = "1e2"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "da"
+name = "deca"
+factor = "1e1"
+kind = "si"
+aliases = ["deka"]
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "d"
+name = "deci"
+factor = "1e-1"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "c"
+name = "centi"
+factor = "1e-2"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "m"
+name = "milli"
+factor = "1e-3"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "µ"
+name = "micro"
+factor = "1e-6"
+kind = "si"
+aliases = ["μ", "u"]
+source = "BIPM Table 7 (µ); ASCII u per ISO 2955"
+
+[[prefix]]
+symbol = "n"
+name = "nano"
+factor = "1e-9"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "p"
+name = "pico"
+factor = "1e-12"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "f"
+name = "femto"
+factor = "1e-15"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "a"
+name = "atto"
+factor = "1e-18"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "z"
+name = "zepto"
+factor = "1e-21"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "y"
+name = "yocto"
+factor = "1e-24"
+kind = "si"
+source = "BIPM Table 7"
+
+[[prefix]]
+symbol = "r"
+name = "ronto"
+factor = "1e-27"
+kind = "si"
+source = "CGPM22"
+
+[[prefix]]
+symbol = "q"
+name = "quecto"
+factor = "1e-30"
+kind = "si"
+source = "CGPM22"
+
+[[prefix]]
+symbol = "Ki"
+name = "kibi"
+factor = "1024"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+[[prefix]]
+symbol = "Mi"
+name = "mebi"
+factor = "1048576"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+[[prefix]]
+symbol = "Gi"
+name = "gibi"
+factor = "1073741824"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+[[prefix]]
+symbol = "Ti"
+name = "tebi"
+factor = "1099511627776"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+[[prefix]]
+symbol = "Pi"
+name = "pebi"
+factor = "1125899906842624"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+[[prefix]]
+symbol = "Ei"
+name = "exbi"
+factor = "1152921504606846976"
+kind = "binary"
+source = "IEC 80000-13 §4"
+
+# ─── SI base units ───────────────────────────────────────────────────────────
+
+[[unit]]
+names = ["metre", "meter"]
+symbols = ["m"]
+base = "length"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+[[unit]]
+names = ["gram", "gramme"]
+symbols = ["g"]
+base = "mass"
+scale = "0.001"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2 (kilogram is the base unit; prefixes attach to gram, §3)"
+
+[[unit]]
+names = ["second"]
+plurals = ["seconds", "secs"]
+symbols = ["s", "sec"]
+base = "time"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+[[unit]]
+names = ["ampere", "amp"]
+symbols = ["A"]
+base = "current"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+[[unit]]
+names = ["kelvin"]
+plurals = ["kelvins", "kelvin"]
+symbols = ["K"]
+base = "temperature"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+[[unit]]
+names = ["mole"]
+symbols = ["mol"]
+base = "amount"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+[[unit]]
+names = ["candela"]
+symbols = ["cd"]
+base = "luminosity"
+prefixes = "si"
+system = "si"
+source = "BIPM §2.3.1, Table 2"
+
+# ─── The 22 SI units with special names (BIPM Table 4) ───────────────────────
+
+[[unit]]
+names = ["radian"]
+symbols = ["rad"]
+def = "1"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["steradian"]
+symbols = ["sr"]
+def = "1"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["hertz"]
+plurals = ["hertz"]
+symbols = ["Hz"]
+def = "1/s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["newton"]
+symbols = ["N"]
+def = "kg m/s^2"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["pascal"]
+symbols = ["Pa"]
+def = "N/m^2"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["joule"]
+symbols = ["J"]
+def = "N m"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["watt"]
+symbols = ["W"]
+def = "J/s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["coulomb"]
+symbols = ["C"]
+def = "A s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["volt"]
+symbols = ["V"]
+def = "W/A"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["farad"]
+symbols = ["F"]
+def = "C/V"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["ohm"]
+symbols = ["Ω", "Ω"]
+def = "V/A"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["siemens"]
+plurals = ["siemens"]
+symbols = ["S"]
+def = "A/V"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["weber"]
+symbols = ["Wb"]
+def = "V s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["tesla"]
+symbols = ["T"]
+def = "Wb/m^2"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["henry"]
+plurals = ["henries", "henrys"]
+symbols = ["H"]
+def = "Wb/A"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["degree celsius", "celsius", "degree centigrade", "centigrade"]
+plurals = ["degrees celsius", "degrees centigrade"]
+symbols = ["°C", "℃", "degC"]
+def = "K"
+offset = "273.15"
+delta = "Δ°C"
+system = "si"
+source = "BIPM Table 4 and §2.3.1 (t/°C = T/K − 273.15)"
+
+[[unit]]
+names = ["lumen"]
+symbols = ["lm"]
+def = "cd sr"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["lux"]
+plurals = ["lux"]
+symbols = ["lx"]
+def = "lm/m^2"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["becquerel"]
+symbols = ["Bq"]
+def = "1/s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["gray"]
+symbols = ["Gy"]
+def = "J/kg"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["sievert"]
+symbols = ["Sv"]
+def = "J/kg"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+[[unit]]
+names = ["katal"]
+symbols = ["kat"]
+def = "mol/s"
+prefixes = "si"
+system = "si"
+source = "BIPM Table 4"
+
+# ─── Temperature scales and differences ──────────────────────────────────────
+
+[[unit]]
+names = ["degree fahrenheit", "fahrenheit"]
+plurals = ["degrees fahrenheit"]
+symbols = ["°F", "℉", "degF"]
+def = "5/9 K"
+offset = "45967/180"
+delta = "Δ°F"
+system = "us"
+source = "SP811 B.8 (t/°F = 1.8 t/°C + 32)"
+
+[[unit]]
+names = ["degree rankine", "rankine"]
+plurals = ["degrees rankine"]
+symbols = ["°R", "degR"]
+def = "5/9 K"
+system = "us"
+source = "SP811 B.8"
+
+[[unit]]
+names = ["celsius degree", "delta celsius"]
+plurals = ["celsius degrees"]
+symbols = ["Δ°C", "ΔC"]
+def = "K"
+system = "si"
+source = "BIPM §2.3.1 (a difference of 1 °C equals 1 K)"
+
+[[unit]]
+names = ["fahrenheit degree", "delta fahrenheit"]
+plurals = ["fahrenheit degrees"]
+symbols = ["Δ°F", "ΔF"]
+def = "5/9 K"
+system = "us"
+source = "SP811 B.8"
+
+# ─── Non-SI units accepted for use with the SI (BIPM Table 8) ────────────────
+
+[[unit]]
+names = ["minute"]
+plurals = ["minutes", "mins"]
+symbols = ["min"]
+def = "60 s"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["hour"]
+plurals = ["hours", "hrs"]
+symbols = ["h", "hr"]
+def = "60 min"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["day"]
+symbols = ["d"]
+def = "24 h"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["week"]
+symbols = ["wk"]
+def = "7 d"
+system = "metric"
+source = "ISO 80000-3"
+
+[[unit]]
+names = ["fortnight"]
+def = "14 d"
+system = "imperial"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["month"]
+symbols = ["mo"]
+def = "1/12 yr"
+system = "metric"
+source = "One twelfth of the Julian year (ISO 80000-3); calendar months vary"
+
+[[unit]]
+names = ["year", "julian year"]
+symbols = ["yr"]
+def = "365.25 d"
+prefixes = "k M G"
+system = "metric"
+source = "Julian year, ISO 80000-3 and IAU Style Manual"
+
+[[unit]]
+names = ["decade"]
+def = "10 yr"
+system = "metric"
+source = "10 Julian years"
+
+[[unit]]
+names = ["century"]
+plurals = ["centuries"]
+def = "100 yr"
+system = "metric"
+source = "100 Julian years"
+
+[[unit]]
+names = ["millennium"]
+plurals = ["millennia", "millenniums"]
+def = "1000 yr"
+system = "metric"
+source = "1000 Julian years"
+
+[[unit]]
+names = ["litre", "liter"]
+symbols = ["L", "l", "ℓ"]
+def = "0.001 m^3"
+prefixes = "si"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["tonne", "metric ton"]
+symbols = ["t"]
+def = "1000 kg"
+prefixes = "k M G"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["hectare"]
+symbols = ["ha"]
+def = "10000 m^2"
+system = "metric"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["ångström", "angstrom"]
+symbols = ["Å", "Å"]
+def = "1e-10 m"
+system = "metric"
+source = "SP811 Table 11"
+
+[[unit]]
+names = ["micron"]
+symbols = ["µ"]
+def = "1e-6 m"
+system = "metric"
+source = "SP811 Table 11 (former name of the micrometre)"
+
+[[unit]]
+names = ["cubic centimetre", "cubic centimeter"]
+symbols = ["cc"]
+def = "cm^3"
+system = "metric"
+source = "SP811 B.8"
+
+[[unit]]
+names = ["degree"]
+symbols = ["°", "deg"]
+def = "pi/180 rad"
+system = "si"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["arcminute", "minute of arc"]
+symbols = ["arcmin"]
+def = "1/60 deg"
+system = "si"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["arcsecond", "second of arc"]
+symbols = ["arcsec"]
+def = "1/60 arcmin"
+system = "si"
+source = "BIPM Table 8"
+
+[[unit]]
+names = ["revolution", "turn"]
+symbols = ["rev"]
+def = "2 pi rad"
+system = "si"
+source = "ISO 80000-3"
+
+[[unit]]
+names = ["revolution per minute"]
+plurals = ["revolutions per minute"]
+symbols = ["rpm"]
+def = "rev/min"
+expand = true
+system = "metric"
+source = "SP811 B.8"
+
+# ─── US customary and imperial: length ───────────────────────────────────────
+
+[[unit]]
+names = ["inch"]
+symbols = ["in", "″"]
+def = "0.0254 m"
+system = "imperial"
+source = "HB44 C-4 (international inch, 1959)"
+
+[[unit]]
+names = ["foot"]
+plurals = ["feet", "foots"]
+symbols = ["ft", "′"]
+def = "12 in"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["yard"]
+symbols = ["yd"]
+def = "3 ft"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["mile", "statute mile"]
+symbols = ["mi"]
+def = "1760 yd"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["thou", "mil"]
+plurals = ["thou", "mils"]
+def = "0.001 in"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["hand"]
+def = "4 in"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["fathom"]
+def = "6 ft"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["rod"]
+def = "5.5 yd"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["chain"]
+def = "22 yd"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["furlong"]
+def = "220 yd"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["league"]
+def = "3 mi"
+system = "imperial"
+source = "HB44 C-4"
+
+[[unit]]
+names = ["nautical mile"]
+symbols = ["nmi", "NM"]
+def = "1852 m"
+system = "nautical"
+source = "BIPM Table 8 note; HB44 C-4"
+
+[[unit]]
+names = ["astronomical unit"]
+symbols = ["au", "AU"]
+def = "149597870700 m"
+system = "astronomical"
+source = "IAU 2012 Resolution B2"
+
+[[unit]]
+names = ["light year", "light-year", "lightyear"]
+symbols = ["ly"]
+def = "c yr"
+system = "astronomical"
+source = "IAU Style Manual (c × one Julian year)"
+
+# ─── US customary and imperial: area ─────────────────────────────────────────
+
+[[unit]]
+names = ["acre"]
+symbols = ["ac"]
+def = "43560 ft^2"
+system = "imperial"
+source = "HB44 C-5"
+
+# ─── US customary and imperial: mass ─────────────────────────────────────────
+
+[[unit]]
+names = ["pound"]
+plurals = ["pounds", "lbs"]
+symbols = ["lb", "lbm"]
+def = "0.45359237 kg"
+system = "imperial"
+source = "HB44 C-6 (international avoirdupois pound, 1959)"
+
+[[unit]]
+names = ["ounce"]
+symbols = ["oz"]
+def = "1/16 lb"
+system = "imperial"
+source = "HB44 C-6"
+
+[[unit]]
+names = ["stone"]
+plurals = ["stone", "stones"]
+symbols = ["st"]
+def = "14 lb"
+system = "imperial"
+source = "WMA Schedule 1"
+
+[[unit]]
+names = ["grain"]
+symbols = ["gr"]
+def = "64.79891 mg"
+system = "imperial"
+source = "HB44 C-6"
+
+[[unit]]
+names = ["short ton", "ton"]
+symbols = ["tn"]
+def = "2000 lb"
+system = "us"
+source = "HB44 C-6"
+
+[[unit]]
+names = ["long ton"]
+def = "2240 lb"
+system = "imperial"
+source = "HB44 C-6"
+
+[[unit]]
+names = ["troy ounce"]
+symbols = ["ozt"]
+def = "31.1034768 g"
+system = "imperial"
+source = "HB44 C-6"
+
+[[unit]]
+names = ["carat"]
+symbols = ["ct"]
+def = "200 mg"
+system = "metric"
+source = "SP811 B.8 (metric carat)"
+
+# ─── US customary and imperial: volume ───────────────────────────────────────
+
+[[unit]]
+names = ["gallon", "us gallon"]
+symbols = ["gal"]
+def = "231 in^3"
+system = "us"
+source = "HB44 C-5 (US liquid gallon)"
+
+[[unit]]
+names = ["quart", "us quart"]
+symbols = ["qt"]
+def = "1/4 gal"
+system = "us"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["pint", "us pint"]
+symbols = ["pt"]
+def = "1/8 gal"
+system = "us"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["cup", "us cup"]
+def = "1/16 gal"
+system = "us"
+source = "HB44 C-5 (customary cup, 8 fl oz)"
+
+[[unit]]
+names = ["fluid ounce", "fl oz", "us fluid ounce"]
+plurals = ["fluid ounces", "fl ozs", "us fluid ounces"]
+symbols = ["floz"]
+display = "fl oz"
+def = "1/128 gal"
+system = "us"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["tablespoon"]
+symbols = ["tbsp", "Tbsp"]
+def = "1/2 floz"
+system = "us"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["teaspoon"]
+symbols = ["tsp"]
+def = "1/3 tbsp"
+system = "us"
+source = "HB44 C-5"
+
+[[unit]]
+names = ["barrel", "oil barrel"]
+symbols = ["bbl"]
+def = "42 gal"
+system = "us"
+source = "SP811 B.8 (petroleum barrel)"
+
+[[unit]]
+names = ["imperial gallon", "imp gal"]
+symbols = ["impgal"]
+def = "4.54609 L"
+system = "imperial"
+source = "WMA Schedule 1"
+
+[[unit]]
+names = ["imperial pint", "imp pt"]
+symbols = ["imppt"]
+def = "1/8 impgal"
+system = "imperial"
+source = "WMA Schedule 1"
+
+# ─── Speed and acceleration ──────────────────────────────────────────────────
+
+[[unit]]
+names = ["mile per hour"]
+plurals = ["miles per hour"]
+symbols = ["mph"]
+def = "mi/h"
+expand = true
+system = "imperial"
+source = "HB44 (derived)"
+
+[[unit]]
+names = ["kilometre per hour", "kilometer per hour"]
+plurals = ["kilometres per hour", "kilometers per hour"]
+symbols = ["kph", "kmh"]
+display = "km/h"
+def = "km/h"
+expand = true
+system = "metric"
+source = "BIPM (derived)"
+
+[[unit]]
+names = ["knot"]
+symbols = ["kn"]
+def = "nmi/h"
+expand = true
+system = "nautical"
+source = "BIPM Table 8 note; SP811 B.8"
+
+[[unit]]
+names = ["speed of light", "lightspeed"]
+plurals = ["speeds of light"]
+symbols = ["c"]
+def = "299792458 m/s"
+system = "physics"
+source = "BIPM §2.2 (exact by definition)"
+
+[[unit]]
+names = ["standard gravity", "gee"]
+symbols = ["g0", "gn", "g₀"]
+def = "9.80665 m/s^2"
+system = "physics"
+source = "SP811 B.8 (3rd CGPM, 1901)"
+
+# ─── Force, energy, power ────────────────────────────────────────────────────
+
+[[unit]]
+names = ["pound-force", "pound force"]
+plurals = ["pounds-force", "pounds force"]
+symbols = ["lbf"]
+def = "lb g0"
+system = "imperial"
+source = "SP811 B.8"
+
+[[unit]]
+names = ["kilogram-force", "kilogram force"]
+plurals = ["kilograms-force"]
+symbols = ["kgf"]
+def = "kg g0"
+system = "metric"
+source = "SP811 B.8"
+
+[[unit]]
+names = ["dyne"]
+symbols = ["dyn"]
+def = "1e-5 N"
+system = "metric"
+source = "SP811 B.8 (CGS)"
+
+[[unit]]
+names = ["watt hour", "watt-hour"]
+plurals = ["watt hours", "watt-hours"]
+symbols = ["Wh"]
+def = "W h"
+prefixes = "k M G T"
+expand = true
+system = "metric"
+source = "SP811 B.8"
+
+[[unit]]
+names = ["horsepower"]
+plurals = ["horsepower"]
+symbols = ["hp"]
+def = "550 ft lbf/s"
+system = "imperial"
+source = "SP811 B.8 (mechanical horsepower)"
+
+# ─── Information ─────────────────────────────────────────────────────────────
+
+[[unit]]
+names = ["bit"]
+symbols = ["bit", "b"]
+base = "information"
+prefixes = "large binary"
+system = "information"
+source = "IEC 80000-13 §13-9"
+
+[[unit]]
+names = ["byte"]
+symbols = ["B"]
+def = "8 bit"
+prefixes = "large binary"
+system = "information"
+source = "IEC 80000-13 §13-9"
+
+# ─── Money and plain numbers ─────────────────────────────────────────────────
+
+[[unit]]
+names = ["dollar", "us dollar"]
+symbols = ["USD", "usd"]
+base = "currency"
+system = "other"
+source = "ISO 4217 (unit of account only; no exchange rates, see decision 0060)"
+
+[[unit]]
+names = ["part per million"]
+plurals = ["parts per million"]
+symbols = ["ppm"]
+def = "1e-6"
+system = "other"
+source = "SP811 §7.10.3"
+
+[[unit]]
+names = ["part per billion"]
+plurals = ["parts per billion"]
+symbols = ["ppb"]
+def = "1e-9"
+system = "other"
+source = "SP811 §7.10.3 (short-scale billion)"
+
+# ─── Named quantities ────────────────────────────────────────────────────────
+
+[[quantity]]
+name = "length"
+dim = "m"
+groups = [["km", "m", "cm", "mm", "µm", "nm"], ["mi", "yd", "ft", "in"]]
+extra = [["nmi"], ["AU", "ly"]]
+
+[[quantity]]
+name = "mass"
+dim = "kg"
+groups = [["t", "kg", "g", "mg", "µg"], ["tn", "lb", "oz"]]
+extra = [["st"], ["ozt"], ["ct"]]
+
+[[quantity]]
+name = "time"
+dim = "s"
+groups = [["yr", "wk", "d", "h", "min", "s", "ms", "µs", "ns"]]
+
+[[quantity]]
+name = "temperature"
+dim = "K"
+groups = [["°C", "°F", "K"]]
+
+[[quantity]]
+name = "electric current"
+dim = "A"
+groups = [["kA", "A", "mA", "µA"]]
+
+[[quantity]]
+name = "amount of substance"
+dim = "mol"
+groups = [["mol", "mmol", "µmol"]]
+
+[[quantity]]
+name = "luminous intensity"
+dim = "cd"
+groups = [["cd"]]
+
+[[quantity]]
+name = "money"
+dim = "USD"
+groups = [["USD"]]
+
+[[quantity]]
+name = "information"
+dim = "bit"
+groups = [["PB", "TB", "GB", "MB", "kB", "B"], ["TiB", "GiB", "MiB", "KiB"]]
+extra = [["Gbit", "Mbit", "kbit", "bit"]]
+
+[[quantity]]
+name = "area"
+dim = "m^2"
+groups = [["km^2", "ha", "m^2", "cm^2", "mm^2"], ["mi^2", "acre", "ft^2", "in^2"]]
+
+[[quantity]]
+name = "volume"
+dim = "m^3"
+groups = [["m^3", "L", "mL"], ["gal", "qt", "cup", "floz", "tbsp", "tsp"]]
+extra = [["impgal", "imppt"], ["bbl"], ["ft^3", "in^3"]]
+
+[[quantity]]
+name = "velocity"
+dim = "m/s"
+groups = [["km/h", "m/s"], ["mph", "ft/s"]]
+extra = [["kn"], ["c"]]
+
+[[quantity]]
+name = "acceleration"
+dim = "m/s^2"
+groups = [["m/s^2"], ["ft/s^2"]]
+extra = [["g0"]]
+
+[[quantity]]
+name = "force"
+dim = "N"
+derived = "N"
+groups = [["MN", "kN", "N", "mN"], ["lbf"]]
+extra = [["kgf", "dyn"]]
+
+[[quantity]]
+name = "pressure"
+dim = "Pa"
+derived = "Pa"
+groups = [["GPa", "MPa", "kPa", "Pa"]]
+
+[[quantity]]
+name = "energy"
+dim = "J"
+derived = "J"
+groups = [["TJ", "GJ", "MJ", "kJ", "J", "mJ"], ["GWh", "MWh", "kWh", "Wh"]]
+
+[[quantity]]
+name = "power"
+dim = "W"
+derived = "W"
+groups = [["GW", "MW", "kW", "W", "mW"], ["hp"]]
+
+[[quantity]]
+name = "frequency"
+dim = "Hz"
+groups = [["GHz", "MHz", "kHz", "Hz"], ["1/yr", "1/wk", "1/d", "1/h", "1/min"]]
+extra = [["rpm"]]
+
+[[quantity]]
+name = "electric charge"
+dim = "C"
+derived = "C"
+groups = [["kC", "C", "mC", "µC"]]
+
+[[quantity]]
+name = "voltage"
+dim = "V"
+derived = "V"
+groups = [["MV", "kV", "V", "mV"]]
+
+[[quantity]]
+name = "resistance"
+dim = "Ω"
+derived = "Ω"
+groups = [["MΩ", "kΩ", "Ω", "mΩ"]]
+
+[[quantity]]
+name = "capacitance"
+dim = "F"
+derived = "F"
+groups = [["F", "mF", "µF", "nF", "pF"]]
+
+[[quantity]]
+name = "inductance"
+dim = "H"
+derived = "H"
+groups = [["H", "mH", "µH"]]
+
+[[quantity]]
+name = "conductance"
+dim = "S"
+derived = "S"
+groups = [["S", "mS", "µS"]]
+
+[[quantity]]
+name = "magnetic flux"
+dim = "Wb"
+derived = "Wb"
+groups = [["Wb", "mWb"]]
+
+[[quantity]]
+name = "magnetic flux density"
+dim = "T"
+derived = "T"
+groups = [["T", "mT", "µT"]]
+
+[[quantity]]
+name = "illuminance"
+dim = "lx"
+groups = [["lx"]]
+
+[[quantity]]
+name = "density"
+dim = "kg/m^3"
+groups = [["kg/m^3", "g/cm^3", "g/L"], ["lb/ft^3"]]
+
+[[quantity]]
+name = "data rate"
+dim = "bit/s"
+groups = [["Gbit/s", "Mbit/s", "kbit/s", "bit/s"], ["GB/s", "MB/s", "kB/s"]]
+
+[[quantity]]
+name = "flow rate"
+dim = "m^3/s"
+groups = [["m^3/s", "L/s", "L/min"], ["gal/min"]]
+
+[[quantity]]
+name = "momentum"
+dim = "kg m/s"
+groups = [["kg m/s"]]
+
+[[quantity]]
+name = "catalytic activity"
+dim = "kat"
+derived = "kat"
+groups = [["kat"]]

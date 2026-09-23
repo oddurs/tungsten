@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5'11" in cm
+
+  ◆ interpretation
+  │ 5 ft + 11 in  →  cm
+
+  ◆ result
+  │ 180.34 cm
+
+  ◆ other units
+  │ 1.803 m
+  │ 1.972 yd
+
+  ──────────────────── W74

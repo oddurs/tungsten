@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 60 miles per hour in m/s
+
+  ◆ interpretation
+  │ 60 mph  →  m/s
+
+  ◆ result
+  │ 26.8224 m/s
+
+  ◆ other units
+  │ 96.56 km/h
+  │ 60 mph
+
+  ──────────────────── W74

@@ -1,0 +1,255 @@
+# cairn.toml — the schema for tungsten's roadmap and issues.
+#
+#   cairn roadmap              milestones with progress
+#   cairn next                 what is ready to pick up
+#   cairn list --view <name>   now · decisions · data · bugs · triage
+#   cairn check --strict       validate everything (run it before committing)
+#
+# Order is behaviour in this file: status order is board-column order, and enum
+# `values` order is sort order. Do not alphabetise anything.
+
+format = 3
+
+[project]
+name = "tungsten"
+description = "Wolfram|Alpha's quantities-and-units heart, as a small offline CLI. Element 74, symbol W."
+dir = "cairn/items"
+id_width = 4
+default_type = "feature"
+default_status = "backlog"
+# A fresh project can afford the gate: closing an item means its criteria hold.
+require_criteria = true
+# url = "https://github.com/oddurs/tungsten/blob/main"   # set once there is a remote, then link_items = true
+
+# ─── Item types ──────────────────────────────────────────────────────────────
+# Templates are shaped around what this tool is: a query goes in, pods come out.
+# So features and bugs lead with an example query and its expected rendering —
+# which is also, verbatim, the snapshot test that proves the item done.
+
+[[type]]
+name = "feature"
+icon = "+"
+color = "cyan"
+description = "Something `w` should be able to do."
+template = """
+## Behaviour
+
+## Example
+
+```
+$ w
+```
+
+## Acceptance criteria
+
+- [ ] Snapshot test covers the example above
+- [ ]
+"""
+
+[[type]]
+name = "bug"
+icon = "!"
+color = "red"
+description = "A query that produces a wrong answer, a wrong rendering, or a crash."
+template = """
+## Query
+
+```
+$ w
+```
+
+## Got
+
+## Expected
+
+## Acceptance criteria
+
+- [ ] Regression snapshot added
+"""
+
+[[type]]
+name = "data"
+icon = "#"
+color = "magenta"
+description = "Knowledge-base content: units, constants, entities, for-scale references."
+template = """
+## What to add
+
+## Sources
+
+Every value needs a `source` in the TOML. Prefer CODATA, NIST, IUPAC, USDA, NASA.
+
+## Acceptance criteria
+
+- [ ] Every entry has a `source`
+- [ ] `w --why` shows provenance for a sample entry
+- [ ]
+"""
+
+[[type]]
+name = "decision"
+icon = "?"
+color = "yellow"
+description = "An open design question. Close it by writing the decision into the body."
+template = """
+## Question
+
+## Options
+
+## Leaning
+
+## Decision
+
+## Acceptance criteria
+
+- [ ] Decision recorded above and reflected in docs/concept.md
+"""
+
+[[type]]
+name = "chore"
+icon = "~"
+color = "gray"
+description = "Build, CI, tooling, refactors — nothing a user sees."
+
+[[type]]
+name = "docs"
+icon = "*"
+color = "blue"
+description = "README, man page, examples."
+
+[[type]]
+name = "milestone"
+description = "A tagged release of tungsten."
+groups = "one"
+inverse = "scheduled"
+
+# ─── Statuses ────────────────────────────────────────────────────────────────
+
+[[status]]
+name = "backlog"
+category = "open"
+color = "gray"
+
+[[status]]
+name = "planned"
+category = "open"
+color = "blue"
+
+[[status]]
+name = "doing"
+label = "in progress"
+category = "active"
+color = "yellow"
+
+[[status]]
+name = "blocked"
+category = "active"
+color = "red"
+
+[[status]]
+name = "done"
+category = "done"
+color = "green"
+
+[[status]]
+name = "dropped"
+category = "dropped"
+color = "gray"
+board = false
+
+# ─── Custom fields ───────────────────────────────────────────────────────────
+
+# Mirrors the crate layout in docs/concept.md §12, so an area is also where the
+# code goes.
+[[field]]
+name = "area"
+kind = "enum"
+values = ["language", "units", "kb", "pods", "render", "cli", "repl", "notebook", "infra", "docs"]
+column = true
+description = "Subsystem, matching the crate layout (concept §12)"
+
+[[field]]
+name = "priority"
+kind = "enum"
+values = ["p0", "p1", "p2", "p3"]
+default = "p2"
+column = true
+description = "p0 blocks its milestone's release"
+
+[[field]]
+name = "effort"
+kind = "enum"
+values = ["s", "m", "l", "xl"]
+column = true
+description = "s: an evening · m: a weekend · l: a week · xl: split it"
+
+[[field]]
+name = "spec"
+kind = "text"
+description = "Section of docs/concept.md this implements, e.g. §5"
+
+[[field]]
+name = "due"
+kind = "date"
+description = "When a milestone is meant to land"
+
+# ─── Saved views ─────────────────────────────────────────────────────────────
+
+[[view]]
+name = "now"
+description = "What is actually being worked on"
+filter = "category=active"
+sort = "priority,id"
+
+[[view]]
+name = "next"
+description = "Planned work, most important first"
+filter = "status=planned"
+sort = "priority,milestone"
+
+[[view]]
+name = "decisions"
+description = "Open design questions"
+filter = "type=decision,category=open|active"
+sort = "milestone,priority"
+columns = ["id", "title", "milestone", "priority"]
+
+[[view]]
+name = "data"
+description = "Knowledge-base work still to do"
+filter = "type=data,category=open|active"
+sort = "milestone,priority"
+
+[[view]]
+name = "bugs"
+description = "Open bugs, worst first"
+filter = "type=bug,category=open|active"
+sort = "priority,id"
+
+[[view]]
+name = "triage"
+description = "Items that still need a milestone"
+filter = "milestone=,category!=done"
+columns = ["id", "type", "title", "created"]
+
+# ─── Hooks ───────────────────────────────────────────────────────────────────
+# The rendered roadmap is kept current automatically rather than remembered.
+
+[hooks]
+after-create = "cairn render -q"
+after-change = "cairn render -q"
+after-remove = "cairn render -q"
+
+# ─── Rendered roadmap ────────────────────────────────────────────────────────
+
+[render]
+target = "ROADMAP.md"
+title = "tungsten roadmap"
+group_by = "milestone"
+include = "category!=dropped"
+checkbox = true
+show_ids = true
+progress = true
+group_by_status = true
+link_items = false
+header = "docs/roadmap-intro.md"

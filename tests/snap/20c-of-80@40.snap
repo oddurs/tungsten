@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 20% of 80
+
+  ◆ interpretation
+  │ 20% × 80
+
+  ◆ result
+  │ 16
+
+  ──────────────────── W74

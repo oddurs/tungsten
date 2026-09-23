@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w -2^2
+
+  ◆ interpretation
+  │ −2²
+
+  ◆ result
+  │ −4
+
+  ──────────────────── W74

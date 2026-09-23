@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 km in s
+
+  ◆ can't convert
+  │ 5 km in s
+  │         ^
+  │ the query is a length, but s measures time
+
+  ────────────────────────────────── W74

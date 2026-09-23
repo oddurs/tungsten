@@ -1,0 +1,40 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+exclude = ["fuzz"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+authors = ["Oddur Sigurdsson"]
+
+[workspace.dependencies]
+tungsten-units = { path = "crates/units" }
+tungsten-core = { path = "crates/core" }
+tungsten-kb = { path = "crates/kb" }
+tungsten-pods = { path = "crates/pods" }
+tungsten-render = { path = "crates/render" }
+clap = { version = "4.5", features = ["derive"] }
+insta = "1.43"
+proptest = "1.7"
+serde = { version = "1", features = ["derive"] }
+terminal_size = "0.4"
+toml = "0.8"
+unicode-width = "0.2"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+dbg_macro = "warn"
+todo = "warn"
+unwrap_used = "warn"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

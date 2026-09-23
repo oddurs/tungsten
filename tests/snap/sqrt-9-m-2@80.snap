@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w sqrt(9 m^2)
+
+  ◆ interpretation
+  │ sqrt(9 m²)
+
+  ◆ result
+  │ 3 m
+
+  ◆ other units
+  │ 300 cm  ·  3.281 yd
+
+  ──────────────────── W74

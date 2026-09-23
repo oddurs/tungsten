@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w sin(3 m)
+
+  ◆ needs a plain number
+  │ sin(3 m)
+  │     ^^^ sin needs a plain number, not a length
+
+  ────────────────────────────────── W74

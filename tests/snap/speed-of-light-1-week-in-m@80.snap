@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w speed of light * 1 week in m
+
+  ◆ interpretation
+  │ c × 1 wk  →  m
+
+  ◆ result
+  │ 1.813×10¹⁴ m
+
+  ◆ other units
+  │ 1212 au
+
+  ──────────────────── W74

@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 98.6 °F in °C
+
+  ◆ interpretation
+  │ 98.6 °F  →  °C
+
+  ◆ result
+  │ 37 °C
+
+  ◆ other units
+  │ 98.6 °F  ·  310.1 K
+
+  ──────────────────── W74

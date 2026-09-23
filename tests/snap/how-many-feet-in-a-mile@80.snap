@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how many feet in a mile
+
+  ◆ interpretation
+  │ 1 mi  →  ft
+
+  ◆ result
+  │ 5280 ft
+
+  ◆ other units
+  │ 1.609 km  ·  1 mi  ·  1609 m
+
+  ────────────────────────── W74

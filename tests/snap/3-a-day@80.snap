@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 a day
+
+  ◆ interpretation
+  │ 3 / d
+
+  ◆ result
+  │ 3 per day
+
+  ◆ other units
+  │ 21 per week  ·  3.472×10⁻⁵ Hz
+
+  ─────────────────────────── W74

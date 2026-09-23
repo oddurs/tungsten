@@ -1,0 +1,19 @@
+[package]
+name = "tungsten-render"
+description = "Layout, number formatting and the filament-glow theme for tungsten pods"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+tungsten-pods.workspace = true
+tungsten-units.workspace = true
+unicode-width.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+tungsten-core.workspace = true

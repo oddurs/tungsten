@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 @ 4
+
+  ◆ unexpected character
+  │ 3 @ 4
+  │   ^ tungsten can't read this character
+
+  ──────────────────────────────────── W74

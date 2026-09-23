@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 2.4 million km in mi
+
+  ◆ interpretation
+  │ 2 400 000 km  →  mi
+
+  ◆ result
+  │ 1.491×10⁶ mi
+
+  ◆ other units
+  │ 2.4×10⁶ km
+  │ 2.4×10⁹ m
+
+  ──────────────────── W74

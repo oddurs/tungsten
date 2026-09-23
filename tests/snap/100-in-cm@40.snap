@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 100 in cm
+
+  ◆ interpretation
+  │ 100 in  →  cm
+
+  ◆ result
+  │ 254 cm
+
+  ◆ other units
+  │ 2.54 m
+  │ 2.778 yd
+
+  ──────────────────── W74

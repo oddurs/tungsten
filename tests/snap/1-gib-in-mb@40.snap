@@ -1,0 +1,17 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 GiB in MB
+
+  ◆ interpretation
+  │ 1 GiB  →  MB
+
+  ◆ result
+  │ 1073.741824 MB
+
+  ◆ other units
+  │ 1.074 GB
+  │ 1 GiB
+  │ 8.59×10⁹ bits
+
+  ──────────────────── W74

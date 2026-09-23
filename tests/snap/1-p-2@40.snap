@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w (1 + 2
+
+  ◆ incomplete query
+  │ (1 + 2
+  │       ^ expected `)`
+
+  ──────────────────── W74

@@ -1,0 +1,26 @@
+[package]
+name = "tungsten"
+description = "Wolfram|Alpha's quantities-and-units heart, as a small offline CLI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+default-run = "tungsten"
+
+[[bin]]
+name = "tungsten"
+path = "src/main.rs"
+
+[dependencies]
+tungsten-core.workspace = true
+tungsten-pods.workspace = true
+tungsten-render.workspace = true
+clap.workspace = true
+terminal_size.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 kg * 9.81 m/s^2
+
+  ◆ interpretation
+  │ 5 kg × 9.81 m / s²
+
+  ◆ result
+  │ 49.05 N
+
+  ◆ other units
+  │ 0.04905 kN
+  │ 11.03 lbf
+
+  ──────────────────── W74

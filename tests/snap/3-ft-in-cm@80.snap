@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 ft in cm
+
+  ◆ interpretation
+  │ 3 ft  →  cm
+
+  ◆ result
+  │ 91.44 cm
+
+  ◆ other units
+  │ 914.4 mm  ·  1 yd  ·  0.9144 m
+
+  ──────────────────────────── W74

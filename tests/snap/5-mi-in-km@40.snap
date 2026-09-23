@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 mi in km
+
+  ◆ interpretation
+  │ 5 mi  →  km
+
+  ◆ result
+  │ 8.04672 km
+
+  ◆ other units
+  │ 8047 m
+  │ 5 mi
+
+  ──────────────────── W74

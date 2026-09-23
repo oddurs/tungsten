@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 100000 s in h, min, s
+
+  ◆ interpretation
+  │ 100 000 s  →  h, min, s
+
+  ◆ result
+  │ 27 h 46 min 40 s
+
+  ───────────────────── W74

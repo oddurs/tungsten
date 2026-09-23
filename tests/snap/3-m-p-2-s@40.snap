@@ -1,0 +1,13 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 3 m + 2 s
+
+  ◆ can't add these
+  │ 3 m + 2 s
+  │ ─┬─   ─┬─
+  │  │     └ time
+  │  └ length
+  │ hint: did you mean 3 m / 2 s  (= 1.5 m/s)?
+
+  ────────────────────────────────── W74

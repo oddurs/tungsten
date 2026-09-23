@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 5 kilometers in milez
+
+  ◆ unknown word
+  │ 5 kilometers in milez
+  │                 ^^^^^ did you mean miles?
+
+  ────────────────────────────────── W74

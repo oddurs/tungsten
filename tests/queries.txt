@@ -1,0 +1,63 @@
+# The snapshot corpus: one query per line. Each is rendered at widths 80 and
+# 40 and compared against tests/snap/. Adding a test is adding a line here,
+# then `cargo insta test --review`. Blank lines and # comments are skipped.
+
+# ─── Headline examples ────────────────────────────────────────────────────────
+60 mph * 2h 15min
+60 mph * 2h 15min in km
+5 mi in km
+3 ft in cm
+speed of light * 1 week in m
+100000 s in h, min, s
+
+# ─── Numbers and normalisation (0012) ─────────────────────────────────────────
+what is 1,500 × 2²?
+1.5k * 2
+2.4 million km in mi
+2½ cups in mL
+1 000 000 s in d
+
+# ─── Parsing (0013) ───────────────────────────────────────────────────────────
+1/2 km in m
+3 a day
+20% of 80
+half of 3 km in m
+6 divided by 3
+2^3^2
+-2^2
+3 1/2 in in cm
+100 in cm
+how many feet in a mile
+60 miles per hour in m/s
+
+# ─── Dimensions and evaluation (0014, 0017) ──────────────────────────────────
+1/3 + 1/6
+1.5 * 3
+sqrt(9 m^2)
+sqrt(2 m)
+5 kg * 9.81 m/s^2
+1 h / 30 min
+sin(30°)
+10!
+1/0
+
+# ─── Units and conversion (0015, 0016, 0018) ──────────────────────────────────
+5'11" in cm
+1 GiB in MB
+1 acre in m^2
+2 cup in mL
+98.6 °F in °C
+-40 °C in °F
+20 °C + 5 °C
+20 °C + 5 Δ°C
+30 °C - 20 °C
+4.18 J/(g °C) * 100 g * 10 °C in kJ
+1 light year in km
+5 km in s
+
+# ─── Errors (0022, 0023) ──────────────────────────────────────────────────────
+3 m + 2 s
+5 kilometers in milez
+3 @ 4
+(1 + 2
+sin(3 m)

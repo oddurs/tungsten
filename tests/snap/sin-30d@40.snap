@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w sin(30°)
+
+  ◆ interpretation
+  │ sin(30°)
+
+  ◆ result
+  │ 0.5
+
+  ──────────────────── W74

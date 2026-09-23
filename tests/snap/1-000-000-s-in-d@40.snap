@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1 000 000 s in d
+
+  ◆ interpretation
+  │ 1 000 000 s  →  d
+
+  ◆ result
+  │ 11.57 d
+
+  ◆ other units
+  │ 1.653 wk
+  │ 1×10⁶ s
+
+  ──────────────────── W74

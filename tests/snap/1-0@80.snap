@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 1/0
+
+  ◆ can't divide by zero
+  │ 1/0
+  │   ^ this is zero
+
+  ──────────────────── W74

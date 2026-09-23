@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w -40 °C in °F
+
+  ◆ interpretation
+  │ −40 °C  →  °F
+
+  ◆ result
+  │ −40 °F
+
+  ◆ other units
+  │ −40 °C  ·  233.2 K
+
+  ──────────────────── W74

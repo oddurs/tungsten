@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      # Includes every snapshot in tests/snap/ and the README examples.
+      - run: cargo test --workspace
+        env:
+          INSTA_UPDATE: "no"
+
+  roadmap:
+    name: cairn
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cairn
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      # Items valid against cairn.toml, and ROADMAP.md matches the items.
+      - run: cairn check --strict --render
