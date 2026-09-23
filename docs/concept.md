@@ -9,16 +9,13 @@ and math, answered in a stack of *pods*.
 $ w 3 coffees a day for a year in grams of caffeine
 
   ◆ interpretation
-  │ 3 × coffee(95 mg caffeine) × day⁻¹ × 1 year  →  g
+  │ 3 × coffee(95 mg caffeine) / d × 1 yr  →  g of caffeine
 
   ◆ result
-  │ 104.0 g
+  │ 104.09625 g
 
   ◆ other units
-  │ 0.104 kg  ·  3.67 oz  ·  1.04×10⁵ mg
-
-  ◆ for scale
-  │ ≈ 1,095 cups over the year
+  │ 0.1041 kg  ·  3.672 oz
 
   ─────────────────────────────── W74 · 0.4ms
 ```
@@ -114,21 +111,37 @@ raw text
 
 ## §4 Knowledge base
 
-TOML under `data/`, compiled into the binary by `build.rs`.
+TOML under `data/`, compiled into the binary by `crates/kb/build.rs`, which
+parses every value with the unit parser and checks it against its property's
+declared dimension (`data/properties.toml`). Bad data fails the build with a
+file and line.
 
 ```toml
-[entity.coffee]
-kind     = "item"
-aliases  = ["coffees", "cup of coffee"]
-default  = "caffeine"
+[[entity]]
+kind = "item"
+display = "coffee"
+names = ["coffee", "coffees", "cup of coffee"]
+default = "caffeine"          # what `3 coffees` stands for
+source = "USDA FoodData Central, …"
+[entity.props]
 caffeine = "95 mg"
-volume   = "240 mL"
-source   = "USDA, brewed, 8 fl oz"
+volume = "8 floz"
 ```
 
-Ships with: ~400 units, CODATA constants, 118 elements, the solar system, ~150
-everyday items, and a curated **for-scale** subset. Every value carries a
-`source`; `w --why` shows it.
+- **Constants:** all 355 of CODATA 2022, with uncertainties
+  (`scripts/data/codata.py`).
+- **Elements:** all 118, from PubChem (`scripts/data/elements.py`).
+- **Solar system:** the Sun, planets, Pluto and 21 moons, from NASA's NSSDCA
+  fact sheets (`scripts/data/solar.py`).
+- **Everyday items**, hand-written with sources, some tagged as **for-scale**
+  references.
+
+Every value carries a `source`; `w --why` shows it.
+
+**Asking:** `mass of earth`, `earth's mass`, `earth.mass`; `3 coffees` stands for
+the item's default property; `in g of caffeine` picks another; a lone name
+(`gold`) shows its card. A name that is already a unit (`W`, `h`) stays the
+unit unless `--as element` asks.
 
 ## §5 Pods
 

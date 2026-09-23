@@ -9,6 +9,7 @@ authors.workspace = true
 
 [dependencies]
 tungsten-units.workspace = true
+tungsten-kb.workspace = true
 
 [dev-dependencies]
 proptest.workspace = true

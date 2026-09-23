@@ -1,0 +1,16 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w density of gold * 1 L
+
+  ◆ interpretation
+  │ density of gold × 1 L
+
+  ◆ result
+  │ 19 282 g
+
+  ◆ other units
+  │ 19.28 kg
+  │ 42.51 lb
+
+  ──────────────────── W74

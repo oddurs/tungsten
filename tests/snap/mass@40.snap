@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w mass
+
+  ◆ can't read this
+  │ mass
+  │ ^^^^ expected `of` and a thing: mass of earth
+
+  ────────────────────────────────── W74

@@ -38,7 +38,10 @@ pub fn suggest(word: &str) -> Option<String> {
     let len = lower.chars().count();
     let limit = if len <= 4 { 1 } else { 2 };
     let mut best: Option<(usize, bool, usize, &str)> = None;
-    for cand in all_forms().chain(vocabulary()) {
+    for cand in all_forms()
+        .chain(vocabulary())
+        .chain(tungsten_kb::all_names())
+    {
         let clen = cand.chars().count();
         if clen.abs_diff(len) > limit {
             continue;

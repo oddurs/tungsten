@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w gold
+
+  ◆ gold · Au · 79
+  │ atomic mass    196.96657 u
+  │ density        19.282 g/cm³
+  │ melting point  1064.18 °C
+  │ boiling point  2855.85 °C
+  │ state          solid
+  │ category       transition metal
+  │ discovered     ancient
+
+  ───────────────────────────── W74

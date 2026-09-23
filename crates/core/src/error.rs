@@ -75,4 +75,15 @@ pub enum ErrorKind {
     },
     FactorialDomain,
     Math(MathError),
+    /// `mass of gold`: the entity has no such property.
+    NoProperty {
+        entity: tungsten_kb::Entity,
+        prop: &'static str,
+    },
+    /// `3 golds`: the entity stands for no single quantity.
+    NoValue {
+        entity: tungsten_kb::Entity,
+    },
+    /// A name that only means something shadowed (asked for with `--as`).
+    NotAThing,
 }

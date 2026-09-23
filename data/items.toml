@@ -2,3 +2,19 @@
 #
 # Hand-written; every entity needs a source. See data/properties.toml for
 # property names, and cairn item 0032.
+
+# ─── Food and drink ──────────────────────────────────────────────────────────
+
+[[entity]]
+kind = "item"
+display = "coffee"
+plural = "cups of coffee"
+names = ["coffee", "coffees", "cup of coffee", "cups of coffee", "brewed coffee"]
+default = "caffeine"
+domain = "food"
+source = "USDA FoodData Central, Beverages, coffee, brewed, prepared with tap water: 40 mg caffeine and 1 kcal per 100 g; an 8 fl oz cup weighs 237 g"
+[entity.props]
+caffeine = "95 mg"
+volume = "8 floz"
+mass = "237 g"
+"food energy" = "2 kcal"

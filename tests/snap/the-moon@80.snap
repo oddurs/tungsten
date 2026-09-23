@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w the moon
+
+  ◆ the Moon · moon
+  │ mass                 7.346×10²² kg
+  │ density              3344 kg/m³
+  │ radius               1737.4 km
+  │ equatorial radius    1738.1 km
+  │ gravity              1.62 m/s²
+  │ escape velocity      2.38 km/s
+  │ distance from earth  384 400 km
+  │ orbital period       27.3217 d
+  │ orbital velocity     1.022 km/s
+  │ rotation period      655.72 h
+  │ axial tilt           6.68°
+  │ mean temperature     −20 °C
+  │ orbits               Earth
+
+  ──────────────────────────────── W74

@@ -243,6 +243,42 @@ pub fn pod(input: &str, e: &Error) -> (Pod, String) {
                 "factorial of a non-integer".into(),
             )
         }
+        ErrorKind::NoProperty { entity, prop } => {
+            let has: Vec<&str> = entity.values().map(|v| v.prop.name()).take(6).collect();
+            let note = if has.is_empty() {
+                format!("{} has no {prop}", entity.display())
+            } else {
+                format!("{} has no {prop}; try {}", entity.display(), has.join(", "))
+            };
+            lines.push(caret(input, &e.span, &note));
+            (
+                "no such property".into(),
+                format!("{} has no {prop}", entity.display()),
+            )
+        }
+        ErrorKind::NoValue { entity } => {
+            let example = entity
+                .values()
+                .next()
+                .map(|v| {
+                    format!(
+                        "; ask for one of its properties, like {} of {}",
+                        v.prop.name(),
+                        entity.display()
+                    )
+                })
+                .unwrap_or_default();
+            let note = format!("{} is a thing, not a quantity{example}", entity.display());
+            lines.push(caret(input, &e.span, &note));
+            (
+                "not a quantity".into(),
+                format!("{} is not a quantity", entity.display()),
+            )
+        }
+        ErrorKind::NotAThing => {
+            lines.push(caret(input, &e.span, "means something else here; see --as"));
+            ("not a thing here".into(), "not a thing here".into())
+        }
         ErrorKind::Math(m) => {
             let (title, note) = match m {
                 MathError::DivideByZero => ("can't divide by zero", "this is zero"),

@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w G
+
+  ◆ Newtonian constant of gravitation · G
+  │ value        6.6743×10⁻¹¹ m³/(kg·s²)
+  │ uncertainty  ± 1.5×10⁻¹⁵ m³/(kg·s²)
+
+  ────────────────────────────────── W74

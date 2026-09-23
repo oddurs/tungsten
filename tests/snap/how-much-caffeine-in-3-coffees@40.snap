@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how much caffeine in 3 coffees
+
+  ◆ interpretation
+  │ 3 × coffee(95 mg caffeine)
+  │   →  caffeine
+
+  ◆ result
+  │ 285 mg
+
+  ◆ other units
+  │ 0.285 g
+  │ 0.01005 oz
+  │ 2.85×10⁻⁴ kg
+
+  ───────────────────────── W74

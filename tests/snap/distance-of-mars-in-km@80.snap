@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w distance of mars in km
+
+  ◆ interpretation
+  │ distance from sun of Mars  →  km
+
+  ◆ result
+  │ 227 956 000 km
+
+  ◆ other units
+  │ 1.524 au  ·  2.28×10¹¹ m
+
+  ────────────────────────────── W74
