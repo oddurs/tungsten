@@ -19,4 +19,8 @@ run() {
 run fmt cargo fmt --all --check
 run clippy cargo clippy --workspace --all-targets -- -D warnings
 run test env INSTA_UPDATE=no cargo test --workspace
-run cairn cairn check --strict --render
+# The backlog is platform-independent and already checked before every merge,
+# so CI skips it rather than installing cairn (and chasing its version).
+if [[ -z ${CI:-} ]]; then
+  run cairn cairn check --strict --render
+fi
