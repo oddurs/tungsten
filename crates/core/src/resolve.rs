@@ -304,6 +304,18 @@ pub fn resolve(tokens: &[Token]) -> Result<Vec<Item>, Error> {
                 i += 1;
                 continue;
             }
+            TokKind::Float(x) => {
+                let sym = Sym::Num {
+                    value: Number::Approx(*x),
+                    superscript: false,
+                };
+                out.push(Item {
+                    sym,
+                    span: t.span.clone(),
+                });
+                i += 1;
+                continue;
+            }
             TokKind::Op(c) => {
                 out.push(Item {
                     sym: Sym::Op(*c),

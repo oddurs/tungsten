@@ -22,6 +22,8 @@ pub enum TokKind {
         decimal: bool,
         superscript: bool,
     },
+    /// A literal too large or small to hold exactly: `3.2e-53`.
+    Float(f64),
     Word(String),
     Op(char),
     /// `'` directly after a number.
@@ -245,8 +247,15 @@ impl Lexer<'_> {
             }
         }
         let span = self.byte(start)..self.byte(self.i);
-        let mut value = Rational::parse(&text)
-            .ok_or_else(|| Error::new(ErrorKind::NumberTooLarge, span.clone()))?;
+        let Some(mut value) = Rational::parse(&text) else {
+            return match text.parse::<f64>() {
+                Ok(x) if x.is_finite() => {
+                    self.push(TokKind::Float(x), start, self.i);
+                    Ok(())
+                }
+                _ => Err(Error::new(ErrorKind::NumberTooLarge, span)),
+            };
+        };
         // 1.5k
         if self.at(self.i) == Some('k') && !self.at(self.i + 1).is_some_and(char::is_alphanumeric) {
             self.i += 1;

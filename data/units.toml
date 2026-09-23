@@ -1007,6 +1007,44 @@ def = "550 ft lbf/s"
 system = "imperial"
 source = "SP811 B.8 (mechanical horsepower)"
 
+[[unit]]
+names = ["electronvolt", "electron volt", "electron-volt"]
+symbols = ["eV"]
+def = "1.602176634e-19 J"
+prefixes = "si"
+system = "physics"
+source = "CODATA 2022, electron volt (exact); BIPM Table 8"
+
+[[unit]]
+names = ["dalton", "unified atomic mass unit", "atomic mass unit"]
+symbols = ["Da", "u", "amu"]
+def = "1.66053906892e-27 kg"
+prefixes = "k M"
+system = "physics"
+source = "CODATA 2022, atomic mass constant (1.660 539 068 92(52) e-27 kg)"
+
+[[unit]]
+names = ["hartree", "hartree energy"]
+symbols = ["E_h", "Eh"]
+def = "4.3597447222060e-18 J"
+system = "physics"
+source = "CODATA 2022, Hartree energy (4.359 744 722 2060(48) e-18 J)"
+
+[[unit]]
+names = ["calorie", "thermochemical calorie"]
+symbols = ["cal"]
+def = "4.184 J"
+prefixes = "k"
+system = "metric"
+source = "SP811 B.8 (thermochemical calorie, cal_th)"
+
+[[unit]]
+names = ["food calorie", "large calorie"]
+symbols = ["Cal"]
+def = "1000 cal"
+system = "metric"
+source = "SP811 B.8 note: the nutritional Calorie is the kilocalorie"
+
 # ─── Information ─────────────────────────────────────────────────────────────
 
 [[unit]]
@@ -1062,7 +1100,7 @@ extra = [["nmi"], ["AU", "ly"]]
 name = "mass"
 dim = "kg"
 groups = [["t", "kg", "g", "mg", "µg"], ["tn", "lb", "oz"]]
-extra = [["st"], ["ozt"], ["ct"]]
+extra = [["st"], ["ozt"], ["ct"], ["Da", "kDa"]]
 
 [[quantity]]
 name = "time"
@@ -1140,7 +1178,8 @@ groups = [["GPa", "MPa", "kPa", "Pa"]]
 name = "energy"
 dim = "J"
 derived = "J"
-groups = [["TJ", "GJ", "MJ", "kJ", "J", "mJ"], ["GWh", "MWh", "kWh", "Wh"]]
+groups = [["TJ", "GJ", "MJ", "kJ", "J", "mJ"], ["GWh", "MWh", "kWh", "Wh"], ["kcal", "cal"]]
+extra = [["GeV", "MeV", "keV", "eV"], ["E_h"]]
 
 [[quantity]]
 name = "power"

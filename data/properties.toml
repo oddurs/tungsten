@@ -1,0 +1,235 @@
+# data/properties.toml — every property an entity may have.
+#
+#   names  what users type; the first is canonical and is the key used in the
+#          entity files. Matched case-insensitively.
+#   also   looser names shared by several properties ("distance"). An entity
+#          answers to one only if it has exactly one property claiming it.
+#   dim    the dimension every value must have, as a unit expression. The build
+#          fails on a value of any other dimension. Omit for plain numbers.
+#   show   the unit to display values in, when not the one they were given in.
+#
+# Order is the order properties appear on entity cards.
+
+# ─── Constants ───────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["value"]
+
+# ─── Elements ────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["atomic number", "proton number"]
+
+[[property]]
+names = ["atomic mass", "atomic weight", "standard atomic weight", "relative atomic mass"]
+dim = "kg"
+show = "u"
+
+# ─── Bulk ────────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["mass", "weight"]
+dim = "kg"
+
+[[property]]
+names = ["volume", "capacity"]
+dim = "m^3"
+
+[[property]]
+names = ["density"]
+dim = "kg/m^3"
+
+[[property]]
+names = ["melting point", "melting temperature", "freezing point"]
+dim = "K"
+show = "°C"
+
+[[property]]
+names = ["boiling point", "boiling temperature"]
+dim = "K"
+show = "°C"
+
+# ─── Size ────────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["radius", "mean radius"]
+dim = "m"
+
+[[property]]
+names = ["equatorial radius"]
+dim = "m"
+
+[[property]]
+names = ["diameter"]
+dim = "m"
+
+[[property]]
+names = ["circumference", "girth"]
+dim = "m"
+
+[[property]]
+names = ["length", "long"]
+dim = "m"
+
+[[property]]
+names = ["width", "wide", "breadth"]
+dim = "m"
+
+[[property]]
+names = ["height", "tall", "tallness"]
+dim = "m"
+
+[[property]]
+names = ["depth", "deep"]
+dim = "m"
+
+[[property]]
+names = ["thickness", "thick"]
+dim = "m"
+
+[[property]]
+names = ["wingspan"]
+dim = "m"
+
+[[property]]
+names = ["area", "surface area"]
+dim = "m^2"
+
+# ─── Motion and energy ───────────────────────────────────────────────────────
+
+[[property]]
+names = ["speed", "top speed", "fast"]
+dim = "m/s"
+
+[[property]]
+names = ["power", "power output"]
+dim = "W"
+
+[[property]]
+names = ["energy", "yield"]
+dim = "J"
+
+[[property]]
+names = ["food energy", "calories"]
+dim = "J"
+show = "kcal"
+
+[[property]]
+names = ["luminosity"]
+dim = "W"
+
+# ─── Food ────────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["caffeine", "caffeine content"]
+dim = "kg"
+show = "mg"
+
+[[property]]
+names = ["sugar", "sugars", "sugar content"]
+dim = "kg"
+
+# ─── Time ────────────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["lifespan", "lifetime", "life expectancy"]
+dim = "s"
+show = "yr"
+
+[[property]]
+names = ["age"]
+dim = "s"
+
+[[property]]
+names = ["duration"]
+dim = "s"
+
+# ─── Information ─────────────────────────────────────────────────────────────
+
+[[property]]
+names = ["storage", "storage capacity", "data capacity"]
+dim = "bit"
+
+# ─── Planets and moons ───────────────────────────────────────────────────────
+
+[[property]]
+names = ["gravity", "surface gravity"]
+dim = "m/s^2"
+
+[[property]]
+names = ["escape velocity", "escape speed"]
+dim = "m/s"
+
+[[property]]
+names = ["distance from sun", "distance to sun", "distance from the sun", "distance to the sun"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+show = "au"
+
+[[property]]
+names = ["distance from earth", "distance to earth", "distance from the earth", "distance to the earth"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from mars", "distance to mars"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from jupiter", "distance to jupiter"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from saturn", "distance to saturn"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from uranus", "distance to uranus"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from neptune", "distance to neptune"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["distance from pluto", "distance to pluto"]
+also = ["distance", "orbital distance", "orbit"]
+dim = "m"
+
+[[property]]
+names = ["orbital period", "year length", "length of year", "orbit period"]
+dim = "s"
+
+[[property]]
+names = ["orbital velocity", "orbital speed"]
+dim = "m/s"
+
+[[property]]
+names = ["rotation period", "sidereal day"]
+dim = "s"
+
+[[property]]
+names = ["day length", "length of day", "solar day"]
+dim = "s"
+
+[[property]]
+names = ["axial tilt", "obliquity", "tilt"]
+
+[[property]]
+names = ["mean temperature", "average temperature"]
+also = ["temperature"]
+dim = "K"
+show = "°C"
+
+[[property]]
+names = ["surface temperature", "effective temperature"]
+also = ["temperature"]
+dim = "K"
+
+[[property]]
+names = ["moons", "number of moons", "satellites"]

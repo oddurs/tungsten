@@ -250,6 +250,11 @@ mod tests {
         assert!(close(v, 0.5));
         assert_eq!(exact("round(2.6 km)"), "3 km");
         assert_eq!(exact("5!"), "120");
+        // Beyond i128: falls back to floating point instead of failing.
+        let (v, _) = single("3.2e-53 * 2");
+        assert!((v - 6.4e-53).abs() < 1e-66);
+        let (v, _) = single("1e60 kg in t");
+        assert!((v - 1e57).abs() / 1e57 < 1e-12);
         let (v, u) = single("sqrt(1 acre)");
         assert!(close(v, 63.614_907_234_075_23), "{v}");
         assert_eq!(u, "m");

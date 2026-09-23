@@ -1,6 +1,6 @@
 [package]
 name = "tungsten-kb"
-description = "tungsten's compiled-in knowledge base (constants, elements, items)"
+description = "tungsten's compiled-in knowledge base: constants, elements, solar system, everyday items"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,6 +9,12 @@ authors.workspace = true
 
 [dependencies]
 tungsten-units.workspace = true
+
+[build-dependencies]
+tungsten-units.workspace = true
+serde.workspace = true
+toml.workspace = true
+indexmap = { version = "2", features = ["serde"] }
 
 [lints]
 workspace = true

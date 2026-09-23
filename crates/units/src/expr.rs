@@ -336,10 +336,21 @@ impl DefParser {
         let tok = self.toks.get(self.pos).cloned().ok_or("unexpected end")?;
         self.pos += 1;
         match tok {
-            Tok::Num(n) => Ok(Parsed {
-                coef: Number::exact(Rational::parse(&n).ok_or("bad number")?, true),
-                terms: vec![],
-            }),
+            Tok::Num(n) => {
+                // Exact when it fits in a rational; 3.2e-53 falls back to f64.
+                let coef = match Rational::parse(&n) {
+                    Some(r) => Number::exact(r, true),
+                    None => n
+                        .parse::<f64>()
+                        .ok()
+                        .and_then(|x| Number::approx(x).ok())
+                        .ok_or("bad number")?,
+                };
+                Ok(Parsed {
+                    coef,
+                    terms: vec![],
+                })
+            }
             Tok::Word(w) if w == "pi" => Ok(Parsed {
                 coef: Number::Approx(std::f64::consts::PI),
                 terms: vec![],
@@ -349,6 +360,14 @@ impl DefParser {
                 Ok(Parsed {
                     coef: Number::ONE,
                     terms: vec![(u, Rational::ONE)],
+                })
+            }
+            // -4.66e-4 (negative constants in CODATA)
+            Tok::Op('-') => {
+                let inner = self.atom()?;
+                Ok(Parsed {
+                    coef: inner.coef.neg(),
+                    terms: inner.terms,
                 })
             }
             Tok::Op('(') => {
