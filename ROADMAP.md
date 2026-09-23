@@ -125,17 +125,14 @@ The first reach beyond arithmetic: polynomial and linear-system solving with ste
 
 ## v0.2.3 — Polish III
 
-`#####·····` 50% · 1 of 2 done
+`##########` 100% · 2 of 2 done
 
 Third dogfooding pass: counting by the right measure, trigonometry at exact angles, fuel economy.
-
-### backlog
-
-- [ ] `0073` Fuel economy: mpg and L/100km <sup>feature · units · p1 · m</sup>
 
 ### done
 
 - [x] `0072` Count by the matching measure; exact trigonometry <sup>feature · language · p0 · s</sup>
+- [x] `0073` Fuel economy: mpg and L/100km <sup>feature · units · p1 · m</sup>
 
 ## v0.6 — Error bars and calendars
 

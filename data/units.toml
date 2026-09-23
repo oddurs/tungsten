@@ -964,6 +964,26 @@ def = "9.80665 m/s^2"
 system = "physics"
 source = "SP811 B.8 (3rd CGPM, 1901)"
 
+# ─── Fuel economy ────────────────────────────────────────────────────────────
+# Miles per gallon and litres per 100 km are reciprocal dimensions; converting
+# between them inverts the value (crates/core/src/lib.rs, convert).
+
+[[unit]]
+names = ["mile per gallon", "us mile per gallon"]
+plurals = ["miles per gallon", "us miles per gallon"]
+symbols = ["mpg"]
+def = "mi/gal"
+system = "us"
+source = "Defined as mi/gal (US gallon: HB44 C-5)"
+
+[[unit]]
+names = ["litre per 100 kilometres", "liter per 100 kilometers"]
+plurals = ["litres per 100 kilometres", "liters per 100 kilometers"]
+symbols = ["L/100km"]
+def = "0.01 L/km"
+system = "metric"
+source = "Defined as L per 100 km (UNECE Regulation 101 fuel consumption)"
+
 # ─── Force, energy, power ────────────────────────────────────────────────────
 
 [[unit]]
@@ -1250,6 +1270,11 @@ groups = [["lx"]]
 name = "density"
 dim = "kg/m^3"
 groups = [["kg/m^3", "g/cm^3", "g/L"], ["lb/ft^3"]]
+
+[[quantity]]
+name = "fuel economy"
+dim = "km/L"
+groups = [["km/L"], ["mpg"]]
 
 [[quantity]]
 name = "data rate"

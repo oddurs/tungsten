@@ -206,6 +206,14 @@ pub fn parse(src: &str) -> Result<Query, Error> {
 }
 
 fn convert(v: &Value, target: &UnitExpr) -> Result<Answer, MathError> {
+    // mpg ↔ L/100km: the target is the reciprocal dimension.
+    if target.dim() != v.dim && target.dim() == v.dim.recip() {
+        return Ok(Answer::Single {
+            num: Number::ONE.div(v.num)?.div(target.factor())?,
+            unit: target.clone(),
+            point: false,
+        });
+    }
     if let Some(u) = target.single() {
         if v.point && is_scale(u) {
             return Ok(Answer::Single {

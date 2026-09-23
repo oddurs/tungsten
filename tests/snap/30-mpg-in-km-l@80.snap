@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 30 mpg in km/L
+
+  ◆ interpretation
+  │ 30 mpg  →  km/L
+
+  ◆ result
+  │ 12.75 km/L
+
+  ◆ other units
+  │ 30 mpg
+
+  ──────────────────── W74

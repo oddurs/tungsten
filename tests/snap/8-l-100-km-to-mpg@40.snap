@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 8 l/100 km to mpg
+
+  ◆ interpretation
+  │ 8 L/100km  →  mpg
+
+  ◆ result
+  │ 29.4 mpg
+
+  ──────────────────── W74
