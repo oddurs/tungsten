@@ -4,6 +4,7 @@
 //! to show it, so display decisions can never change an answer.
 
 use crate::ast::{BinOp, Choice, Expr, Node, PostOp};
+use crate::env::{Env, MAX_DEPTH};
 use crate::error::{Error, ErrorKind};
 use crate::resolve::Func;
 use tungsten_units::{Dim, MathError, Number, Rational, UnitExpr, UnitRef, coherent};
@@ -139,12 +140,50 @@ fn math(span: &std::ops::Range<usize>) -> impl Fn(MathError) -> Error + '_ {
     move |e| Error::new(ErrorKind::Math(e), span.clone())
 }
 
-pub fn eval(node: &Node) -> Result<Value, Error> {
+pub fn eval(node: &Node, env: &Env) -> Result<Value, Error> {
     let m = math(&node.span);
     Ok(match &node.expr {
         Expr::Num(n) => Value::scalar(*n),
         Expr::Quantity { value, unit } => {
             quantity(value.unwrap_or(Number::ONE), unit).map_err(&m)?
+        }
+        Expr::Var(name) => env
+            .vars
+            .get(name)
+            .cloned()
+            .ok_or_else(|| Error::new(ErrorKind::NoIt, node.span.clone()))?,
+        Expr::UserCall(name, args) => {
+            if let Some(v) = env.memo.borrow().get(&(node as *const Node as usize)) {
+                return Ok(v.clone());
+            }
+            let f = env
+                .funcs
+                .get(name)
+                .ok_or_else(|| Error::new(ErrorKind::NoIt, node.span.clone()))?;
+            if args.len() != f.params.len() {
+                return Err(Error::new(
+                    ErrorKind::UserArity {
+                        name: name.clone(),
+                        expected: f.params.len(),
+                        found: args.len(),
+                    },
+                    node.span.clone(),
+                ));
+            }
+            if env.depth >= MAX_DEPTH {
+                return Err(Error::new(
+                    ErrorKind::TooDeep { name: name.clone() },
+                    node.span.clone(),
+                ));
+            }
+            let mut inner = env.clone();
+            inner.depth += 1;
+            for (p, a) in f.params.iter().zip(args) {
+                inner.vars.insert(p.clone(), eval(a, env)?);
+            }
+            // An error inside the body is reported at the call.
+            crate::session::eval_body(&f.body, &inner)
+                .map_err(|e| Error::new(*e.kind, node.span.clone()))?
         }
         Expr::Entity(mention) | Expr::Prop(mention, _) => {
             let c = mention
@@ -154,17 +193,17 @@ pub fn eval(node: &Node) -> Result<Value, Error> {
         }
         Expr::Const(c) => Value::scalar(Number::approx(c.value()).map_err(&m)?),
         Expr::Neg(x) => {
-            let v = eval(x)?;
+            let v = eval(x, env)?;
             Value {
                 num: v.num.neg(),
                 given: v.given.map(Number::neg),
                 ..v
             }
         }
-        Expr::Group(x) => eval(x)?,
+        Expr::Group(x) => eval(x, env)?,
         Expr::Bin { op, lhs, rhs, .. } => {
-            let a = eval(lhs)?;
-            let b = eval(rhs)?;
+            let a = eval(lhs, env)?;
+            let b = eval(rhs, env)?;
             binary(*op, &a, &b).map_err(|e| {
                 let span = if e == MathError::DivideByZero {
                     &rhs.span
@@ -175,8 +214,8 @@ pub fn eval(node: &Node) -> Result<Value, Error> {
             })?
         }
         Expr::Pow(base, exp) => {
-            let b = as_difference(&eval(base)?).map_err(&m)?;
-            let e = eval(exp)?;
+            let b = as_difference(&eval(base, env)?).map_err(&m)?;
+            let e = eval(exp, env)?;
             let num = b.num.pow(e.num).map_err(&m)?;
             match e.num.as_rational() {
                 Some(r) => {
@@ -198,16 +237,16 @@ pub fn eval(node: &Node) -> Result<Value, Error> {
             }
         }
         Expr::Post(PostOp::Percent, x) => {
-            let v = eval(x)?;
+            let v = eval(x, env)?;
             let hundred = Number::int(100);
             Value::scalar(v.num.div(hundred).map_err(&m)?.with_decimal(true))
         }
         Expr::Post(PostOp::Factorial, x) => {
-            let v = eval(x)?;
+            let v = eval(x, env)?;
             Value::scalar(factorial(v.num, &node.span)?)
         }
         Expr::Call(f, args) => {
-            let v = eval(&args[0])?;
+            let v = eval(&args[0], env)?;
             call(*f, &v).map_err(&m)?
         }
     })

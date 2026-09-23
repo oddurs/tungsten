@@ -76,6 +76,10 @@ pub enum Expr {
     Entity(Mention),
     /// `mass of earth`, `earth's mass`, `earth.mass`.
     Prop(Mention, Vec<Prop>),
+    /// A variable the session bound, or `it`.
+    Var(String),
+    /// A call of a function the session defined: `f(3)`.
+    UserCall(String, Vec<Node>),
 }
 
 /// A word that names one or more entities, and which one was chosen.

@@ -9,20 +9,24 @@
 mod ast;
 mod check;
 mod entities;
+mod env;
 mod error;
 mod eval;
 mod interp;
 mod lex;
 mod parse;
 mod resolve;
+mod session;
 mod suggest;
 
 pub use ast::{BinOp, Choice, Expr, Mention, Node, PostOp, Query, Style, Target};
 pub use entities::Assumption;
+pub use env::UserFunc;
 pub use error::{Error, ErrorKind, Hint};
 pub use eval::{Value, is_scale, quantity};
 pub use interp::{Piece, interpret};
-pub use resolve::{Const, Func};
+pub use resolve::{Const, Func, Scope};
+pub use session::{Binding, Session};
 pub use suggest::suggest;
 pub use tungsten_kb::{Entity, Kind, Prop};
 
@@ -41,6 +45,12 @@ pub enum Answer {
     Parts(Vec<(Number, UnitExpr)>),
     /// A lone entity, to be shown as a card: `gold`.
     Card(Entity),
+    /// A statement that defined a function: `f(x) = x^2`.
+    Defined {
+        name: String,
+        params: Vec<String>,
+        body: String,
+    },
 }
 
 /// How to read a query.
@@ -61,6 +71,8 @@ pub struct Outcome {
     pub assumptions: Vec<Assumption>,
     /// Every unit and knowledge-base value the query touched, for `--why`.
     pub sources: Vec<Source>,
+    /// What the statement bound, in a session: `rent = …`.
+    pub binding: Option<Binding>,
 }
 
 /// Something the answer depends on that came from a table.
@@ -121,8 +133,8 @@ fn sources(q: &Query, card: Option<Entity>) -> Vec<Source> {
                 walk(lhs, out);
                 walk(rhs, out);
             }
-            Expr::Call(_, args) => args.iter().for_each(|a| walk(a, out)),
-            Expr::Num(_) | Expr::Const(_) => {}
+            Expr::Call(_, args) | Expr::UserCall(_, args) => args.iter().for_each(|a| walk(a, out)),
+            Expr::Num(_) | Expr::Const(_) | Expr::Var(_) => {}
         }
     }
     let mut out = Vec::new();
@@ -149,7 +161,18 @@ pub fn evaluate(src: &str) -> Result<Outcome, Error> {
 
 pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
     let tokens = lex::lex(src)?;
-    let items = resolve::resolve(&tokens, opts.prefer)?;
+    evaluate_tokens(&tokens, src, &env::Env::default(), opts)
+}
+
+/// Evaluates tokens lexed from `src`, with a session's bindings.
+fn evaluate_tokens(
+    tokens: &[lex::Token],
+    src: &str,
+    env: &env::Env,
+    opts: Options,
+) -> Result<Outcome, Error> {
+    let env = &env.clone();
+    let items = resolve::resolve(tokens, opts.prefer, &env.scope())?;
     let mut query = parse::parse(items, src)?;
     let assumptions = entities::choose(&mut query, opts.prefer)?;
     if entities::is_card(&query)
@@ -162,10 +185,11 @@ pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
             sources: sources(&query, Some(c.entity)),
             query,
             assumptions,
+            binding: None,
         });
     }
-    check::check_query(&query, src)?;
-    let value = eval::eval(&query.expr)?;
+    check::check_query(&query, src, env)?;
+    let value = eval::eval(&query.expr, env)?;
     let math = |e: MathError| Error::new(ErrorKind::Math(e), query.expr.span.clone());
     // A bare unit asks what it is: `speed of light` is 299 792 458 m/s.
     let bare = match &query.expr.expr {
@@ -195,13 +219,14 @@ pub fn evaluate_with(src: &str, opts: Options) -> Result<Outcome, Error> {
         value,
         answer,
         assumptions,
+        binding: None,
     })
 }
 
 /// Parses without evaluating, for fuzzing and the REPL highlighter.
 pub fn parse(src: &str) -> Result<Query, Error> {
     let tokens = lex::lex(src)?;
-    let items = resolve::resolve(&tokens, None)?;
+    let items = resolve::resolve(&tokens, None, &Scope::default())?;
     parse::parse(items, src)
 }
 
@@ -273,7 +298,7 @@ mod tests {
     fn single(s: &str) -> (f64, String) {
         match evaluate(s).unwrap_or_else(|e| panic!("{s}: {e:?}")).answer {
             Answer::Single { num, unit, .. } => (num.to_f64(), unit.display(false)),
-            Answer::Parts(_) | Answer::Card(_) => panic!("not a single value"),
+            _ => panic!("not a single value"),
         }
     }
 
@@ -286,7 +311,7 @@ mod tests {
             )
             .trim()
             .to_string(),
-            Answer::Parts(_) | Answer::Card(_) => panic!("not a single value"),
+            _ => panic!("not a single value"),
         }
     }
 

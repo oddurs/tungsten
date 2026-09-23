@@ -293,6 +293,7 @@ pub fn render_quiet(r: &Report, o: &Options) -> Option<String> {
             .map(|(n, u)| format!("{} {}", quiet(*n, o.sig), u.display(false)))
             .collect::<Vec<_>>()
             .join(" "),
+        Quiet::Text(t) => t.clone(),
     })
 }
 

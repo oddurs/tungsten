@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w f(x) = x^2 - 3x; f(5)
+
+  ◆ defined
+  │ f(x) = x^2 - 3x
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ f(5)
+
+  ◆ result
+  │ 10
+
+  ──────────────────── W74

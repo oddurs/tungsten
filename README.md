@@ -86,6 +86,18 @@ w -q 5 mi in km               # just the value, for scripts: 8.04672
 echo "3 ft in cm" | w -q      # one query per line from stdin
 ```
 
+### Variables and functions
+
+Statements separated by `;` (or lines read from stdin) share a session.
+`it` is the previous answer. Names that already mean something, like `m` for
+metres, cannot be rebound.
+
+```sh
+w "rent = 2400 USD/month; rent * 12 month; it / 52 wk"
+w "f(x) = x^2 - 3x; f(5)"     # 10
+printf 'r = 3 cm\npi r^2 in mm^2\n' | w -q
+```
+
 Shells treat `*` `?` `'` `"` `(` `)` specially. Quote the query, or write `x`
 for `*`, `per` for `/`, and `ft`/`in` for `'` and `"`.
 

@@ -145,6 +145,18 @@ pub enum Sym {
     Possessive,
     /// `how tall`: a question about these properties.
     Ask(Vec<Prop>),
+    /// A variable the session has bound, or `it`.
+    Var(String),
+    /// A function the session has defined: `f` in `f(3)`.
+    UserFunc(String),
+}
+
+/// Names a session has bound. Variables win over keywords and knowledge-base
+/// names (so `a = 2` then `a * 3` is 6); units can never be rebound.
+#[derive(Clone, Debug, Default)]
+pub struct Scope {
+    pub vars: std::collections::BTreeSet<String>,
+    pub funcs: std::collections::BTreeSet<String>,
 }
 
 /// Everything a knowledge-base word could mean.
@@ -333,7 +345,18 @@ fn meaning(words: &str, prefer: Option<Kind>) -> Option<Sym> {
     }
 }
 
-fn single(word: &str, prefer: Option<Kind>) -> Option<Sym> {
+/// A built-in function or constant name: `sqrt`, `pi`.
+pub fn is_builtin(word: &str) -> bool {
+    constant(word).is_some() || function(&word.to_lowercase()).is_some()
+}
+
+fn single(word: &str, prefer: Option<Kind>, scope: &Scope) -> Option<Sym> {
+    if scope.vars.contains(word) {
+        return Some(Sym::Var(word.to_string()));
+    }
+    if scope.funcs.contains(word) {
+        return Some(Sym::UserFunc(word.to_string()));
+    }
     let lower = word.to_lowercase();
     if let Some(k) = keyword(word) {
         return Some(Sym::Kw(k));
@@ -369,7 +392,7 @@ fn single(word: &str, prefer: Option<Kind>) -> Option<Sym> {
     None
 }
 
-pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Error> {
+pub fn resolve(tokens: &[Token], prefer: Option<Kind>, scope: &Scope) -> Result<Vec<Item>, Error> {
     // `the` carries no meaning anywhere: `the mass of the earth`.
     let tokens: Vec<Token> = tokens
         .iter()
@@ -460,9 +483,11 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
             }
         };
 
+        // A bound name is never swallowed by a longer phrase it starts.
+        let bound = scope.vars.contains(word.as_str()) || scope.funcs.contains(word.as_str());
         // Longest multi-word phrase starting here: keyword phrase or unit name.
         let mut matched = None;
-        for n in (2..=max_words).rev() {
+        for n in (2..=max_words).rev().filter(|_| !bound) {
             let Some(words) = phrase(tokens, i, n) else {
                 continue;
             };
@@ -497,11 +522,14 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
             i += 1;
             continue;
         }
-        match single(word, prefer) {
+        match single(word, prefer, scope) {
             Some(sym) => out.push(Item {
                 sym,
                 span: t.span.clone(),
             }),
+            None if word == "it" => {
+                return Err(Error::new(ErrorKind::NoIt, t.span.clone()));
+            }
             None => {
                 let suggestion = suggest::suggest(word);
                 return Err(Error::new(
@@ -548,7 +576,7 @@ mod tests {
     use crate::lex::lex;
 
     fn syms(s: &str) -> Vec<Sym> {
-        resolve(&lex(s).unwrap(), None)
+        resolve(&lex(s).unwrap(), None, &Scope::default())
             .unwrap()
             .into_iter()
             .map(|i| i.sym)
@@ -577,7 +605,12 @@ mod tests {
 
     #[test]
     fn unknown_words_suggest() {
-        let e = resolve(&lex("5 kilometers in milez").unwrap(), None).unwrap_err();
+        let e = resolve(
+            &lex("5 kilometers in milez").unwrap(),
+            None,
+            &Scope::default(),
+        )
+        .unwrap_err();
         match *e.kind {
             ErrorKind::UnknownWord { word, suggestion } => {
                 assert_eq!(word, "milez");

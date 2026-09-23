@@ -176,3 +176,13 @@ tan(45°)
 5 L/100km in mpg
 8 l/100 km to mpg
 30 mpg in km/L
+
+# ─── Variables, it, user functions (0039) ────────────────────────────────────
+rent = 2400 USD/month; rent * 12 month; it / 52 wk
+m = 5
+a = 2; a * 3
+f(x) = x^2 - 3x; f(5)
+area(r) = pi r^2; area(3 cm) in mm^2
+it * 2
+f(x) = x; f(1, 2)
+loop(x) = loop(x) + 1

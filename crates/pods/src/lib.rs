@@ -10,7 +10,7 @@ mod other_units;
 mod scale;
 mod why;
 
-use tungsten_core::{Answer, Error, Kind, Outcome, Piece, interpret};
+use tungsten_core::{Answer, Binding, Error, Kind, Outcome, Piece, interpret};
 use tungsten_units::{Number, UnitExpr};
 
 pub use other_units::other_units;
@@ -83,6 +83,8 @@ pub struct Pod {
 pub enum Quiet {
     Value(Number),
     Parts(Vec<(Number, UnitExpr)>),
+    /// Printed as is: a definition, `f(x) = x^2`.
+    Text(String),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -230,7 +232,26 @@ fn success(input: &str, o: &Outcome) -> Report {
         };
     }
 
+    if let Answer::Defined { name, params, body } = &o.answer {
+        let text = format!("{name}({}) = {body}", params.join(", "));
+        pods.push(Pod {
+            title: "defined".into(),
+            error: false,
+            body: Body::Lines(vec![Line(vec![Seg::Text(text.clone())])]),
+        });
+        return Report {
+            pods,
+            ok: true,
+            quiet: Some(Quiet::Text(text)),
+            error_line: None,
+            footnote: None,
+        };
+    }
+
     let mut interp = Line::default();
+    if let Some(Binding::Var(name)) = &o.binding {
+        interp.push(Seg::Text(format!("{name} = ")));
+    }
     for p in interpret(&o.query) {
         interp.push(match p {
             Piece::Num(num) => Seg::Value {
@@ -269,7 +290,7 @@ fn success(input: &str, o: &Outcome) -> Report {
             };
             (Line(vec![seg]), Quiet::Value(*num))
         }
-        Answer::Card(_) => unreachable!("cards return early"),
+        Answer::Card(_) | Answer::Defined { .. } => unreachable!("returned early"),
         Answer::Parts(parts) => {
             let mut line = Line::default();
             for (i, (n, u)) in parts.iter().enumerate() {

@@ -61,17 +61,20 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 
 ## v0.3 — Conversational
 
-`··········` 0% · 0 of 5 done
+`##········` 20% · 1 of 5 done
 
 `w` with no arguments becomes a REPL: variables, `it`, user functions, highlighting as you type, completion.
 
 ### backlog
 
-- [ ] `0039` Variables, it, and user functions <sup>feature · language · p0 · m</sup>
 - [ ] `0040` REPL on reedline <sup>feature · repl · p0 · m</sup>
 - [ ] `0041` Live syntax highlighting <sup>feature · repl · p1 · m</sup>
 - [ ] `0042` Tab completion <sup>feature · repl · p1 · s</sup>
 - [ ] `0043` Meta-commands: :vars :clear :pods :sig :why <sup>feature · repl · p2 · s</sup>
+
+### done
+
+- [x] `0039` Variables, it, and user functions <sup>feature · language · p0 · m</sup>
 
 ## v0.2.1 — Polish
 

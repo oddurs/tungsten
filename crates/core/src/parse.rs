@@ -698,6 +698,18 @@ impl<'a> Parser<'a> {
                 self.pos += 1;
                 Ok(Node::new(Expr::Const(*c), it.span.clone()))
             }
+            Sym::Var(name) => {
+                self.pos += 1;
+                Ok(Node::new(Expr::Var(name.clone()), it.span.clone()))
+            }
+            Sym::UserFunc(name) => {
+                self.pos += 1;
+                let call = self.call(Func::Abs, it.span.start)?;
+                let Expr::Call(_, args) = call.expr else {
+                    unreachable!("call builds calls")
+                };
+                Ok(Node::new(Expr::UserCall(name.clone(), args), call.span))
+            }
             Sym::Func(f) => {
                 self.pos += 1;
                 self.call(*f, it.span.start)
@@ -1083,6 +1095,8 @@ fn starts_operand(sym: &Sym) -> bool {
             | Sym::Const(_)
             | Sym::Func(_)
             | Sym::Name(_)
+            | Sym::Var(_)
+            | Sym::UserFunc(_)
             | Sym::Op('(')
             | Sym::Kw(
                 Kw::Square | Kw::Cubic | Kw::Half | Kw::Twice | Kw::SquareRootOf | Kw::CubeRootOf
@@ -1116,7 +1130,11 @@ mod tests {
     use crate::{lex::lex, resolve::resolve};
 
     fn q(s: &str) -> Query {
-        parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap()
+        parse(
+            resolve(&lex(s).unwrap(), None, &crate::resolve::Scope::default()).unwrap(),
+            s,
+        )
+        .unwrap()
     }
 
     /// Compact S-expression for asserting structure.
@@ -1157,6 +1175,8 @@ mod tests {
             }
             Expr::Group(x) => sx(x),
             Expr::Entity(m) => format!("<{}>", m.hits[0].entity.display()),
+            Expr::Var(n) => n.clone(),
+            Expr::UserCall(n, _) => format!("({n} …)"),
             Expr::Prop(m, p) => format!("<{} {}>", p[0].name(), m.hits[0].entity.display()),
         }
     }
@@ -1246,10 +1266,18 @@ mod tests {
     #[test]
     fn errors_point_at_the_problem() {
         let s = "5 km in 3";
-        let err = parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap_err();
+        let err = parse(
+            resolve(&lex(s).unwrap(), None, &crate::resolve::Scope::default()).unwrap(),
+            s,
+        )
+        .unwrap_err();
         assert_eq!(&s[err.span.clone()], "3");
         let s = "(1 + 2";
-        let err = parse(resolve(&lex(s).unwrap(), None).unwrap(), s).unwrap_err();
+        let err = parse(
+            resolve(&lex(s).unwrap(), None, &crate::resolve::Scope::default()).unwrap(),
+            s,
+        )
+        .unwrap_err();
         assert!(matches!(*err.kind, ErrorKind::UnexpectedEnd { .. }));
     }
 }

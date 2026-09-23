@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w area(r) = pi r^2; area(3 cm) in mm^2
+
+  ◆ defined
+  │ area(r) = pi r^2
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ area(3 cm)  →  mm²
+
+  ◆ result
+  │ 2827 mm²
+
+  ◆ other units
+  │ 28.27 cm²  ·  4.383 in²  ·  0.002827 m²
+
+  ───────────────────────────────────── W74

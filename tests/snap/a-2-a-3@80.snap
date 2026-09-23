@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w a = 2; a * 3
+
+  ◆ interpretation
+  │ a = 2
+
+  ◆ result
+  │ 2
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ a × 3
+
+  ◆ result
+  │ 6
+
+  ──────────────────── W74
