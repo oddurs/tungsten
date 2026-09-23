@@ -75,3 +75,13 @@ pub fn render_quiet(query: &str, s: &Settings) -> Rendered {
         }
     }
 }
+
+/// `tungsten --about`: the element card as the version screen.
+pub fn render_about(s: &Settings) -> Rendered {
+    let report = tungsten_pods::about(env!("CARGO_PKG_VERSION"));
+    Rendered {
+        out: tungsten_render::render(&report, &options(s, None)),
+        err: String::new(),
+        ok: true,
+    }
+}

@@ -40,13 +40,9 @@ The smallest `w` worth using: arithmetic on quantities with units, conversion, a
 
 ## v0.2 — Knows things
 
-`##########` 92% · 11 of 12 done
+`##########` 100% · 12 of 12 done
 
 The knowledge base arrives: constants, elements, the solar system and everyday items, addressable by possessive, with the for-scale pod that gives results a sense of size.
-
-### backlog
-
-- [ ] `0038` Easter eggs: 74, wolfram, --about <sup>feature · cli · p3 · s</sup>
 
 ### done
 
@@ -60,6 +56,7 @@ The knowledge base arrives: constants, elements, the solar system and everyday i
 - [x] `0035` For-scale pod <sup>feature · pods · p1 · m</sup>
 - [x] `0036` Entity card pod <sup>feature · pods · p1 · s</sup>
 - [x] `0037` Provenance with --why <sup>feature · cli · p2 · s</sup>
+- [x] `0038` Easter eggs: 74, wolfram, --about <sup>feature · cli · p3 · s</sup>
 - [x] `0063` Lean git workflow: one PR per item, local checks, quiet CI <sup>chore · infra · p1 · s</sup>
 
 ## v0.3 — Conversational

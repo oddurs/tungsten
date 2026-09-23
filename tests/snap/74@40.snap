@@ -1,0 +1,14 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 74
+
+  ◆ interpretation
+  │ 74
+
+  ◆ result
+  │ 74
+
+  74 is tungsten's atomic number.
+
+  ──────────────────── W74

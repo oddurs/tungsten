@@ -118,3 +118,9 @@ boeing 747
 70 yr
 mass of jupiter
 radius of mars
+
+# ─── Easter eggs (0038) ──────────────────────────────────────────────────────
+74
+70 + 4
+wolfram
+--about
