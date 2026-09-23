@@ -1,5 +1,6 @@
 # One quiet job. Local `scripts/check` is the gate on every PR; this re-runs it
-# on Linux after merging, as a safety net. It never blocks anything.
+# on Linux after merging, as a safety net: build, clippy, tests. It never
+# blocks anything.
 name: main
 
 on:
@@ -19,5 +20,4 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
-      - run: curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh | sh
-      - run: PATH="$HOME/.local/bin:$PATH" scripts/check
+      - run: scripts/check
