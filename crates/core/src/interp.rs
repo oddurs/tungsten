@@ -115,11 +115,12 @@ fn emit(n: &Node, parent: u8, right: bool, out: &mut Vec<Piece>) {
                 prop: Some(prop),
             }) = m.chosen
             {
-                out.push(Piece::Text(format!(
-                    "{} of {}",
-                    prop.name(),
-                    entity.display()
-                )));
+                // the Moon's distance from earth; height of Eiffel Tower
+                out.push(Piece::Text(if prop.name().starts_with("distance from") {
+                    format!("{}'s {}", entity.display(), prop.name())
+                } else {
+                    format!("{} of {}", prop.name(), entity.display())
+                }));
             }
         }
         Expr::Neg(x) => {

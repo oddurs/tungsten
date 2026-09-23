@@ -37,7 +37,7 @@ const KINDS: &[(&str, &str)] = &[
 const RESERVED: &[&str] = &[
     "in", "to", "as", "into", "per", "a", "an", "of", "for", "times", "x", "plus", "minus",
     "over", "squared", "cubed", "square", "sq", "cubic", "cu", "half", "twice", "double", "and",
-    "is", "are", "there", "many", "much", "how", "the", "pi", "π", "tau", "τ", "e", "sqrt",
+    "is", "are", "there", "many", "much", "how", "the", "does", "do", "weigh", "weighs", "between", "pi", "π", "tau", "τ", "e", "sqrt",
     "cbrt", "sin", "cos", "tan", "asin", "acos", "atan", "arcsin", "arccos", "arctan", "ln",
     "log", "log10", "log2", "exp", "abs", "round", "floor", "ceil", "hundred", "thousand",
     "million", "billion", "trillion", "quadrillion", "dozen", "percent", "pct", "permille",

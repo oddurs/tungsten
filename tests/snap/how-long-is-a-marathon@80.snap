@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how long is a marathon
+
+  ◆ interpretation
+  │ length of marathon
+
+  ◆ result
+  │ 42.195 km
+
+  ◆ other units
+  │ 42 195 m  ·  26.22 mi
+
+  ◆ for scale
+  │ ≈ 15 Golden Gate Bridges
+  │ ≈ 4.8 Mount Everests
+
+  ────────────────────── W74
