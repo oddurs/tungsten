@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w tan(90°)
+
+  ◆ no real answer
+  │ tan(90°)
+  │ ^^^^^^^^ the answer is not a real number
+
+  ────────────────────────────────── W74

@@ -162,3 +162,11 @@ what's 12% of 80
 speed of light
 mile
 how many calories are in 3 eggs
+
+# ─── Counting by the right measure; exact angles (0072) ──────────────────────
+how many cups of coffee in a litre
+how many olympic pools in lake superior
+sin(180°)
+cos(90°)
+tan(90°)
+tan(45°)

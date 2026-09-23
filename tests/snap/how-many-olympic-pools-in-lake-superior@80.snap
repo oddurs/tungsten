@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how many olympic pools in lake superior
+
+  ◆ interpretation
+  │ volume of Lake Superior / volume of Olympic pool
+
+  ◆ result
+  │ 4.835×10⁹
+
+  ────────────────────────────────────────────── W74

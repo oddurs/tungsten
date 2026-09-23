@@ -123,6 +123,20 @@ The first reach beyond arithmetic: polynomial and linear-system solving with ste
 - [ ] `0051` Function properties pod <sup>feature · pods · p1 · m</sup>
 - [ ] `0052` table command <sup>feature · pods · p2 · s</sup>
 
+## v0.2.3 — Polish III
+
+`#####·····` 50% · 1 of 2 done
+
+Third dogfooding pass: counting by the right measure, trigonometry at exact angles, fuel economy.
+
+### backlog
+
+- [ ] `0073` Fuel economy: mpg and L/100km <sup>feature · units · p1 · m</sup>
+
+### done
+
+- [x] `0072` Count by the matching measure; exact trigonometry <sup>feature · language · p0 · s</sup>
+
 ## v0.6 — Error bars and calendars
 
 `··········` 0% · 0 of 3 done

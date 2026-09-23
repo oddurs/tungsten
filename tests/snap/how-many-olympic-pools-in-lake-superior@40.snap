@@ -1,12 +1,13 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w how many bananas weigh as much as a blue whale
+$ w how many olympic pools in lake superior
 
   ◆ interpretation
-  │ mass of blue whale / mass of banana
+  │ volume of Lake Superior / volume of
+  │   Olympic pool
 
   ◆ result
-  │ 1.269×10⁶
+  │ 4.835×10⁹
 
   ───────────────────────────────── W74
