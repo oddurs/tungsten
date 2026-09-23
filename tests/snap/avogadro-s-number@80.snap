@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w avogadro's number
+
+  ◆ Avogadro constant · N_A
+  │ value        6.02214076×10²³ per mole
+  │ uncertainty  exact
+
+  ─────────────────────────────────── W74

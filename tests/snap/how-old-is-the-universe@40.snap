@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how old is the universe
+
+  ◆ interpretation
+  │ age of the universe
+
+  ◆ result
+  │ 13.787 Gyr
+
+  ◆ other units
+  │ 4.351×10¹⁷ s
+
+  ──────────────────── W74

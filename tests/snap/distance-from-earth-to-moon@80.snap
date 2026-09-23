@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w distance from earth to moon
+
+  ◆ interpretation
+  │ the Moon's distance from earth
+
+  ◆ result
+  │ 384 400 km
+
+  ◆ other units
+  │ 238 855 mi  ·  3.844×10⁸ m
+
+  ◆ for scale
+  │ ≈ 0.6 × the Sun (radius)
+  │ ≈ 18 Great Walls
+
+  ──────────────────────────── W74

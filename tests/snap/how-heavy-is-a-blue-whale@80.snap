@@ -1,0 +1,18 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how heavy is a blue whale
+
+  ◆ interpretation
+  │ mass of blue whale
+
+  ◆ result
+  │ 330 000 lb
+
+  ◆ other units
+  │ 149.7 t  ·  165 tn  ·  149 685 kg
+
+  ◆ for scale
+  │ ≈ 4.1 semi trucks
+
+  ─────────────────────────────── W74

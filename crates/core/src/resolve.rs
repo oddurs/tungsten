@@ -46,6 +46,9 @@ pub enum Kw {
     Is,
     Are,
     There,
+    Does,
+    Weigh,
+    Between,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -140,6 +143,8 @@ pub enum Sym {
     Name(Meaning),
     /// `'s`
     Possessive,
+    /// `how tall`: a question about these properties.
+    Ask(Vec<Prop>),
 }
 
 /// Everything a knowledge-base word could mean.
@@ -167,17 +172,33 @@ pub struct Item {
     pub span: Range<usize>,
 }
 
+/// Matched after `the` is dropped, so `to the power of` is `to power of`.
 const PHRASES: &[(&str, Kw)] = &[
-    ("to the power of", Kw::ToThePowerOf),
-    ("raised to the power of", Kw::ToThePowerOf),
+    ("to power of", Kw::ToThePowerOf),
+    ("raised to power of", Kw::ToThePowerOf),
     ("raised to", Kw::ToThePowerOf),
-    ("to the", Kw::ToThePowerOf),
     ("square root of", Kw::SquareRootOf),
     ("cube root of", Kw::CubeRootOf),
     ("divided by", Kw::DividedBy),
     ("multiplied by", Kw::MultipliedBy),
     ("how many", Kw::How),
     ("how much", Kw::How),
+];
+
+/// `how tall is X` asks for X's height.
+const ASK: &[(&str, &str)] = &[
+    ("how tall", "height"),
+    ("how high", "height"),
+    ("how heavy", "mass"),
+    ("how long", "length"),
+    ("how wide", "width"),
+    ("how deep", "depth"),
+    ("how thick", "thickness"),
+    ("how far", "distance"),
+    ("how old", "age"),
+    ("how fast", "speed"),
+    ("how hot", "temperature"),
+    ("how dense", "density"),
 ];
 
 /// Leading phrases that carry no meaning.
@@ -219,6 +240,9 @@ fn keyword(w: &str) -> Option<Kw> {
         "there" => Kw::There,
         "many" => Kw::Many,
         "much" => Kw::Much,
+        "does" | "do" => Kw::Does,
+        "weigh" | "weighs" => Kw::Weigh,
+        "between" => Kw::Between,
         _ => return None,
     })
 }
@@ -437,6 +461,10 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
                 matched = Some((n, Some(Sym::Kw(*k))));
                 break;
             }
+            if let Some((_, prop)) = ASK.iter().find(|(p, _)| *p == lower) {
+                matched = Some((n, Some(Sym::Ask(tungsten_kb::lookup_prop(prop)))));
+                break;
+            }
             if let Some(sym) = meaning(&words, prefer) {
                 matched = Some((n, Some(sym)));
                 break;
@@ -477,13 +505,18 @@ pub fn resolve(tokens: &[Token], prefer: Option<Kind>) -> Result<Vec<Item>, Erro
 }
 
 /// `n` consecutive word tokens starting at `i`, joined by single spaces.
-/// Whole numbers may appear after the first word: `boeing 747`, `iphone 15`.
+/// Whole numbers may appear after the first word (`boeing 747`), and a
+/// possessive rejoins its word (`avogadro's number`).
 fn phrase(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     let slice = tokens.get(i..i + n)?;
-    let mut words = Vec::with_capacity(n);
+    let mut words: Vec<String> = Vec::with_capacity(n);
     for (k, t) in slice.iter().enumerate() {
         match &t.kind {
             TokKind::Word(w) => words.push(w.clone()),
+            // A phrase never ends on a possessive: `earth's` alone is not a name.
+            TokKind::Possessive if k > 0 && k + 1 < n => {
+                words.last_mut()?.push_str("'s");
+            }
             TokKind::Num {
                 value,
                 decimal: false,

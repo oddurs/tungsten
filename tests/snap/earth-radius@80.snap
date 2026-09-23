@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w earth radius
+
+  ◆ interpretation
+  │ radius of Earth
+
+  ◆ result
+  │ 6371 km
+
+  ◆ other units
+  │ 3959 mi  ·  6.371×10⁶ m
+
+  ◆ for scale
+  │ ≈ 150 marathons
+  │ ≈ 3.7 Moons (radius)
+
+  ───────────────────── W74

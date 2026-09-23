@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how tall is gold
+
+  ◆ no such property
+  │ how tall is gold
+  │             ^^^^ gold has no height; try atomic number, atomic mass, density, melting point, boiling point
+
+  ────────────────────────────────────────────────────────────────────────── W74

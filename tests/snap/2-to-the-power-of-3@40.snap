@@ -1,0 +1,12 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w 2 to the power of 3
+
+  ◆ interpretation
+  │ 2³
+
+  ◆ result
+  │ 8
+
+  ──────────────────── W74

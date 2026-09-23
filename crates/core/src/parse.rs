@@ -35,6 +35,9 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
     if items.is_empty() {
         return Err(Error::new(ErrorKind::Empty, 0..src.len()));
     }
+    if let Some(q) = question(&items, src) {
+        return q;
+    }
     if items[0].sym == Sym::Kw(Kw::How) {
         return how_many(&items, src);
     }
@@ -85,6 +88,121 @@ pub fn parse(items: Vec<Item>, src: &str) -> Result<Query, Error> {
                 .max_by_key(|e| e.span.start)
                 .expect("at least one error"))
         }
+    }
+}
+
+/// The thing a question is about, as a property access.
+fn ask(props: &[Prop], items: &[Item], src: &str) -> Result<Query, Error> {
+    // how heavy is *a* blue whale
+    let items = match items.first() {
+        Some(it) if it.sym == Sym::Kw(Kw::A) => &items[1..],
+        _ => items,
+    };
+    let node = whole(items, src)?;
+    let Expr::Entity(m) = node.expr else {
+        return Err(Error::new(
+            ErrorKind::Unexpected {
+                found: src.get(node.span.clone()).unwrap_or("").to_string(),
+                expected: "a thing, like the eiffel tower",
+            },
+            node.span,
+        ));
+    };
+    Ok(Query {
+        expr: Node::new(Expr::Prop(m, props.to_vec()), node.span),
+        targets: Vec::new(),
+        of: None,
+    })
+}
+
+/// Questions people type that are property accesses in disguise:
+///
+/// - `how tall is the eiffel tower`, `how far is the moon`
+/// - `how much does a blue whale weigh`
+/// - `distance from earth to moon`, `distance between earth and moon`
+fn question(items: &[Item], src: &str) -> Option<Result<Query, Error>> {
+    let is = |it: &Item, k: Kw| it.sym == Sym::Kw(k);
+    match &items[0].sym {
+        Sym::Ask(props) => {
+            let mut rest = &items[1..];
+            while rest
+                .first()
+                .is_some_and(|it| is(it, Kw::Is) || is(it, Kw::Are) || is(it, Kw::Does))
+            {
+                rest = &rest[1..];
+            }
+            // `how long does a marathon go` reads fine without its verb.
+            if rest
+                .last()
+                .is_some_and(|it| is(it, Kw::Weigh) || is(it, Kw::Is))
+            {
+                rest = &rest[..rest.len() - 1];
+            }
+            Some(ask(props, rest, src))
+        }
+        // how much does X weigh
+        Sym::Kw(Kw::How)
+            if items.len() > 3
+                && is(&items[1], Kw::Does)
+                && is(&items[items.len() - 1], Kw::Weigh) =>
+        {
+            let mass = tungsten_kb::lookup_prop("mass");
+            Some(ask(&mass, &items[2..items.len() - 1], src))
+        }
+        Sym::Name(m) if m.props.iter().any(|p| p.name().starts_with("distance")) => distance(items),
+        _ => None,
+    }
+}
+
+/// `distance from earth to moon`: the moon's "distance from earth".
+/// `distance between earth and moon`: whichever of the two has the other's.
+fn distance(items: &[Item]) -> Option<Result<Query, Error>> {
+    let mention = |it: &Item| match &it.sym {
+        Sym::Name(m) if !m.entities.is_empty() => Some(Mention {
+            hits: m.entities.clone(),
+            chosen: None,
+            name_span: it.span.clone(),
+        }),
+        _ => None,
+    };
+    let span = items[0].span.start..items.last()?.span.end;
+    let prop_query = |m: Mention, props: Vec<Prop>| {
+        Some(Ok(Query {
+            expr: Node::new(Expr::Prop(m, props), span.clone()),
+            targets: Vec::new(),
+            of: None,
+        }))
+    };
+    let Sym::Name(first) = &items[0].sym else {
+        return None;
+    };
+    match items {
+        // distance from X (one phrase) to Y
+        [_, to, y] if to.sym == Sym::Kw(Kw::To) => prop_query(mention(y)?, first.props.clone()),
+        // distance between X and Y
+        [_, between, x, and, y]
+            if between.sym == Sym::Kw(Kw::Between) && and.sym == Sym::Kw(Kw::And) =>
+        {
+            let (mx, my) = (mention(x)?, mention(y)?);
+            let from = |m: &Mention| {
+                let name = m.hits.first()?.entity.display().to_lowercase();
+                let name = name.trim_start_matches("the ");
+                let props = tungsten_kb::lookup_prop(&format!("distance from {name}"));
+                (!props.is_empty()).then_some(props)
+            };
+            // Prefer the pair where the second has a distance from the first.
+            match (from(&mx), from(&my)) {
+                (Some(p), _) if my.hits.iter().any(|h| h.entity.resolve_prop(&p).is_some()) => {
+                    prop_query(my, p)
+                }
+                (_, Some(p)) if mx.hits.iter().any(|h| h.entity.resolve_prop(&p).is_some()) => {
+                    prop_query(mx, p)
+                }
+                (Some(p), _) => prop_query(my, p),
+                _ => None,
+            }
+        }
+        _ => None,
     }
 }
 
@@ -573,6 +691,19 @@ impl<'a> Parser<'a> {
             chosen: None,
             name_span: it.span.clone(),
         };
+        // earth radius, big mac calories
+        if let Some(
+            p @ Item {
+                sym: Sym::Name(pm), ..
+            },
+        ) = self.peek()
+            && !pm.props.is_empty()
+            && !pm.has_entity()
+        {
+            self.pos += 1;
+            let span = it.span.start..p.span.end;
+            return Ok(Node::new(Expr::Prop(mention, pm.props.clone()), span));
+        }
         if let Some(Sym::Possessive | Sym::Op('.')) = self.peek().map(|n| &n.sym) {
             return match self.peek_at(1) {
                 Some(
@@ -931,6 +1062,8 @@ mod tests {
         assert_eq!(e("5 km per hour"), "(/ [5 km] [h])");
         assert_eq!(e("half of 3 km"), "(* 1/2 [3 km])");
         assert_eq!(e("6 divided by 3"), "(/ 6 3)");
+        // `the` is dropped before phrases match; this once broke.
+        assert_eq!(e("2 to the power of 3"), "(^ 2 3)");
         assert_eq!(e("5 m squared"), "[5 m^2]");
         assert_eq!(e("2.4 million km"), "[2400000d km]");
         assert_eq!(e("5 percent"), "1/20d");

@@ -69,7 +69,10 @@ write on a whiteboard should definitely work.
 | `in`, `to`, `as` | conversion — lowest precedence, always applies last |
 | `what is`, `how many`, `?` | ignored |
 
-**Properties:** `mass of earth` · `earth's mass` · `earth.mass`
+**Properties:** `mass of earth` · `earth's mass` · `earth.mass` · `earth mass`
+
+**Questions:** `how tall is the eiffel tower` · `how much does a blue whale weigh`
+· `how far is the moon` · `distance from earth to moon` · `how old is the universe`
 
 **Variables and functions:** `rent = 2400 usd/month` · `f(x) = x^2 - 3x` · `it`
 

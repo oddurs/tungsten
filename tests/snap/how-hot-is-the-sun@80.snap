@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how hot is the sun
+
+  ◆ interpretation
+  │ surface temperature of the Sun
+
+  ◆ result
+  │ 5772 K
+
+  ◆ other units
+  │ 5499 °C  ·  9930 °F
+
+  ──────────────────────────── W74

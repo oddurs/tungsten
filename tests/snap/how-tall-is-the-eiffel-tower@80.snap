@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w how tall is the eiffel tower
+
+  ◆ interpretation
+  │ height of Eiffel Tower
+
+  ◆ result
+  │ 330 m
+
+  ◆ other units
+  │ 0.33 km  ·  360.9 yd
+
+  ◆ for scale
+  │ ≈ 0.7 × Empire State Building
+  │ ≈ 3 American football fields (length)
+
+  ─────────────────────────────────── W74
