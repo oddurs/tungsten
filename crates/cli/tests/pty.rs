@@ -23,7 +23,9 @@ fn spawn(data: &Path) -> PtySession {
     p
 }
 
-/// Waits for `needle`, answering cursor queries on the way.
+/// Waits for `needle`, answering cursor queries on the way. Keys sent
+/// before reedline has redrawn its prompt can be lost, as they would be for
+/// a very fast typist, so tests wait for `W> ` after each answer.
 fn expect(p: &mut PtySession, needle: &str) {
     loop {
         let (_, found) = p
@@ -81,6 +83,7 @@ fn ctrl_c_clears_the_line_and_ctrl_d_exits() {
     expect(&mut p, "W> ");
     keys(&mut p, "2 + 2\r");
     expect(&mut p, "  4");
+    expect(&mut p, "W> ");
     p.send_control('d').expect("ctrl-d");
     exits(&mut p);
     let _ = std::fs::remove_dir_all(&dir);
@@ -92,6 +95,7 @@ fn history_survives_a_restart() {
     let mut p = spawn(&dir);
     keys(&mut p, "rent = 2400 USD/month\r");
     expect(&mut p, "  2400 USD/mo");
+    expect(&mut p, "W> ");
     keys(&mut p, ":quit\r");
     exits(&mut p);
 
@@ -107,8 +111,10 @@ fn history_survives_a_restart() {
     expect(&mut p, "rent = 2400 USD/month");
     keys(&mut p, "\r");
     expect(&mut p, "  2400 USD/mo");
+    expect(&mut p, "W> ");
     keys(&mut p, "rent / 4\r");
     expect(&mut p, "  600 USD/mo");
+    expect(&mut p, "W> ");
     p.send_control('d').expect("ctrl-d");
     exits(&mut p);
     let _ = std::fs::remove_dir_all(&dir);
