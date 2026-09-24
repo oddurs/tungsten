@@ -1,11 +1,11 @@
 ---
 source: crates/cli/tests/snapshots.rs
 ---
-$ w m = 5
+$ w t = 20 °C; t in °F
 
-  ◆ can't define m
-  │ m = 5
-  │ ^ it is the unit m (metre)
-  │ try m1 = 5
+  ◆ can't define t
+  │ t = 20 °C
+  │ ^ it is the unit t (tonne)
+  │ try t1 = 20 °C
 
   ──────────────────────── W74

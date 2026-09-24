@@ -13,17 +13,26 @@
 
 use crate::{Settings, options, statements};
 use std::time::Instant;
-use tungsten_core::{Outcome, Scope, Session};
+use tungsten_core::{Kind, Outcome, Scope, Session};
 use tungsten_pods::{Body, Build, Line, NumMode, Pod, Report, Seg};
 use tungsten_render::{FILAMENT, Style};
 
 /// The colon commands, for `:help` and completion.
+const REPL: Build = Build {
+    why: false,
+    repl: true,
+};
+
 pub const COMMANDS: &[(&str, &str)] = &[
     (":vars", "variables and functions defined so far"),
     (":clear", "forget them all"),
     (":pods on|off", "every pod, or just the answer"),
     (":sig N", "significant figures (:sig alone resets to 4)"),
     (":why", "where the last answer's units and values came from"),
+    (
+        ":as KIND",
+        "what an ambiguous name means: planet, element, …",
+    ),
     (":help", "this list"),
     (":quit", "leave (or Ctrl-D)"),
 ];
@@ -77,7 +86,8 @@ impl Repl {
         for stmt in statements(line) {
             let start = Instant::now();
             let result = self.session.run(stmt);
-            let report = tungsten_pods::build_with(stmt, &result, Build::default());
+            let report = tungsten_pods::build_with(stmt, &result, REPL);
+            let failed = result.is_err();
             if let Ok(o) = result {
                 self.last = Some((stmt.to_string(), o));
             }
@@ -92,6 +102,10 @@ impl Repl {
                     &report,
                     &options(&self.settings, None),
                 ));
+            }
+            // What follows may depend on this; its errors would be echoes.
+            if failed {
+                break;
             }
         }
         Reply::Show(out)
@@ -140,6 +154,29 @@ impl Repl {
                 )),
             },
             ("why", "") => self.why(),
+            ("as", "") => {
+                self.session.options.prefer = None;
+                self.settings.prefer = None;
+                self.note("ambiguous names take their likeliest meaning")
+            }
+            ("as", kind) => match Kind::parse(&kind.replace('-', " ")) {
+                Some(k) => {
+                    self.session.options.prefer = Some(k);
+                    self.settings.prefer = Some(k);
+                    self.note(&format!("ambiguous names mean the {}", k.name()))
+                }
+                None => {
+                    let all: Vec<String> = Kind::ALL
+                        .iter()
+                        .map(|k| k.name().replace(' ', "-"))
+                        .collect();
+                    self.pods_out(problem(
+                        "can't set that",
+                        &format!(":as {kind}"),
+                        &format!("kinds: {}", all.join(", ")),
+                    ))
+                }
+            },
             _ => self.pods_out(problem(
                 "unknown command",
                 &format!(":{cmd}"),
@@ -207,7 +244,14 @@ impl Repl {
         let Some((input, outcome)) = &self.last else {
             return self.note("nothing calculated yet");
         };
-        let full = tungsten_pods::build_with(input, &Ok(outcome.clone()), Build { why: true });
+        let full = tungsten_pods::build_with(
+            input,
+            &Ok(outcome.clone()),
+            Build {
+                why: true,
+                repl: true,
+            },
+        );
         let sources: Vec<Pod> = full
             .pods
             .into_iter()

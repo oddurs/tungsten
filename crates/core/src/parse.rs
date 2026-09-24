@@ -659,11 +659,11 @@ impl<'a> Parser<'a> {
             Sym::Name(m) if !starts_unit(&it.sym) || self.of_follows() => self.name(m, it),
             Sym::Num { value, .. } => {
                 self.pos += 1;
-                self.quantity_from(*value, it.span.clone(), true)
+                self.quantity_from(*value, it.span.clone(), true, true)
             }
             Sym::Magnitude(m) => {
                 self.pos += 1;
-                self.quantity_from(*m, it.span.clone(), false)
+                self.quantity_from(*m, it.span.clone(), false, true)
             }
             Sym::Unit(_)
             | Sym::UnitPow(..)
@@ -682,7 +682,7 @@ impl<'a> Parser<'a> {
                 {
                     return self.prefix();
                 }
-                let node = self.quantity_from(Number::ONE, it.span.clone(), false)?;
+                let node = self.quantity_from(Number::ONE, it.span.clone(), false, false)?;
                 Ok(node)
             }
             Sym::Kw(Kw::Half) => {
@@ -738,7 +738,12 @@ impl<'a> Parser<'a> {
                     && self.peek_at(1).is_some_and(|n| starts_unit(&n.sym))
                 {
                     let num = self.bump().expect("peeked");
-                    return self.quantity_from(value.neg(), it.span.start..num.span.end, true);
+                    return self.quantity_from(
+                        value.neg(),
+                        it.span.start..num.span.end,
+                        true,
+                        true,
+                    );
                 }
                 let inner = self.expr(NEG)?;
                 let span = it.span.start..inner.span.end;
@@ -886,14 +891,17 @@ impl<'a> Parser<'a> {
     }
 
     /// A number, any magnitude words after it, then any units after those.
+    /// `explicit`: written as digits, so `in` after it is inches. `counted`:
+    /// a number stands alone without a unit (`dozen` does; `a` does not).
     fn quantity_from(
         &mut self,
         mut value: Number,
         span: Range<usize>,
         explicit: bool,
+        counted: bool,
     ) -> Result<Node, Error> {
         let mut end = span.end;
-        let mut absorbed = explicit;
+        let mut absorbed = counted;
         while let Some(Sym::Magnitude(m)) = self.peek().map(|n| &n.sym) {
             value = value
                 .mul(*m)

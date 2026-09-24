@@ -1,0 +1,3 @@
+# A failed statement stops the line; later ones would only echo it.
+t = 20 °C; t in °F
+t1 = 20 °C; t1 in °F

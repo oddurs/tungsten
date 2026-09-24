@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w f(x, x) = x
+
+  ◆ can't define f
+  │ f(x, x) = x
+  │ ^^^^^^^ x is a parameter twice
+
+  ──────────────────────────── W74

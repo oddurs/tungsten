@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w n = 3; n dozen
+
+  ◆ interpretation
+  │ n = 3
+
+  ◆ result
+  │ 3
+
+  ──────────────────── W74
+
+
+  ◆ interpretation
+  │ n × 12
+
+  ◆ result
+  │ 36
+
+  ──────────────────── W74

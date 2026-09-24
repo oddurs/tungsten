@@ -1,0 +1,10 @@
+---
+source: crates/cli/tests/snapshots.rs
+---
+$ w f(2) = 3
+
+  ◆ can't define f
+  │ f(2) = 3
+  │ ^^^^ parameters are plain names: f(x, y) = …
+
+  ────────────────────────────────── W74
