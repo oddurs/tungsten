@@ -6,5 +6,6 @@ $ w m = 5
   ◆ can't define m
   │ m = 5
   │ ^ it is the unit m (metre)
+  │ try m1 = 5
 
   ──────────────────────── W74

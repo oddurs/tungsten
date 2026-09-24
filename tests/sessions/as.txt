@@ -1,0 +1,6 @@
+# :as changes what an ambiguous name means, as --as does.
+mercury
+:as element
+mercury
+:as
+:as rock

@@ -222,8 +222,8 @@ Unknown words get an edit-distance suggestion: `unknown unit "kilometres"? → k
 
 `w` with no arguments. Prompt `W›`. Live highlighting (numbers amber, units
 teal, entities green, variables bold, unknown words underlined), tab
-completion, `it`, and `:vars` `:clear` `:pods on|off` `:sig N` `:why` `:help`
-`:quit`. History in `$XDG_DATA_HOME/tungsten/history` (default
+completion, `it`, and `:vars` `:clear` `:pods on|off` `:sig N` `:why` `:as KIND`
+`:help` `:quit`. History in `$XDG_DATA_HOME/tungsten/history` (default
 `~/.local/share/tungsten/history`). Answers show alone; `:pods on` shows every
 pod.
 

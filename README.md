@@ -90,7 +90,8 @@ echo "3 ft in cm" | w -q      # one query per line from stdin
 
 Statements separated by `;` (or lines read from stdin) share a session.
 `it` is the previous answer. Names that already mean something, like `m` for
-metres, cannot be rebound.
+metres, cannot be rebound (tungsten suggests `m1`). A statement that fails
+stops the line.
 
 ```sh
 w "rent = 2400 USD/month; rent * 12 month; it / 52 wk"
@@ -119,7 +120,7 @@ W› :vars
 ```
 <!-- /session -->
 
-`:vars` `:clear` `:pods on|off` `:sig N` `:why` `:help` `:quit`. Ctrl-C clears
+`:vars` `:clear` `:pods on|off` `:sig N` `:why` `:as KIND` `:help` `:quit`. Ctrl-C clears
 the line, Ctrl-D leaves.
 
 Shells treat `*` `?` `'` `"` `(` `)` specially. Quote the query, or write `x`

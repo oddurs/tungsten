@@ -1,0 +1,13 @@
+---
+source: crates/cli/tests/sessions.rs
+---
+W› t = 20 °C; t in °F
+  ◆ can't define t
+  │ t = 20 °C
+  │ ^ it is the unit t (tonne)
+  │ try t1 = 20 °C
+
+W› t1 = 20 °C; t1 in °F
+  20 °C
+
+  68 °F

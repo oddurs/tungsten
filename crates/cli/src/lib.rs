@@ -73,11 +73,23 @@ pub fn render_line(line: &str, session: &mut Session, s: &Settings) -> Rendered 
         any = true;
         let start = Instant::now();
         let result = session.run(stmt);
-        let report = tungsten_pods::build_with(stmt, &result, tungsten_pods::Build { why: s.why });
+        let report = tungsten_pods::build_with(
+            stmt,
+            &result,
+            tungsten_pods::Build {
+                why: s.why,
+                repl: false,
+            },
+        );
         let elapsed = s.timing.then(|| start.elapsed());
         all.out
             .push_str(&tungsten_render::render(&report, &options(s, elapsed)));
         all.ok &= report.ok;
+        // Later statements may depend on this one; their errors would only
+        // be echoes of it.
+        if !report.ok {
+            break;
+        }
     }
     if !any {
         // An empty query still explains itself.
@@ -103,13 +115,21 @@ pub fn quiet_line(line: &str, session: &mut Session, s: &Settings) -> Rendered {
     };
     for stmt in statements(line) {
         let result = session.run(stmt);
-        let report = tungsten_pods::build_with(stmt, &result, tungsten_pods::Build { why: s.why });
+        let report = tungsten_pods::build_with(
+            stmt,
+            &result,
+            tungsten_pods::Build {
+                why: s.why,
+                repl: false,
+            },
+        );
         match tungsten_render::render_quiet(&report, &options(s, None)) {
             Some(v) => all.out.push_str(&format!("{v}\n")),
             None => {
                 let line = report.error_line.unwrap_or_else(|| "error".into());
                 all.err.push_str(&format!("tungsten: {line}\n"));
                 all.ok = false;
+                break;
             }
         }
     }

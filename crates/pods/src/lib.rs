@@ -135,6 +135,8 @@ pub fn about(version: &str) -> Report {
 pub struct Build {
     /// `--why`: a sources pod listing where every unit and value came from.
     pub why: bool,
+    /// Built for the REPL, where `:as` replaces `--as`.
+    pub repl: bool,
 }
 
 pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
@@ -144,7 +146,7 @@ pub fn build(input: &str, result: &Result<Outcome, Error>) -> Report {
 pub fn build_with(input: &str, result: &Result<Outcome, Error>, b: Build) -> Report {
     match result {
         Ok(o) => {
-            let mut report = success(input, o);
+            let mut report = success(input, o, b);
             if b.why
                 && let Some(p) = why::pod(&o.sources)
             {
@@ -180,7 +182,8 @@ fn with_article(kind: Kind) -> String {
 /// ◆ assuming
 /// │ "mercury" is a planet  ·  use --as element for the element
 /// ```
-fn assuming(input: &str, o: &Outcome) -> Option<Pod> {
+fn assuming(input: &str, o: &Outcome, b: Build) -> Option<Pod> {
+    let flag = if b.repl { ":as" } else { "--as" };
     let lines: Vec<Line> = o
         .assumptions
         .iter()
@@ -191,7 +194,7 @@ fn assuming(input: &str, o: &Outcome) -> Option<Pod> {
                 .iter()
                 .map(|e| {
                     format!(
-                        "use --as {} for the {}",
+                        "use {flag} {} for the {}",
                         e.kind().name().replace(' ', "-"),
                         e.kind().name()
                     )
@@ -210,8 +213,8 @@ fn assuming(input: &str, o: &Outcome) -> Option<Pod> {
     })
 }
 
-fn success(input: &str, o: &Outcome) -> Report {
-    let mut pods: Vec<Pod> = assuming(input, o).into_iter().collect();
+fn success(input: &str, o: &Outcome, b: Build) -> Report {
+    let mut pods: Vec<Pod> = assuming(input, o, b).into_iter().collect();
 
     if let Answer::Card(e) = o.answer {
         pods.push(card::card(e));

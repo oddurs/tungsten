@@ -186,3 +186,9 @@ area(r) = pi r^2; area(3 cm) in mm^2
 it * 2
 f(x) = x; f(1, 2)
 loop(x) = loop(x) + 1
+
+# ─── Polish IV (0074) ────────────────────────────────────────────────────────
+t = 20 °C; t in °F
+f(2) = 3
+f(x, x) = x
+n = 3; n dozen

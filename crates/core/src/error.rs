@@ -92,6 +92,8 @@ pub enum ErrorKind {
     CannotAssign {
         name: String,
         reason: String,
+        /// A similar name that is free: `t1` for `t`.
+        instead: Option<String>,
     },
     /// A user function called with the wrong number of arguments.
     UserArity {

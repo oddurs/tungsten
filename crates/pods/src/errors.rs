@@ -282,8 +282,16 @@ pub fn pod(input: &str, e: &Error) -> (Pod, String) {
                 "no previous answer for it".into(),
             )
         }
-        ErrorKind::CannotAssign { name, reason } => {
+        ErrorKind::CannotAssign {
+            name,
+            reason,
+            instead,
+        } => {
             lines.push(caret(input, &e.span, reason));
+            if let Some(other) = instead {
+                let fixed = input.trim().replacen(name.as_str(), other, 1);
+                lines.push(dim(format!("try {fixed}")));
+            }
             (
                 format!("can't define {name}"),
                 format!("can't define {name}: {reason}"),

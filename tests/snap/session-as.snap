@@ -22,6 +22,23 @@ W› mercury
   │ moons              0
   │ orbits             the Sun
 
-W› 74
-  74
-  74 is tungsten's atomic number.
+W› :as element
+  ambiguous names mean the element
+
+W› mercury
+  ◆ mercury · Hg · 80
+  │ atomic mass    200.59 u
+  │ density        13.5336 g/cm³
+  │ melting point  −38.83 °C
+  │ boiling point  356.73 °C
+  │ state          liquid
+  │ category       transition metal
+  │ discovered     ancient
+
+W› :as
+  ambiguous names take their likeliest meaning
+
+W› :as rock
+  ◆ can't set that
+  │ :as rock
+  │ kinds: star, planet, dwarf-planet, moon, element, item, constant

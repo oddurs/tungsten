@@ -6,8 +6,9 @@ type: milestone
 status: backlog
 depends_on:
 - 3
+- 74
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
 ---
 
 `.w` files: a plain-text calculation sheet evaluated top to bottom with results in a right-hand column. The Soulver-shaped use case.

@@ -58,12 +58,21 @@ impl Session {
             && op(1, '=')
         {
             self.bindable(name, &tokens[0])?;
+            if tokens.len() == 2 {
+                return Err(Error::new(
+                    ErrorKind::UnexpectedEnd {
+                        expected: "a value to remember",
+                    },
+                    src.len()..src.len(),
+                ));
+            }
             let mut outcome = self.evaluate(&tokens[2..], src)?;
             let value = shown(&outcome).map_err(|_| {
                 Error::new(
                     ErrorKind::CannotAssign {
                         name: name.to_string(),
                         reason: "the right side has no single value to remember".into(),
+                        instead: None,
                     },
                     tokens[2].span.start..src.len(),
                 )
@@ -77,8 +86,44 @@ impl Session {
         // f(x, y) = expr
         if let Some(name) = words(0)
             && op(1, '(')
-            && let Some((params, eq)) = params(&tokens)
+            && let Some(eq) = definition(&tokens)
         {
+            let refuse = |reason: String, span: std::ops::Range<usize>| {
+                Err(Error::new(
+                    ErrorKind::CannotAssign {
+                        name: name.to_string(),
+                        reason,
+                        instead: None,
+                    },
+                    span,
+                ))
+            };
+            let head = tokens[0].span.start..tokens[eq - 1].span.end;
+            let Some((params, eq)) = params(&tokens) else {
+                return if eq == 3 {
+                    refuse(format!("it needs a parameter: {name}(x) = …"), head)
+                } else {
+                    refuse(
+                        format!("parameters are plain names: {name}(x, y) = …"),
+                        head,
+                    )
+                };
+            };
+            if let Some(dup) = params
+                .iter()
+                .enumerate()
+                .find_map(|(i, p)| params[..i].contains(p).then_some(p))
+            {
+                return refuse(format!("{dup} is a parameter twice"), head);
+            }
+            if tokens.len() == eq + 1 {
+                return Err(Error::new(
+                    ErrorKind::UnexpectedEnd {
+                        expected: "a body for the function",
+                    },
+                    src.len()..src.len(),
+                ));
+            }
             self.bindable(name, &tokens[0])?;
             for (p, t) in params.iter().zip(tokens.iter().skip(2).step_by(2)) {
                 self.bindable_param(p, t)?;
@@ -105,6 +150,7 @@ impl Session {
                     ErrorKind::CannotAssign {
                         name: name.to_string(),
                         reason: "it would call itself, which never ends".into(),
+                        instead: None,
                     },
                     tokens[0].span.start..tokens[eq].span.end,
                 ));
@@ -147,28 +193,25 @@ impl Session {
 
     /// Why a name cannot be bound, if it cannot.
     fn bindable(&self, name: &str, at: &Token) -> Result<(), Error> {
-        let refuse = |reason: String| {
-            Err(Error::new(
-                ErrorKind::CannotAssign {
-                    name: name.to_string(),
-                    reason,
-                },
-                at.span.clone(),
-            ))
+        let Some((reason, suggest)) = taken(name) else {
+            return Ok(());
         };
-        if STRUCTURAL.contains(&name.to_lowercase().as_str()) {
-            return refuse("it is part of how queries are read".into());
-        }
-        if let Some(u) = tungsten_units::lookup(name) {
-            return refuse(format!("it is the unit {} ({})", u.symbol(), u.name(false)));
-        }
-        if crate::resolve::is_builtin(name) {
-            return refuse("it is a built-in function or constant".into());
-        }
-        if let Some(h) = tungsten_kb::lookup(name).into_iter().find(|h| !h.shadowed) {
-            return refuse(format!("it is {}", h.entity.display()));
-        }
-        Ok(())
+        // `t` is tonnes, but `t1` is free.
+        let instead = suggest
+            .then(|| {
+                [format!("{name}1"), format!("{name}_")]
+                    .into_iter()
+                    .find(|n| taken(n).is_none())
+            })
+            .flatten();
+        Err(Error::new(
+            ErrorKind::CannotAssign {
+                name: name.to_string(),
+                reason,
+                instead,
+            },
+            at.span.clone(),
+        ))
     }
 
     fn bindable_param(&self, name: &str, at: &Token) -> Result<(), Error> {
@@ -178,6 +221,7 @@ impl Session {
                 ErrorKind::CannotAssign {
                     name: name.to_string(),
                     reason: format!("it is the unit {} ({})", u.symbol(), u.name(false)),
+                    instead: None,
                 },
                 at.span.clone(),
             ));
@@ -203,6 +247,25 @@ impl Session {
     pub fn scope(&self) -> crate::Scope {
         self.env.scope()
     }
+}
+
+/// Why `name` cannot be bound, and whether a similar name is worth offering
+/// (not for keywords: `in1` helps no one).
+fn taken(name: &str) -> Option<(String, bool)> {
+    if STRUCTURAL.contains(&name.to_lowercase().as_str()) {
+        return Some(("it is part of how queries are read".into(), false));
+    }
+    if let Some(u) = tungsten_units::lookup(name) {
+        let what = format!("it is the unit {} ({})", u.symbol(), u.name(false));
+        return Some((what, true));
+    }
+    if crate::resolve::is_builtin(name) {
+        return Some(("it is a built-in function or constant".into(), true));
+    }
+    tungsten_kb::lookup(name)
+        .into_iter()
+        .find(|h| !h.shadowed)
+        .map(|h| (format!("it is {}", h.entity.display()), true))
 }
 
 /// Whether calling `name` could reach `name` again. There are no
@@ -234,6 +297,24 @@ fn calls_itself(name: &str, funcs: &BTreeMap<String, UserFunc>) -> bool {
         }
     }
     false
+}
+
+/// `f(…) =`, however malformed inside: the index of `=`.
+fn definition(tokens: &[Token]) -> Option<usize> {
+    let mut depth = 0;
+    for (i, t) in tokens.iter().enumerate().skip(1) {
+        match t.kind {
+            TokKind::Op('(') => depth += 1,
+            TokKind::Op(')') => {
+                depth -= 1;
+                if depth == 0 {
+                    return (tokens.get(i + 1)?.kind == TokKind::Op('=')).then_some(i + 1);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
 }
 
 /// `f(x, y) =`: the parameter names and the index of `=`.
@@ -322,6 +403,9 @@ mod tests {
         );
         assert!(run(&mut s, "in = 5").contains("CannotAssign"));
         assert!(run(&mut s, "earth = 5").contains("CannotAssign"));
+        assert!(run(&mut s, "t = 5").contains("instead: Some(\"t1\")"));
+        assert!(run(&mut s, "in = 5").contains("instead: None"));
+        assert!(run(&mut s, "x =").contains("a value to remember"));
     }
 
     #[test]
@@ -342,6 +426,10 @@ mod tests {
         assert_eq!(run(&mut s, "add(3, 4)"), "13");
         assert!(run(&mut s, "add(3)").contains("UserArity"));
         assert!(run(&mut s, "g(x) = x").contains("CannotAssign"));
+        assert!(run(&mut s, "k(2) = 3").contains("plain names"));
+        assert!(run(&mut s, "k() = 3").contains("needs a parameter"));
+        assert!(run(&mut s, "k(x, x) = x").contains("twice"));
+        assert!(run(&mut s, "k(x) =").contains("a body"));
     }
 
     #[test]
